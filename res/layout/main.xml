@@ -17,12 +17,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Start"
-                    android:id="@+id/startButton" android:layout_weight="0.5"/>
+                    android:id="@+id/startButton" android:layout_weight="0.5" android:textSize="30dp"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:text="Settings"
-                    android:id="@+id/settingsButton" android:layout_weight="0.5"/>
+                    android:text="Ustawienia"
+                    android:id="@+id/settingsButton" android:layout_weight="0.2" android:textSize="30dp"/>
         </LinearLayout>
         <LinearLayout
                 android:orientation="vertical"
@@ -36,13 +36,13 @@
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Resign"
-                        android:id="@+id/resignButton" android:layout_weight="0.5"/>
+                        android:text="Poddaj się"
+                        android:id="@+id/resignButton" android:layout_weight="0.5" android:textSize="25dp"/>
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Draw"
-                        android:id="@+id/drawButton" android:layout_weight="0.5"/>
+                        android:text="Remis"
+                        android:id="@+id/drawButton" android:layout_weight="0.5" android:textSize="25dp"/>
             </LinearLayout>
             <LinearLayout
                     android:orientation="horizontal"
@@ -51,30 +51,39 @@
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Undo"
-                        android:id="@+id/undoButton" android:layout_weight="0.3"/>
+                        android:text="Cofnij"
+                        android:id="@+id/undoButton" android:layout_weight="0.3" android:textSize="25dp"/>
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Redo"
-                        android:id="@+id/redoButton" android:layout_weight="0.3"/>
+                        android:text="Powtórz"
+                        android:id="@+id/redoButton" android:layout_weight="0.3" android:textSize="25dp"/>
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:text="Pause"
-                        android:id="@+id/pauseButton"/>
+                        android:text="Pauza"
+                        android:id="@+id/pauseButton" android:textSize="25dp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_weight="0.17">
+            android:layout_height="wrap_content" android:layout_margin="30dp"
+            >
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Ruch białych"
+                android:id="@+id/textView" android:layout_gravity="center_horizontal" android:textSize="50dp"
+                android:textIsSelectable="false"/>
     </LinearLayout>
     <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_weight="0.55">
+            android:layout_height="wrap_content" android:layout_weight="0.55" android:layout_marginLeft="70dp"
+            android:layout_marginRight="70dp">
         <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -84,7 +93,53 @@
     <LinearLayout
             android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" android:layout_weight="0.20">
+            android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+            android:layout_weight="0.07" android:layout_marginTop="50dp" android:layout_marginLeft="80dp"
+            android:layout_marginRight="80dp" android:id="@+id/timeLayout">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="05:00"
+                android:id="@+id/textView4" android:textSize="40dp" android:layout_marginLeft="100dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="05:00"
+                android:id="@+id/textView5" android:textSize="40dp" android:layout_marginLeft="300dp"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp" android:layout_marginLeft="80dp"
+            android:layout_marginRight="80dp" android:weightSum="1" android:id="@+id/playerInfoLayout">
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton" android:background="@android:color/background_light"
+                android:minHeight="50dp" android:minWidth="50dp" android:layout_marginRight="20dp"
+                android:layout_marginLeft="50dp"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Człowiek"
+                android:id="@+id/textView2" android:minHeight="50dp" android:textAlignment="center"
+                android:elegantTextHeight="false" android:textSize="30dp"
+                android:textIsSelectable="false"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Komputer"
+                android:id="@+id/textView3" android:layout_marginLeft="200dp" android:layout_marginRight="20dp"
+                android:textSize="30dp" android:textIsSelectable="false"/>
+        <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/imageButton2" android:minHeight="50dp" android:minWidth="50dp"
+                android:background="@android:color/background_dark"/>
     </LinearLayout>
 </LinearLayout>
-
