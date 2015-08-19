@@ -26,11 +26,11 @@ public class Data {
             1, 1, 1, 1, 1,
     };
     private int[] init_piece={
-            4, 2, 6, 2, 4,
+            4, 2, 3, 5, 6,
             1, 1, 1, 1, 1,
             0, 0, 0, 0, 0,
             1, 1, 1, 1, 1,
-            4, 2, 6, 2, 4,
+            4, 2, 3, 5, 6,
     };//TO DO startowe umieszczenie figur
     Data (){
         piece=new int[25];
