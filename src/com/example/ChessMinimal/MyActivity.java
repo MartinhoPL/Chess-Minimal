@@ -3,9 +3,12 @@ package com.example.ChessMinimal;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TableLayout;
 
 public class MyActivity extends Activity {
     private GameStateEnum gameState;
+    private Data data;
+    private ChessBoardView chessBoardView;
 
     /**
      * Called when the activity is first created.
@@ -14,7 +17,11 @@ public class MyActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         gameState = GameStateEnum.BLOCKED;
         super.onCreate(savedInstanceState);
+        data=new Data();
         setContentView(R.layout.main);
+        TableLayout chessBoardLayout = (TableLayout)findViewById(R.id.chessBoardLayout);
+        chessBoardView = new ChessBoardView(chessBoardLayout, data, this);
+        chessBoardView.createBoard();
     }
 
     public void onStartButtonClick(View view) {
@@ -22,14 +29,12 @@ public class MyActivity extends Activity {
     }
 
     public void onPauseButtonClick(View view) {
-        if (gameState == GameStateEnum.STARTED)
-        {
+        if (gameState == GameStateEnum.STARTED) {
             gameState = GameStateEnum.PAUSED;
-        }
-        else
-        {
+        } else {
             gameState = GameStateEnum.STARTED;
         }
     }
+
 }
 

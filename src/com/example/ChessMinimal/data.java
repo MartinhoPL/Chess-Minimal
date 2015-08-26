@@ -3,8 +3,8 @@ package com.example.ChessMinimal;
 
 public class Data {
     //mozna polaczyc color i piece np. biale parzyste czarne nieparyste 0 puste
-    private int[] color; //1-bialy; 2-czarny; 0-pusty
-    private int[] piece; //0-pusty; 1-pion; 2-kon; 3-goniec; 4-wieza; 5-hetman/krolowa; 6-krol
+    public int[] color; //1-bialy; 2-czarny; 0-pusty
+    public int[] piece; //0-pusty; 1-pion; 2-kon; 3-goniec; 4-wieza; 5-hetman/krolowa; 6-krol
     //mozliwe zamiana na bool true-bialy; false-czarny
     private int side;  // strona wykonujaca ruch
     private int xside;  //strona niewykonujaca ruchu
@@ -18,14 +18,14 @@ public class Data {
     //czas rozpoczecia szukania i maksymalny czas zaakonczenia
     private int start_time;
     private int stop_time;
-    private int[] init_color={
+    public int[] init_color={
             2, 2, 2, 2, 2,
             2, 2, 2, 2, 2,
             0, 0, 0, 0, 0,
             1, 1, 1, 1, 1,
             1, 1, 1, 1, 1,
     };
-    private int[] init_piece={
+    public int[] init_piece={
             4, 2, 3, 5, 6,
             1, 1, 1, 1, 1,
             0, 0, 0, 0, 0,
