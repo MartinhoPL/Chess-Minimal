@@ -45,6 +45,7 @@ public class Data {
         return -1;
     }
     public void changeSite(){
+	this.xside=this.side;
         this.side=1-this.side;
     }
     public int getSide(){
