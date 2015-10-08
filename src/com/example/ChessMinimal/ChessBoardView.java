@@ -1,10 +1,13 @@
 package com.example.ChessMinimal;
 
+import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Color;
-import android.widget.ImageButton;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+import android.view.DragEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.*;
 
 public class ChessBoardView {
 
@@ -13,6 +16,9 @@ public class ChessBoardView {
     private TableLayout tableLayout;
     private Data data;
     private Context context;
+    private int startX;
+    private int startY;
+    private int imageResourceDrag;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context){
         tableRows = new TableRow[5];
@@ -50,16 +56,61 @@ public class ChessBoardView {
         tableRows[x] = tableRow;
     }
 
-    private void createColumn(int color, int imageResource, int x, int y) {
-
-        ImageButton imageButton = new ImageButton(context);
+    private void createColumn(int color, final int imageResource, final int x, final int y) {
+        final ImageButton imageButton = new ImageButton(context);
         imageButton.setLayoutParams(new TableRow.LayoutParams(x));
         if (imageResource != -0) {
             imageButton.setImageResource(imageResource);
+            imageButton.setTag(imageResource);
         }
         imageButton.setBackgroundColor(color);
         imageButton.setMinimumHeight(100);
         imageButton.setMinimumWidth(100);
+        imageButton.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                    startX = x;
+                    startY = y;
+                    imageResourceDrag = (Integer)imageButtons[x][y].getTag();
+                    ClipData clipData = ClipData.newPlainText("", "");
+                    View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
+                    view.startDrag(clipData, dsb, view, 0);
+                    imageButton.setImageResource(android.R.color.transparent);
+                    //view.setVisibility(View.INVISIBLE);
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+
+        imageButton.setOnDragListener(new View.OnDragListener() {
+            boolean containsDragable;
+
+            public boolean onDrag(View v, DragEvent event) {
+                int dragAction = event.getAction();
+                View dragView = (View) event.getLocalState();
+                if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
+                    containsDragable = false;
+                } else if (dragAction == DragEvent.ACTION_DRAG_ENTERED) {
+                    containsDragable = true;
+                } else if (dragAction == DragEvent.ACTION_DRAG_ENDED) {
+                    if (dropEventNotHandled(event)) {
+                        dragView.setVisibility(View.VISIBLE);
+                    }
+                } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
+                    // TODO PATRYK, TU DAJ IF Z WALIDACJA
+                    movePiece(startX, startY, x, y);
+
+                    //dragView.setVisibility(View.VISIBLE);
+                }
+                return true;
+            }
+
+            private boolean dropEventNotHandled(DragEvent dragEvent) {
+                return !dragEvent.getResult();
+            }
+        });
 
         imageButtons[x][y] = imageButton;
         tableRows[y].addView(imageButtons[x][y]);
@@ -130,12 +181,13 @@ public class ChessBoardView {
     }
 
     public void movePiece(int x1, int y1, int x2, int y2) {
-        int imageResources;
-        if(data.piece[x1 + y1*5] != 0)
+        if(data.piece[(x1) + ((y1)*5)] != 0)
         {
-            imageResources = getimageResourceForCell(x1, y1);
+            //imageResources = getimageResourceForCell(x1, y1);
             imageButtons[x1][y1].setImageResource(android.R.color.transparent);
-            imageButtons[x2][y2].setImageResource(imageResources);
+            imageButtons[x2][y2].setImageResource(imageResourceDrag);
+            imageButtons[x2][y2].setTag(imageResourceDrag);
+
         }
     }
 
