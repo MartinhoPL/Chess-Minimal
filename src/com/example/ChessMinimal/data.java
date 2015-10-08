@@ -1,7 +1,7 @@
 package com.example.ChessMinimal;
 
 
-public class Data {
+class Data {
     //mozna polaczyc color i piece np. biale parzyste czarne nieparyste 0 puste
     public int[] color; //1-bialy; 2-czarny; 0-pusty
     public int[] piece; //0-pusty; 1-pion; 2-kon; 3-goniec; 4-wieza; 5-hetman/krolowa; 6-krol
