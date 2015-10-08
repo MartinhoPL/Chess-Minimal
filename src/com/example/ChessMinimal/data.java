@@ -14,7 +14,7 @@ public class Data {
     //ograniczenia w szukaniu ruchow;
     private int max_time;
     private int max_depth;
-    private boolean isCheck=false;
+    private boolean isCheck;
     //czas rozpoczecia szukania i maksymalny czas zaakonczenia
     private int start_time;
     private int stop_time;
@@ -33,23 +33,26 @@ public class Data {
             4, 2, 3, 5, 6,
     };//TO DO startowe umieszczenie figur
     Data (){
+        isCheck=false;
+        side=1;
+        xside=2;
+        fifty=0;
         piece=new int[25];
         piece=init_piece.clone();
         color=new int[25];
         color=init_color.clone();
     }
     public int getPiece(int x, int y){
-        if(x<5 && x>1)
+        if(x<5 && x>-1)
             if(y<5 && y>-1)
                 return piece[x*5+y];
         return -1;
     }
-    public void changeSite(){
-	this.xside=this.side;
-        this.side=1-this.side;
-    }
     public int getSide(){
         return this.side;
+    }
+    public int getXside(){
+        return this.xside;
     }
     public int getColor(int x, int y){
         if(x<5 && x>1)
@@ -57,7 +60,16 @@ public class Data {
                 return color[x*5+y];
         return -1;
     }
-    public void setIsCheck(boolean b){
-        this.isCheck=b;
+    public boolean getIsCheck(){
+        return this.isCheck;
+    }
+
+    public void setIsCheck(boolean isCheck){
+        this.isCheck=isCheck;
+    }
+
+    public void changeSite(){
+        this.xside=this.side;
+        this.side=1-this.side;
     }
 }
