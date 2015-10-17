@@ -6,8 +6,9 @@ import android.graphics.Color;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.ImageButton;
+import android.widget.TableLayout;
+import android.widget.TableRow;
 
 public class ChessBoardView {
 
@@ -19,13 +20,14 @@ public class ChessBoardView {
     private int startX;
     private int startY;
     private int imageResourceDrag;
-
+    private ChessMechanic chessMechanic;
     public ChessBoardView(TableLayout tableLayout, Data data, Context context){
         tableRows = new TableRow[5];
         imageButtons = new ImageButton[5][5];
         this.tableLayout = tableLayout;
         this.data = data;
         this.context = context;
+        chessMechanic = new ChessMechanic(data);
     }
     
     public void createBoard(){
@@ -100,9 +102,12 @@ public class ChessBoardView {
                     }
                 } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
                     // TODO PATRYK, TU DAJ IF Z WALIDACJA
-                    movePiece(startX, startY, x, y);
-
-                    //dragView.setVisibility(View.VISIBLE);
+                    if(chessMechanic.isMoveCorrect(startX, startY, x, y)) {
+                        movePiece(startX, startY, x, y);
+                    } else {
+                        movePiece(startX, startY, startX, startY);
+                    }
+//                    dragView.setVisibility(View.VISIBLE);
                 }
                 return true;
             }
@@ -181,14 +186,10 @@ public class ChessBoardView {
     }
 
     public void movePiece(int x1, int y1, int x2, int y2) {
-        if(data.piece[(x1) + ((y1)*5)] != 0)
-        {
             //imageResources = getimageResourceForCell(x1, y1);
             imageButtons[x1][y1].setImageResource(android.R.color.transparent);
             imageButtons[x2][y2].setImageResource(imageResourceDrag);
             imageButtons[x2][y2].setTag(imageResourceDrag);
-
-        }
     }
 
     public TableRow[] getTableRows() {

@@ -25,7 +25,7 @@ public class Data {
             1, 1, 1, 1, 1,
             1, 1, 1, 1, 1,
     };
-    public int[] init_piece={// wie¿a koñ goniec hetman król
+    public int[] init_piece={// wieï¿½a koï¿½ goniec hetman krï¿½l
             4, 2, 3, 5, 6,
             1, 1, 1, 1, 1,
             0, 0, 0, 0, 0,
