@@ -188,6 +188,7 @@ public class ChessBoardView {
     public void movePiece(int x1, int y1, int x2, int y2) {
             //imageResources = getimageResourceForCell(x1, y1);
             imageButtons[x1][y1].setImageResource(android.R.color.transparent);
+            imageButtons[x1][y1].setTag(android.R.color.transparent);
             imageButtons[x2][y2].setImageResource(imageResourceDrag);
             imageButtons[x2][y2].setTag(imageResourceDrag);
     }
