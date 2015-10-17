@@ -42,18 +42,25 @@ public class ChessMechanic {
                 if (y1 > y2) {
                     if ((x1 - x2 == 1 && y1 - y2 == 2) || (x1 - x2 == 2 && y1 - y2 == 1)) {
                         return true;
-                    } else return false;
-                } else if ((x1 - x2 == 1 && y1 - y2 == -2) || (x1 - x2 == 2 && y1 - y2 == -1)) {
-                    return true;
-                } else return false;
+                    } else
+                        return false;
+                } else {
+                    if ((x1 - x2 == 1 && y1 - y2 == -2) || (x1 - x2 == 2 && y1 - y2 == -1)) {
+                        return true;
+                    } else
+                        return false;
+                }
             } else {
                 if (y1 > y2) {
                     if ((x1 - x2 == -1 && y1 - y2 == 2) || (x1 - x2 == -2 && y1 - y2 == 1)) {
                         return true;
                     } else return false;
-                } else if ((x1 - x2 == -1 && y1 - y2 == -2) || (x1 - x2 == -2 && y1 - y2 == -1)) {
-                    return true;
-                } else return false;
+                } else {
+                    if ((x1 - x2 == -1 && y1 - y2 == -2) || (x1 - x2 == -2 && y1 - y2 == -1)) {
+                        return true;
+                    } else
+                        return false;
+                }
             }
         }else
             return false;
@@ -86,14 +93,14 @@ public class ChessMechanic {
             if (x1 != x2) { //czy ruch w pionie
                 int minus = 1;
                 if (x1 > x2) minus = -1;
-                for (int i = x1; i != x2; i += minus) {
+                for (int i = x1+minus; i != x2; i += minus) {
                     if (data.getPiece(i, y1) != 0)
                         return false;
                 }
             } else { //ruch w poziomie
                 int minus = 1;
                 if (y1 > y2) minus = -1;
-                for (int i = y1; i != y2; i += minus) {
+                for (int i = y1+minus; i != y2; i += minus) {
                     if (data.getPiece(x1, i) != 0)
                         return false;
                 }
@@ -137,22 +144,27 @@ public class ChessMechanic {
                                 case 1: {//pion (tylko do przodu o jedno pole)
                                     if (pawnMoveIsCorrect(i, j, x2, y2))
                                         return false;
+                                    break;
                                 }
                                 case 2: {//kon  ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
                                     if (knigthMoveIsCorrect(i, j, x2, y2))
                                         return false;
+                                    break;
                                 }
                                 case 3: {//goniec
                                     if (bishopMoveIsCorrect(i, j, x2, y2))
                                         return false;
+                                    break;
                                 }
                                 case 4: {//wieza
                                     if (rookMoveIsCorrect(i, j, x2, y2))
                                         return false;
+                                    break;
                                 }
                                 case 5: {//hetman
                                     if (queenMoveIsCorrect(i, j, x2, y2))
                                         return false;
+                                    break;
                                 }
                                 case 6: {//krol sprawdzamy czy nie podjeżdżamy pod króla przeciwnika(ruch hipotetyczny)
                                     if (i - x2 > 1 || i - x2 < -1)
@@ -161,6 +173,7 @@ public class ChessMechanic {
                                         return false;
                                     else if (i - x2 == 0 && j - y2 == 0)
                                         return false;
+                                    break;
                                 }
                             }
                         }
@@ -188,22 +201,27 @@ public class ChessMechanic {
                             case 1: {//pion
                                 if(pawnMoveIsCorrect(i,j,kingX,kingY))
                                     return true;
+                                break;
                             }
                             case 2: {//kon
                                 if(knigthMoveIsCorrect(i,j,kingX,kingY))
                                     return true;
+                                break;
                             }
                             case 3:{//goniec
                                 if(bishopMoveIsCorrect(i,j,kingX,kingY))
                                     return true;
+                                break;
                             }
                             case 4:{//wieza
                                 if(rookMoveIsCorrect(i,j,kingX,kingY))
                                     return true;
+                                break;
                             }
                             case 5:{//hetman
                                 if(queenMoveIsCorrect(i,j,kingX,kingY))
                                     return true;
+                                break;
                             }//króla nie sprawdzamy bo nie można ruszyć się drugim królem pod bicie więc wsystkie takie ruchy nie będą poprawne
                         }
                     }
@@ -236,26 +254,32 @@ public class ChessMechanic {
             case 1: {//pion (tylko do przodu o jedno pole)
                 if(!pawnMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
             case 2: {//kon ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
                 if(!knigthMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
             case 3:{//goniec
                 if(!bishopMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
             case 4:{//wieza
                 if(!rookMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
             case 5:{//hetman
                 if(!queenMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
             case 6:{//krol
                 if(!kingMoveIsCorrect(x1,y1,x2,y2))
                     return false;
+                break;
             }
         }
         if(data.getIsCheck()){//w przypadku szacha
