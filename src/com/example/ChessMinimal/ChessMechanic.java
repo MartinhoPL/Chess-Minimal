@@ -23,15 +23,15 @@ public class ChessMechanic {
     }
     public boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2){
         if (data.getSide() == 1) {
-            if (x1 - x2 != 1)//czy ruch o jedno pole do przodu białe
+            if (y1 - y2 != 1)//czy ruch o jedno pole do przodu białe
                 return false;
         } else {
-            if (x2 - x1 != 1)//czy ruch o jedno pole do przodu czarne
+            if (y2 - y1 != 1)//czy ruch o jedno pole do przodu czarne
                 return false;
         }
-        if(data.getColor(x2,y2)==0 && y1-y2==0)
+        if(data.getColor(x2,y2)==0 && x1-x2==0)
             return true;
-        if ((y1 - y2 == 1 || y1 - y2 == -1) && (data.getColor(x2, y2) == data.getXside() ))//czy poprawne bicie pionem
+        if ((x1 - x2 == 1 || x1 - x2 == -1) && (data.getColor(x2, y2) == data.getXside() ))//czy poprawne bicie pionem
             return true;
         else
             return false;
@@ -104,13 +104,13 @@ public class ChessMechanic {
     }
     public boolean queenMoveIsCorrect(int x1, int y1, int x2, int y2){
         if(data.getColor(x2,y2)!=data.getSide()) {
-            if(x1 != x2 && y1 != y2){
+            if(x1 == x2 || y1 == y2){
                 if(rookMoveIsCorrect(x1, y1, x2, y2))
                     return true;
                 else
                     return false;
             }
-            else if (x1 - x2 != y1 - y2 && x1 - x2 != y2 - y1){
+            else if (x1 - x2 == y1 - y2 || x1 - x2 == y2 - y1){
                 if(bishopMoveIsCorrect(x1, y1, x2, y2))
                     return true;
                 else
