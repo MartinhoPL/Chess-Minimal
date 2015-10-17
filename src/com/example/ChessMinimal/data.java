@@ -1,7 +1,7 @@
 package com.example.ChessMinimal;
 
 
-class Data {
+public class Data {
     //mozna polaczyc color i piece np. biale parzyste czarne nieparyste 0 puste
     public int[] color; //1-bialy; 2-czarny; 0-pusty
     public int[] piece; //0-pusty; 1-pion; 2-kon; 3-goniec; 4-wieza; 5-hetman/krolowa; 6-krol
@@ -25,13 +25,13 @@ class Data {
             1, 1, 1, 1, 1,
             1, 1, 1, 1, 1,
     };
-    public int[] init_piece={
+    public int[] init_piece={// wie¿a koñ goniec hetman król
             4, 2, 3, 5, 6,
             1, 1, 1, 1, 1,
             0, 0, 0, 0, 0,
             1, 1, 1, 1, 1,
             4, 2, 3, 5, 6,
-    };//TO DO startowe umieszczenie figur
+    };
     Data (){
         isCheck=false;
         side=1;
@@ -45,7 +45,7 @@ class Data {
     public int getPiece(int x, int y){
         if(x<5 && x>-1)
             if(y<5 && y>-1)
-                return piece[x*5+y];
+                return piece[x+y*5];
         return -1;
     }
     public int getSide(){
@@ -55,9 +55,9 @@ class Data {
         return this.xside;
     }
     public int getColor(int x, int y){
-        if(x<5 && x>1)
+        if(x<5 && x>-1)
             if(y<5 && y>-1)
-                return color[x*5+y];
+                return color[x+y*5];
         return -1;
     }
     public boolean getIsCheck(){
@@ -69,7 +69,8 @@ class Data {
     }
 
     public void changeSite(){
-        this.xside=this.side;
-        this.side=1-this.side;
+        int a = this.xside;
+        this.xside = this.side;
+        this.side = a;
     }
 }
