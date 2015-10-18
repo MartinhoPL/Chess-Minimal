@@ -63,8 +63,9 @@ public class ChessBoardView {
         imageButton.setLayoutParams(new TableRow.LayoutParams(x));
         if (imageResource != -0) {
             imageButton.setImageResource(imageResource);
-            imageButton.setTag(imageResource);
+
         }
+        imageButton.setTag(imageResource);
         imageButton.setBackgroundColor(color);
         imageButton.setMinimumHeight(100);
         imageButton.setMinimumWidth(100);
@@ -73,12 +74,14 @@ public class ChessBoardView {
                 if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
                     startX = x;
                     startY = y;
-                    imageResourceDrag = (Integer)imageButtons[x][y].getTag();
-                    ClipData clipData = ClipData.newPlainText("", "");
-                    View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
-                    view.startDrag(clipData, dsb, view, 0);
-                    imageButton.setImageResource(android.R.color.transparent);
-                    //view.setVisibility(View.INVISIBLE);
+                    imageResourceDrag = (Integer) imageButtons[x][y].getTag();
+                    if (imageResourceDrag != -0) {
+                        ClipData clipData = ClipData.newPlainText("", "");
+                        View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
+                        view.startDrag(clipData, dsb, view, 0);
+                        imageButton.setImageResource(android.R.color.transparent);
+                        //view.setVisibility(View.INVISIBLE);
+                    }
                     return true;
                 } else {
                     return false;
@@ -102,7 +105,7 @@ public class ChessBoardView {
                     }
                 } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
                     // TODO PATRYK, TU DAJ IF Z WALIDACJA
-                    if(chessMechanic.isMoveCorrect(startX, startY, x, y)) {
+                    if (chessMechanic.isMoveCorrect(startX, startY, x, y)) {
                         movePiece(startX, startY, x, y);
                     } else {
                         movePiece(startX, startY, startX, startY);
@@ -188,7 +191,7 @@ public class ChessBoardView {
     public void movePiece(int x1, int y1, int x2, int y2) {
             //imageResources = getimageResourceForCell(x1, y1);
             imageButtons[x1][y1].setImageResource(android.R.color.transparent);
-            imageButtons[x1][y1].setTag(android.R.color.transparent);
+            imageButtons[x1][y1].setTag(-0);
             imageButtons[x2][y2].setImageResource(imageResourceDrag);
             imageButtons[x2][y2].setTag(imageResourceDrag);
     }
