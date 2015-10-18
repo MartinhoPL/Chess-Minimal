@@ -71,20 +71,26 @@ public class ChessBoardView {
         imageButton.setMinimumWidth(100);
         imageButton.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+                int s = motionEvent.getAction();
+                if (s == MotionEvent.ACTION_DOWN) {
                     startX = x;
                     startY = y;
-                    imageResourceDrag = (Integer) imageButtons[x][y].getTag();
-                    if (imageResourceDrag != -0) {
-                        ClipData clipData = ClipData.newPlainText("", "");
-                        View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
-                        view.startDrag(clipData, dsb, view, 0);
-                        imageButton.setImageResource(android.R.color.transparent);
-                        //view.setVisibility(View.INVISIBLE);
+                    try {
+                        imageResourceDrag = (Integer) imageButtons[x][y].getTag();
+                        if (imageResourceDrag != -0) {
+                            ClipData clipData = ClipData.newPlainText("", "");
+                            View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
+                            view.startDrag(clipData, dsb, view, 0);
+                           // imageButton.setImageResource(android.R.color.transparent);
+                            //view.setVisibility(View.INVISIBLE);
+                        }
+                    } catch (Exception exception) {
+
+                    } finally {
+                        return true;
                     }
-                    return true;
                 } else {
-                    return false;
+                        return false;
                 }
             }
         });
@@ -93,26 +99,41 @@ public class ChessBoardView {
             boolean containsDragable;
 
             public boolean onDrag(View v, DragEvent event) {
-                int dragAction = event.getAction();
-                View dragView = (View) event.getLocalState();
-                if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
-                    containsDragable = false;
-                } else if (dragAction == DragEvent.ACTION_DRAG_ENTERED) {
-                    containsDragable = true;
-                } else if (dragAction == DragEvent.ACTION_DRAG_ENDED) {
-                    if (dropEventNotHandled(event)) {
-                        dragView.setVisibility(View.VISIBLE);
-                    }
-                } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
-                    // TODO PATRYK, TU DAJ IF Z WALIDACJA
-                    if (chessMechanic.isMoveCorrect(startX, startY, x, y)) {
-                        movePiece(startX, startY, x, y);
-                    } else {
-                        movePiece(startX, startY, startX, startY);
-                    }
+                try {
+                    int dragAction = event.getAction();
+                    View dragView = (View) event.getLocalState();
+                    if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
+                        containsDragable = false;
+                    } else    if (dragAction == DragEvent.ACTION_DRAG_STARTED) {
+                         imageButtons[startX][startY].setImageResource(android.R.color.transparent);
+                    } else if (dragAction == DragEvent.ACTION_DRAG_ENTERED) {
+                        containsDragable = true;
+                    } else if (dragAction == DragEvent.ACTION_DRAG_ENDED) {
+                        if (dropEventNotHandled(event)) {
+                            movePiece(startX, startY, startX, startY);
+                            dragView.setVisibility(View.VISIBLE);
+                        }
+                        for (int i = 0; i < 5 ; i++)
+                        {
+                            for (int j = 0 ; j < 5 ; j++)
+                            {
+                                imageButtons[i][j].setImageResource((Integer)imageButtons[i][j].getTag());
+                            }
+                        }
+                    } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
+                        // TODO PATRYK, TU DAJ IF Z WALIDACJA
+                        if (chessMechanic.isMoveCorrect(startX, startY, x, y)) {
+                            movePiece(startX, startY, x, y);
+                        } else {
+                            movePiece(startX, startY, startX, startY);
+                        }
 //                    dragView.setVisibility(View.VISIBLE);
+                    }
+                } catch (Exception ex) {
+
+                } finally {
+                    return true;
                 }
-                return true;
             }
 
             private boolean dropEventNotHandled(DragEvent dragEvent) {
