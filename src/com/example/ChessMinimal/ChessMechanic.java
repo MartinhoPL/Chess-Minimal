@@ -49,187 +49,165 @@ public class ChessMechanic {
     }
 
     public boolean knigthMoveIsCorrect(int x1, int y1, int x2, int y2){//ruchy konia
-        if(data.getColor(x2,y2)!=data.getSide()) {
-            if (x1 > x2) {
-                if (y1 > y2) {
-                    if ((x1 - x2 == 1 && y1 - y2 == 2) || (x1 - x2 == 2 && y1 - y2 == 1)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+        if (x1 > x2) {
+            if (y1 > y2) {
+                if ((x1 - x2 == 1 && y1 - y2 == 2) || (x1 - x2 == 2 && y1 - y2 == 1)) {
+                    return true;
                 } else {
-                    if ((x1 - x2 == 1 && y1 - y2 == -2) || (x1 - x2 == 2 && y1 - y2 == -1)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return false;
                 }
             } else {
-                if (y1 > y2) {
-                    if ((x1 - x2 == -1 && y1 - y2 == 2) || (x1 - x2 == -2 && y1 - y2 == 1)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                if ((x1 - x2 == 1 && y1 - y2 == -2) || (x1 - x2 == 2 && y1 - y2 == -1)) {
+                    return true;
                 } else {
-                    if ((x1 - x2 == -1 && y1 - y2 == -2) || (x1 - x2 == -2 && y1 - y2 == -1)) {
-                        return true;
-                    } else {
-                        return false;
-                    }
+                    return false;
                 }
             }
-        }else {
-            return false;
+        } else {
+            if (y1 > y2) {
+                if ((x1 - x2 == -1 && y1 - y2 == 2) || (x1 - x2 == -2 && y1 - y2 == 1)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } else {
+                if ((x1 - x2 == -1 && y1 - y2 == -2) || (x1 - x2 == -2 && y1 - y2 == -1)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         }
+
     }
 
     public boolean bishopMoveIsCorrect(int x1, int y1, int x2, int y2) {
-        if(data.getColor(x2,y2)!=data.getSide()) {
-            if (x1 - y1 != x2 - y2 && x1 + y1 != x2 + y2) {
-                return false;  //czy ruch po skosie
+        if (x1 - y1 != x2 - y2 && x1 + y1 != x2 + y2) {
+            return false;  //czy ruch po skosie
+        }
+        int xminus = 1, yminus = 1, i = x1, j = y1; //czy linia ruchu jest pusta
+        if (x1 > x2) {
+            xminus = -1; //czy do gory?
+        }
+        if (y1 > y2) {
+            yminus = -1;  // czy w lewo?
+        }
+        while (true) {
+            i += xminus;
+            j += yminus;
+            if (i == x2) break;
+            if (j == y2) break;
+            if (data.getPiece(i, j) != 0)
+                return false;
+        }
+        if (data.getColor(x2, y2) == data.getSide()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean rookMoveIsCorrect(int x1, int y1, int x2, int y2) {
+        if (x1 != x2 && y1 != y2) { // ruch w pionie lub poziomie
+            return false;
+        }
+        if (x1 != x2) { //czy ruch w pionie
+            int minus = 1;
+            if (x1 > x2) minus = -1;
+            for (int i = x1 + minus; i != x2; i += minus) {
+                if (data.getPiece(i, y1) != 0) {
+                    return false;
+                }
             }
-            int xminus = 1, yminus = 1, i = x1, j = y1; //czy linia ruchu jest pusta
-            if (x1 > x2) {
-                xminus = -1; //czy do gory?
-            }
+        } else { //ruch w poziomie
+            int minus = 1;
             if (y1 > y2) {
-                yminus = -1;  // czy w lewo?
+                minus = -1;
             }
-            while (true) {
-                i += xminus;
-                j += yminus;
-                if (i == x2) break;
-                if (j == y2) break;
-                if (data.getPiece(i, j) != 0)
+            for (int i = y1 + minus; i != y2; i += minus) {
+                if (data.getPiece(x1, i) != 0) {
                     return false;
+                }
             }
-            if (data.getColor(x2, y2) == data.getSide()) {
+        }
+        return true;
+    }
+
+    public boolean queenMoveIsCorrect(int x1, int y1, int x2, int y2) {
+        if (x1 == x2 || y1 == y2) {
+            if (rookMoveIsCorrect(x1, y1, x2, y2)) {
+                return true;
+            } else {
                 return false;
             }
-            return true;
-        }else {
+        } else if (x1 - x2 == y1 - y2 || x1 - x2 == y2 - y1) {
+            if (bishopMoveIsCorrect(x1, y1, x2, y2)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
     }
 
-    public boolean rookMoveIsCorrect(int x1, int y1, int x2, int y2){
-        if(data.getColor(x2,y2)!=data.getSide()) {
-            if (x1 != x2 && y1 != y2) { // ruch w pionie lub poziomie
-                return false;
-            }
-            if (x1 != x2) { //czy ruch w pionie
-                int minus = 1;
-                if (x1 > x2) minus = -1;
-                for (int i = x1+minus; i != x2; i += minus) {
-                    if (data.getPiece(i, y1) != 0) {
-                        return false;
-                    }
-                }
-            } else { //ruch w poziomie
-                int minus = 1;
-                if (y1 > y2) {
-                    minus = -1;
-                }
-                for (int i = y1+minus; i != y2; i += minus) {
-                    if (data.getPiece(x1, i) != 0) {
-                        return false;
-                    }
-                }
-            }
-            return true;
-        }else {
+    public boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2) {
+        if (x1 - x2 > 1 || x1 - x2 < -1) {
+            return false;//ruch tylko o jedno pole
+        } else if (y1 - y2 > 1 || y1 - y2 < -1) {
+            return false;//ruch o jedno pole
+        } else if (x1 - x2 == 0 && y1 - y2 == 0) {
             return false;
         }
-    }
-
-    public boolean queenMoveIsCorrect(int x1, int y1, int x2, int y2){
-        if(data.getColor(x2,y2)!=data.getSide()) {
-            if(x1 == x2 || y1 == y2){
-                if(rookMoveIsCorrect(x1, y1, x2, y2)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            else if (x1 - x2 == y1 - y2 || x1 - x2 == y2 - y1){
-                if(bishopMoveIsCorrect(x1, y1, x2, y2)) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }else {
-                return false;
-            }
-        }else {
-            return false;
-        }
-    }
-
-    public boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2){
-        if(data.getColor(x2,y2)!=data.getSide()) {
-            if (x1 - x2 > 1 || x1 - x2 < -1) {
-                return false;//ruch tylko o jedno pole
-            } else if (y1 - y2 > 1 || y1 - y2 < -1) {
-                return false;//ruch o jedno pole
-            } else if (x1 - x2 == 0 && y1 - y2 == 0) {
-                return false;
-            }
-            for (int j = 0; j < 5; j++) {
-                for (int i = 0; i < 5; i++) {
-                    int piece = data.getPiece(i, j);
-                    if (piece != 0) {
-                        if (data.getColor(i, j) != data.getSide()) {
-                            switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
-                                case 1: {//pion (tylko do przodu o jedno pole)
-                                    if (pawnMoveIsCorrect(i, j, x2, y2)) {
+        for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < 5; i++) {
+                int piece = data.getPiece(i, j);
+                if (piece != 0) {
+                    if (data.getColor(i, j) != data.getSide()) {
+                        switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
+                            case 1: {//pion (tylko do przodu o jedno pole)
+                                if (pawnMoveIsCorrect(i, j, x2, y2)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                            case 2: {//kon  ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
+                                if (knigthMoveIsCorrect(i, j, x2, y2)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                            case 3: {//goniec
+                                if (bishopMoveIsCorrect(i, j, x2, y2)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                            case 4: {//wieza
+                                if (rookMoveIsCorrect(i, j, x2, y2)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                            case 5: {//hetman
+                                if (queenMoveIsCorrect(i, j, x2, y2)) {
+                                    return false;
+                                }
+                                break;
+                            }
+                            case 6: {//krol sprawdzamy czy nie podjeżdżamy pod króla przeciwnika(ruch hipotetyczny)
+                                if (i - x2 < 2 && i - x2 > -2) {
+                                    if (j - y2 < 2 && j - y2 > -2) {
                                         return false;
                                     }
-                                    break;
                                 }
-                                case 2: {//kon  ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
-                                    if (knigthMoveIsCorrect(i, j, x2, y2)) {
-                                        return false;
-                                    }
-                                    break;
-                                }
-                                case 3: {//goniec
-                                    if (bishopMoveIsCorrect(i, j, x2, y2)) {
-                                        return false;
-                                    }
-                                    break;
-                                }
-                                case 4: {//wieza
-                                    if (rookMoveIsCorrect(i, j, x2, y2)) {
-                                        return false;
-                                    }
-                                    break;
-                                }
-                                case 5: {//hetman
-                                    if (queenMoveIsCorrect(i, j, x2, y2)) {
-                                        return false;
-                                    }
-                                    break;
-                                }
-                                case 6: {//krol sprawdzamy czy nie podjeżdżamy pod króla przeciwnika(ruch hipotetyczny)
-                                    if (i - x2 < 2 && i - x2 > -2) {
-                                        if (j - y2 < 2 && j - y2 > -2) {
-                                            return false;
-                                        }
-                                    }
-                                    break;
-                                }
+                                break;
                             }
                         }
                     }
                 }
             }
-            return true;
-        }else {
-            return false;
         }
+        return true;
     }
 
     public boolean isCheckAfterMove(boolean myKing){//czy po ruchu doszlo do szacha
@@ -241,8 +219,8 @@ public class ChessMechanic {
         } else {
             side = data.getXside();
         }
-        for(int i = 0 ; i < 5 ; i++){
-            for (int j = 0; j < 5 ; j++) {
+        for(int j = 0 ; j < 5 ; j++){
+            for (int i = 0; i < 5 ; i++) {
                 int piece = data.getPiece(i,j);
                 if(piece != 0){
                     if(data.getColor(i,j) != side){
@@ -276,7 +254,9 @@ public class ChessMechanic {
                                     return true;
                                 }
                                 break;
-                            }//króla nie sprawdzamy bo nie można ruszyć się drugim królem pod bicie więc wsystkie takie ruchy nie będą poprawne
+                            }
+                            //króla nie sprawdzamy bo nie można ruszyć się drugim królem pod bicie
+                            //więc wszystkie takie ruchy nie będą poprawne(beda odrzucane wczesniej)
                         }
                     }
                 }
@@ -335,17 +315,20 @@ public class ChessMechanic {
         }
         if(data.getIsCheck()){//w przypadku szacha
             data.makeMove(x1, y1, x2, y2);
-            if(isCheckAfterMove(true)){//sprawdzenie czy nadal król szachowany (true - nasz król)
+            if(isCheckAfterMove(false)){//sprawdzenie czy nadal król szachowany false bo makeMove zmienia stronę na ruchu
                 data.undoMove();
                 return false;// i zrócenie niepoprawności ruchu
             }
             else{
+                data.setIsCheck(isCheckAfterMove(true));
                 data.undoMove();
                 return true;
             }
         }
         //todo spytać o zachowywanie sekwencji ruchów
-        data.setIsCheck(isCheckAfterMove(false));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.isCheck
+        data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
+        data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.isCheck
+        data.undoMove();// cofnięcie ruchu
         return true;//ruch poprawny
     }
 }
