@@ -177,8 +177,8 @@ public class ChessMechanic {
             } else if (x1 - x2 == 0 && y1 - y2 == 0) {
                 return false;
             }
-            for (int i = 0; i < 5; i++) {
-                for (int j = 0; j < 5; j++) {
+            for (int j = 0; j < 5; j++) {
+                for (int i = 0; i < 5; i++) {
                     int piece = data.getPiece(i, j);
                     if (piece != 0) {
                         if (data.getColor(i, j) != data.getSide()) {
@@ -214,14 +214,10 @@ public class ChessMechanic {
                                     break;
                                 }
                                 case 6: {//krol sprawdzamy czy nie podjeżdżamy pod króla przeciwnika(ruch hipotetyczny)
-                                    if (i - x2 > 1 || i - x2 < -1) {
-                                        return false;
-                                    }
-                                    else if (j - y2 > 1 || j - y2 < -1) {
-                                        return false;
-                                    }
-                                    else if (i - x2 == 0 && j - y2 == 0) {
-                                        return false;
+                                    if (i - x2 < 2 && i - x2 > -2) {
+                                        if (j - y2 < 2 && j - y2 > -2) {
+                                            return false;
+                                        }
                                     }
                                     break;
                                 }
