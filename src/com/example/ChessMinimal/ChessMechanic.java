@@ -288,21 +288,7 @@ public class ChessMechanic {
         }
         return false;
     }
-
-    public boolean isStalemate(){  //sprawdzamy czy istnieje jakikolwiek legalny ruch przy braku szacha
-        //todo przeszukanie szachownicy
-        //todo sprawdzenie czy ruch na dane pole danej figury jest poprawny (najbliższe pole)
-        //todo jesli nie sprawdź inne opcje dla tej figury
-        //todo jeśli brak opcji poprawnego ruchu dla tej figury szukaj następnej
-        return true;
-    }
-
-    public boolean isCheckmate(){  //sprawdzamy jak w powyższej funkcji tylko przyy szachu
-        //todo czy możliwa ucieczka króla jeśli tak return false
-        //todo w innym przypadku czy atak więcej niż jednej figury jaśli tak to true
-        //todo szukanie figury która może zasłonić króla znaleziono->false nieznaleziono->true
-        return true;
-    }
+    
 
     public boolean isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
         int piece1 = data.getPiece(x1,y1);
@@ -350,28 +336,18 @@ public class ChessMechanic {
             }
         }
         if(data.getIsCheck()){//w przypadku szacha
-            int piece[] = data.piece.clone();//zapisanie stanu planszy
-            int color[] = data.color.clone();
-            data.piece[x2+y2*5]=data.piece[x1+y1*5];//wykonanie ruchu
-            data.color[x2+y2*5]=data.color[x1+y1*5];
-            data.color[x1+y1*5] = 0;
-            data.piece[x1+y1*5] = 0;
+            data.makeMove(x1, y1, x2, y2);
             if(isCheckAfterMove(true)){//sprawdzenie czy nadal król szachowany (true - nasz król)
-                data.color=color.clone();//gdy tak przywrócenie stanu planszy
-                data.piece=piece.clone();
+                data.undoMove();
                 return false;// i zrócenie niepoprawności ruchu
-            }  //gdy nie jest szachowany ruch jest wykonywany
-            else{
             }
-        }else{//gdy nie ma szacha ruch jest wykonywany
-            //todo spytać o zachowywanie sekwencji ruchów
-            data.piece[x2+y2*5]=data.piece[x1+y1*5];//wykonanie ruchu
-            data.color[x2+y2*5]=data.color[x1+y1*5];
-            data.color[x1+y1*5] = 0;
-            data.piece[x1+y1*5] = 0;
+            else{
+                data.undoMove();
+                return true;
+            }
         }
+        //todo spytać o zachowywanie sekwencji ruchów
         data.setIsCheck(isCheckAfterMove(false));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.isCheck
-        data.changeSite();
-        return true;//ruch wykonany
+        return true;//ruch poprawny
     }
 }

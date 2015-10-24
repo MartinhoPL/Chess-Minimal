@@ -18,6 +18,7 @@ public class Data {
     //czas rozpoczecia szukania i maksymalny czas zaakonczenia
     private int start_time;
     private int stop_time;
+    private Move lastMove;
     public int[] init_color={
             2, 2, 2, 2, 2,
             2, 2, 2, 2, 2,
@@ -41,6 +42,7 @@ public class Data {
         piece=init_piece.clone();
         color=new int[25];
         color=init_color.clone();
+        lastMove = new Move(-1,-1,-1,-1,-1,-1);
     }
     public int getPiece(int x, int y){
         if(x<5 && x>-1)
@@ -72,5 +74,25 @@ public class Data {
         int a = this.xside;
         this.xside = this.side;
         this.side = a;
+    }
+
+    public void makeMove(int x1, int y1, int x2, int y2){
+        lastMove.setAll(x1,y1,x2,y2,this.piece[x1+y1*5],this.color[x1+y1*5]);
+        this.piece[x2+y2*5]=this.piece[x1+y1*5];//wykonanie ruchu
+        this.color[x2+y2*5]=this.color[x1+y1*5];
+        this.color[x1+y1*5] = 0;
+        this.piece[x1+y1*5] = 0;
+        changeSite();
+    }
+
+    public void undoMove(){
+        if(lastMove.getX1()!=-1) {
+            this.color[lastMove.getX1() + lastMove.getY1() * 5] = this.color[lastMove.getX2() + lastMove.getY2() * 5];
+            this.piece[lastMove.getX1() + lastMove.getY1() * 5] = this.piece[lastMove.getX2() + lastMove.getY2() * 5];
+            this.piece[lastMove.getX2() + lastMove.getY2() * 5] = lastMove.getBeatenPiece();
+            this.color[lastMove.getX2() + lastMove.getY2() * 5] = lastMove.getBeatenColor();
+            changeSite();
+            lastMove.setX1(-1);
+        }
     }
 }
