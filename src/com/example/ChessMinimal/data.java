@@ -77,12 +77,14 @@ public class Data {
     }
 
     public void makeMove(int x1, int y1, int x2, int y2){
-        lastMove.setAll(x1,y1,x2,y2,this.piece[x1+y1*5],this.color[x1+y1*5]);
-        this.piece[x2+y2*5]=this.piece[x1+y1*5];//wykonanie ruchu
-        this.color[x2+y2*5]=this.color[x1+y1*5];
-        this.color[x1+y1*5] = 0;
-        this.piece[x1+y1*5] = 0;
-        changeSite();
+        if(x1!=x2|| y1!=y2) {
+            lastMove.setAll(x1, y1, x2, y2, this.piece[x2 + y2 * 5], this.color[x2 + y2 * 5]);
+            this.piece[x2 + y2 * 5] = this.piece[x1 + y1 * 5];//wykonanie ruchu
+            this.color[x2 + y2 * 5] = this.color[x1 + y1 * 5];
+            this.color[x1 + y1 * 5] = 0;
+            this.piece[x1 + y1 * 5] = 0;
+            changeSite();
+        }
     }
 
     public void undoMove(){

@@ -86,7 +86,7 @@ public class ChessMechanic {
 
     public boolean bishopMoveIsCorrect(int x1, int y1, int x2, int y2) {
         if(data.getColor(x2,y2)!=data.getSide()) {
-            if (x1 - x2 != y1 - y2 && x1 - x2 != y2 - y1) {
+            if (x1 - y1 != x2 - y2 && x1 + y1 != x2 + y2) {
                 return false;  //czy ruch po skosie
             }
             int xminus = 1, yminus = 1, i = x1, j = y1; //czy linia ruchu jest pusta
@@ -104,7 +104,7 @@ public class ChessMechanic {
                 if (data.getPiece(i, j) != 0)
                     return false;
             }
-            if (data.getPiece(x2, y2) == data.getSide()) {
+            if (data.getColor(x2, y2) == data.getSide()) {
                 return false;
             }
             return true;
@@ -171,9 +171,9 @@ public class ChessMechanic {
     public boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2){
         if(data.getColor(x2,y2)!=data.getSide()) {
             if (x1 - x2 > 1 || x1 - x2 < -1) {
-                return false;
+                return false;//ruch tylko o jedno pole
             } else if (y1 - y2 > 1 || y1 - y2 < -1) {
-                return false;// bo ruch tylko o jedno pole
+                return false;//ruch o jedno pole
             } else if (x1 - x2 == 0 && y1 - y2 == 0) {
                 return false;
             }
@@ -288,9 +288,11 @@ public class ChessMechanic {
         }
         return false;
     }
-    
+
 
     public boolean isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
+        if(x1==x2 && y1==y2)
+            return false;
         int piece1 = data.getPiece(x1,y1);
         if(data.getColor(x1,y1)!=data.getSide()) //czy wybrana bierka jest przeciwnika lub puste pole
             return false;
