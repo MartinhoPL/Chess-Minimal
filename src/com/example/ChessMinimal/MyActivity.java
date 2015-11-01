@@ -8,6 +8,7 @@ import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TableLayout;
+import android.widget.TextView;
 
 public class MyActivity extends Activity {
     private GameStateEnum gameState;
@@ -24,7 +25,8 @@ public class MyActivity extends Activity {
         data=new Data();
         setContentView(R.layout.main);
         TableLayout chessBoardLayout = (TableLayout)findViewById(R.id.chessBoardLayout);
-        chessBoardView = new ChessBoardView(chessBoardLayout, data, this);
+        TextView textView = (TextView) findViewById(R.id.textView);
+        chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
         chessBoardView.createBoard();
     }
 

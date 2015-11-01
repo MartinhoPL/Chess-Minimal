@@ -9,9 +9,13 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+
+import static com.example.ChessMinimal.R.string.WhitesMove;
 
 public class ChessBoardView {
 
+    private final CharSequence whitesMoveString;
     private TableRow[]tableRows;
     private ImageButton[][]imageButtons;
     private TableLayout tableLayout;
@@ -21,7 +25,11 @@ public class ChessBoardView {
     private int startY;
     private int imageResourceDrag;
     private ChessMechanic chessMechanic;
-    public ChessBoardView(TableLayout tableLayout, Data data, Context context){
+    private TextView textView;
+
+    public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
+        this.textView = textView;
+        this.whitesMoveString = textView.getText();
         tableRows = new TableRow[5];
         imageButtons = new ImageButton[5][5];
         this.tableLayout = tableLayout;
@@ -124,6 +132,7 @@ public class ChessBoardView {
                         // TODO PATRYK, TU DAJ IF Z WALIDACJA
                         if (chessMechanic.isMoveCorrect(startX, startY, x, y)) {
                             movePiece(startX, startY, x, y);
+                            //changeTextViewForNextTurn();
                         } else {
                             movePiece(startX, startY, startX, startY);
                         }
@@ -144,6 +153,16 @@ public class ChessBoardView {
         imageButtons[x][y] = imageButton;
         tableRows[y].addView(imageButtons[x][y]);
 
+    }
+
+    private void changeTextViewForNextTurn() {
+        if (textView.getText() == whitesMoveString) {
+            textView.setText("Ruch czarnych");
+        }
+        else
+        {
+            textView.setText(whitesMoveString);
+        }
     }
 
     private int getimageResourceForCell(int x, int y)

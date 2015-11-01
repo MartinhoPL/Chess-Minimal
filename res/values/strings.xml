@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyActivity</string>
+    <string name="WhitesMove">Ruch białych</string>
     <string-array name="gameModeSpinnerItems">
         <item>Human White</item>
     </string-array>
