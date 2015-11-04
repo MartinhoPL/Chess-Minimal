@@ -130,11 +130,22 @@ public class ChessBoardView {
                         }
                     } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
                         // TODO PATRYK, TU DAJ IF Z WALIDACJA
-                        if (chessMechanic.isMoveCorrect(startX, startY, x, y)) {
-                            movePiece(startX, startY, x, y);
-                            //changeTextViewForNextTurn();
-                        } else {
-                            movePiece(startX, startY, startX, startY);
+                        switch (chessMechanic.isMoveCorrect(startX, startY, x, y)){
+                            case FAIL:
+                                movePiece(startX, startY, startX, startY);
+                                break;
+                            case GOOD:
+                                movePiece(startX, startY, x, y);
+                                break;
+                            case PROMOTION:
+                                break;
+                            case CHECKMATE:
+                                break;
+                            case STALEMATE:
+                                break;
+                            case CHECK:
+                                movePiece(startX, startY, x, y);
+                                break;
                         }
 //                    dragView.setVisibility(View.VISIBLE);
                     }

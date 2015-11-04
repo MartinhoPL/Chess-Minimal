@@ -291,52 +291,51 @@ public class ChessMechanic {
         return false;
     }
 
-
-    public boolean isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
+    public MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
         if(x1==x2 && y1==y2)
-            return false;
+            return MoveCorrectEnum.FAIL;
         if(data.getColor(x2,y2)==data.getSide())
-            return false;
+            return MoveCorrectEnum.FAIL;
         int piece1 = data.getPiece(x1,y1);
         if(data.getColor(x1,y1)!=data.getSide()) //czy wybrana bierka jest przeciwnika lub puste pole
-            return false;
+            return MoveCorrectEnum.FAIL;
         switch (piece1) { //sprawdzanie poprawnosci ruchu dla kazdej bierki
             case 0: {//puste (brak bierki na polu)
-                return false;
+                return MoveCorrectEnum.FAIL;
             }
             case 1: {//pion (tylko do przodu o jedno pole)
                 if(!pawnMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 2: {//kon ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
                 if(!knigthMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 3:{//goniec
                 if(!bishopMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 4:{//wieza
                 if(!rookMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 5:{//hetman
                 if(!queenMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 6:{//krol
                 if(!kingMoveIsCorrect(x1,y1,x2,y2)) {
-                    return false;
+                    return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
@@ -345,18 +344,27 @@ public class ChessMechanic {
             data.makeMove(x1, y1, x2, y2);
             if(isCheckAfterMove(false)){//sprawdzenie czy nadal król szachowany false bo makeMove zmienia stronę na ruchu
                 data.undoMove();
-                return false;// i zrócenie niepoprawności ruchu
+                return MoveCorrectEnum.FAIL;// i zrócenie niepoprawności ruchu
             }
             else{
                 data.setIsCheck(isCheckAfterMove(true));
                 data.undoMove();
-                return true;
+                if(data.getIsCheck()){
+                    return MoveCorrectEnum.CHECK;
+                }else {
+                    return MoveCorrectEnum.GOOD;
+                }
             }
         }
         //todo spytać o zachowywanie sekwencji ruchów
         data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
         data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.isCheck
         data.undoMove();// cofnięcie ruchu
-        return true;//ruch poprawny
+        if(data.getIsCheck()) {
+            return MoveCorrectEnum.CHECK;
+        }else {
+            return MoveCorrectEnum.GOOD;//ruch poprawny
+        }
+
     }
 }
