@@ -291,6 +291,18 @@ public class ChessMechanic {
         return false;
     }
 
+    public void promotion(int x,int y,int piece){
+        data.promotion(x,y,piece);
+    }
+
+    public boolean isPromotionAfterMove(){
+        for (int i = 0; i < 5; i++) {
+            if(data.getPiece(i,0)==1 || data.getPiece(i,4)==1)
+                return true;
+        }
+        return false;
+    }
+
     public MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
         if(x1==x2 && y1==y2)
             return MoveCorrectEnum.FAIL;
@@ -348,7 +360,11 @@ public class ChessMechanic {
             }
             else{
                 data.setIsCheck(isCheckAfterMove(true));
+                boolean promotion = isPromotionAfterMove();
                 data.undoMove();
+                if(promotion){
+                    return MoveCorrectEnum.PROMOTION;
+                }
                 if(data.getIsCheck()){
                     return MoveCorrectEnum.CHECK;
                 }else {
@@ -358,8 +374,12 @@ public class ChessMechanic {
         }
         //todo spytać o zachowywanie sekwencji ruchów
         data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
-        data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.isCheck
+        data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.
+        boolean promotion = isPromotionAfterMove();
         data.undoMove();// cofnięcie ruchu
+        if(promotion){
+            return MoveCorrectEnum.PROMOTION;
+        }
         if(data.getIsCheck()) {
             return MoveCorrectEnum.CHECK;
         }else {

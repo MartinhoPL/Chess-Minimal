@@ -97,4 +97,8 @@ public class Data {
             lastMove.setX1(-1);
         }
     }
+
+    public void promotion(int x, int y, int piece){
+        this.piece[5*y+x]=piece;
+    }
 }
