@@ -28,6 +28,32 @@ public class ChessMechanic {
         return -1;
     }
 
+    public boolean pawnCanAttack(int x1, int y1, int x2, int y2){
+        if (x1 - x2 == 1 ){
+            if(data.getColor(x1,y1)==1){
+                if(y1 - y2 == 1 || y1 - y2 == -1){
+                    return true;
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }
+        }else if ( x1 - x2 == -1 ){
+            if(data.getColor(x1,y1)==2){
+                if(y1 - y2 == 1 || y1 - y2 == -1){
+                    return true;
+                }else {
+                    return false;
+                }
+            }else {
+                return false;
+            }
+        }else {
+            return false;
+        }
+    }
+
     public boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2){
         if (data.getSide() == 1) {
             if (y1 - y2 != 1) {//czy ruch o jedno pole do przodu białe
@@ -165,7 +191,7 @@ public class ChessMechanic {
                     if (data.getColor(i, j) != data.getSide()) {
                         switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
                             case 1: {//pion (tylko do przodu o jedno pole)
-                                if (pawnMoveIsCorrect(i, j, x2, y2)) {
+                                if (pawnCanAttack(i, j, x2, y2)) {
                                     return false;
                                 }
                                 break;
