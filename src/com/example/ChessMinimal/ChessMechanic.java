@@ -269,6 +269,8 @@ public class ChessMechanic {
     public boolean isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
         if(x1==x2 && y1==y2)
             return false;
+        if(data.getColor(x2,y2)==data.getSide())
+            return false;
         int piece1 = data.getPiece(x1,y1);
         if(data.getColor(x1,y1)!=data.getSide()) //czy wybrana bierka jest przeciwnika lub puste pole
             return false;
