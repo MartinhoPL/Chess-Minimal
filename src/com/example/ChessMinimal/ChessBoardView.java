@@ -1,8 +1,12 @@
 package com.example.ChessMinimal;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -129,7 +133,6 @@ public class ChessBoardView {
                             }
                         }
                     } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
-                        // TODO PATRYK, TU DAJ IF Z WALIDACJA
                         switch (chessMechanic.isMoveCorrect(startX, startY, x, y)){
                             case FAIL:
                                 movePiece(startX, startY, startX, startY);
@@ -138,6 +141,8 @@ public class ChessBoardView {
                                 movePiece(startX, startY, x, y);
                                 break;
                             case PROMOTION:
+                                movePiece(startX, startY, x, y);
+                                makePromotion(x, y);
                                 break;
                             case CHECKMATE:
                                 break;
@@ -150,7 +155,7 @@ public class ChessBoardView {
 //                    dragView.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception ex) {
-
+                    for (;;);
                 } finally {
                     return true;
                 }
@@ -164,6 +169,71 @@ public class ChessBoardView {
         imageButtons[x][y] = imageButton;
         tableRows[y].addView(imageButtons[x][y]);
 
+    }
+
+    private void makePromotion(final int x, final int y) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+        final String[] items = {"Hetman", "Goniec", "Skoczek", "Wie¿a"};
+        final int[] imageResource = new int[1];
+        builder.setTitle("Wybierz bierke")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(which)
+                        {
+                            case 0:
+                                if (y == 0) {
+                                    imageResource[0] = R.drawable.whitequeen;
+                                }
+                                else
+                                {
+                                    imageResource[0] = R.drawable.blackqueen;
+                                }
+                                imageButtons[x][y].setImageResource(imageResource[0]);
+                                imageButtons[x][y].setTag(imageResource[0]);
+                                chessMechanic.promotion(x, y, 5);
+                                break;
+                            case 1:
+                                if (y == 0) {
+                                    imageResource[0] = R.drawable.whitebishop;
+                                }
+                                else
+                                {
+                                    imageResource[0] = R.drawable.blackbishop;
+                                }
+                                imageButtons[x][y].setImageResource(imageResource[0]);
+                                imageButtons[x][y].setTag(imageResource[0]);
+                                chessMechanic.promotion(x, y, 3);
+                                break;
+                            case 2:
+                                if (y == 0) {
+                                    imageResource[0] = R.drawable.whiteknight;
+                                }
+                                else
+                                {
+                                    imageResource[0] = R.drawable.blackknight;
+                                }
+                                imageButtons[x][y].setImageResource(imageResource[0]);
+                                imageButtons[x][y].setTag(imageResource[0]);
+                                chessMechanic.promotion(x, y, 2);
+                                break;
+                            case 3:
+                                if (y == 0) {
+                                    imageResource[0] = R.drawable.whiterook;
+                                }
+                                else
+                                {
+                                    imageResource[0] = R.drawable.blackrock;
+                                }
+                                imageButtons[x][y].setImageResource(imageResource[0]);
+                                imageButtons[x][y].setTag(imageResource[0]);
+                                chessMechanic.promotion(x, y, 4);
+                                break;
+                        }
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     private void changeTextViewForNextTurn() {
@@ -264,5 +334,4 @@ public class ChessBoardView {
     public void setImageButtons(ImageButton[][] imageButtons) {
         this.imageButtons = imageButtons;
     }
-
 }
