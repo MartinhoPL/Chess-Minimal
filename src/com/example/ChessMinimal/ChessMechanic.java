@@ -374,13 +374,17 @@ public class ChessMechanic {
         }
         //todo spytać o zachowywanie sekwencji ruchów
         data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
+        if(isCheckAfterMove(false)){
+            data.undoMove();
+            return MoveCorrectEnum.FAIL;
+        }
         data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.
         boolean promotion = isPromotionAfterMove();
         data.undoMove();// cofnięcie ruchu
         if(promotion){
             return MoveCorrectEnum.PROMOTION;
         }
-        if(data.getIsCheck()) {
+        if (data.getIsCheck()) {
             return MoveCorrectEnum.CHECK;
         }else {
             return MoveCorrectEnum.GOOD;//ruch poprawny
