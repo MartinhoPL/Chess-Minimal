@@ -113,10 +113,10 @@ public class ChessMechanic {
         }
         int xminus = 1, yminus = 1, i = x1, j = y1; //czy linia ruchu jest pusta
         if (x1 > x2) {
-            xminus = -1; //czy do gory?
+            xminus = -1; //czy w lewo?
         }
         if (y1 > y2) {
-            yminus = -1;  // czy w lewo?
+            yminus = -1;  // czy do gory?
         }
         while (true) {
             i += xminus;
@@ -303,6 +303,319 @@ public class ChessMechanic {
         return false;
     }
 
+    public boolean pieceAttackKing(int x, int y, int king){
+        int kingX = king % 5, kingY = king/5;
+        int piece = data.getPiece(x, y);
+        switch (piece){
+            case 1: {
+                if (pawnCanAttack(x, y, kingX, kingY))
+                    return true;
+                break;
+            }
+            case 2: {
+                if (knigthMoveIsCorrect(x, y, kingX, kingY))
+                    return true;
+                break;
+            }
+            case 3: {
+                if (bishopMoveIsCorrect(x, y, kingX, kingY))
+                    return true;
+                break;
+            }
+            case 4: {
+                if (rookMoveIsCorrect(x, y, kingX, kingY))
+                    return true;
+                break;
+            }
+            case 5: {
+                if (queenMoveIsCorrect(x, y, kingX, kingY))
+                    return true;
+                break;
+            }
+        }
+        return false;
+    }
+
+    public boolean attackerCanKilled(int x, int y){
+        for (int i = 0; i < 5; i++) {//y
+            for (int j = 0; j < 5; j++) { //x
+                if(data.getColor(j,i)==data.getSide()){
+                    int piece = data.getPiece(j,i);
+                    switch (piece){
+                        case 1: {
+                            if (pawnCanAttack(j, i, x, y))
+                                return true;
+                            break;
+                        }
+                        case 2: {
+                            if (knigthMoveIsCorrect(j, i, x, y))
+                                return false;
+                        }
+                        case 3: {
+                            if (bishopMoveIsCorrect(j, i, x, y))
+                                return true;
+                            break;
+                        }
+                        case 4: {
+                            if (rookMoveIsCorrect(j, i, x, y))
+                                return true;
+                            break;
+                        }
+                        case 5: {
+                            if (queenMoveIsCorrect(j, i, x, y))
+                                return true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean pieceCanMove(int x1, int y1, int x2, int y2) {
+        int piece = data.getPiece(x1, y1);
+        switch (piece) {
+            case 1: {//pion
+                if (pawnMoveIsCorrect(x1, y1, x2, y2)) {
+                    return true;
+                }
+                break;
+            }
+            case 2: {//kon
+                if (knigthMoveIsCorrect(x1, y1, x2, y2)) {
+                    return true;
+                }
+                break;
+            }
+            case 3: {//goniec
+                if (bishopMoveIsCorrect(x1, y1, x2, y2)) {
+                    return true;
+                }
+                break;
+            }
+            case 4: {//wieza
+                if (rookMoveIsCorrect(x1, y1, x2, y2)) {
+                    return true;
+                }
+                break;
+            }
+            case 5: {//hetman
+                if (queenMoveIsCorrect(x1, y1, x2, y2)) {
+                    return true;
+                }
+                break;
+            }
+        }
+        return false;
+    }
+
+    public boolean diagonalAttackCanDefend(int x, int y,int king) {
+        int kingX = king % 5, kingY = king / 5;
+        int xminus = 1, yminus = 1, i = y, j = x; //czy linia ruchu jest pusta
+        if (x > kingX) {
+            xminus = -1; //czy w lewo do krola
+        }
+        if (y > kingY) {
+            yminus = -1;  // czy do gory do krola
+        }
+        //sprawdzamy czy można zasłonić linię ataku
+        while (true) {
+            i += xminus;
+            j += yminus;
+            if (j == kingX || i == kingY) break;
+            for (int k = 0; k < 5; k++) { //pion
+                if (k == i)
+                    continue;
+                if (data.getColor(j, k) == data.getSide()) {
+                    if (pieceCanMove(j, k, j, i))
+                        return true;
+                }
+            }
+
+            for (int k = 0; k < 5; k++) { //poziom
+                if (k == j)
+                    continue;
+                if (data.getColor(k, i) == data.getSide()) {
+                    if (pieceCanMove(k, i, j, i))
+                        return true;
+                }
+            }
+            //skosy
+            for (int k = 1; k < 5; k++) {//1
+                if (i + k > 4 || j + k > 4)
+                    break;
+                if (data.getColor(j + k, i + k) == data.getSide()) {
+                    if (pieceCanMove(j + k, i + k, j, i))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//2
+                if (i - k < 0 || j + k > 4)
+                    break;
+                if (data.getColor(j + k, i - k) == data.getSide()) {
+                    if (pieceCanMove(j + k, i - k, j, i))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//3
+                if (i + k > 4 || j - k < 0)
+                    break;
+                if (data.getColor(j - k, i + k) == data.getSide()) {
+                    if (pieceCanMove(j - k, i + k, j, i))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//4
+                if (i - k < 0 || j - k < 0)
+                    break;
+                if (data.getColor(j - k, i - k) == data.getSide()) {
+                    if (pieceCanMove(j - k, i - k, j, i))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean fileOrRankAttackCanDefend(int x, int y,int king) {
+        int kingX = king % 5, kingY = king / 5;
+        int xminus = 1, yminus = 1;
+        if (x == kingX) { // file - pion
+            xminus = 0;
+            if (y < kingY) {//czy w dol do krola?
+                yminus = -1;
+            }
+        } else if (y == kingY) { // rank - poziom
+            yminus = 0;
+            if (x < kingX) { // czy w prawo do krola?
+                xminus = -1;
+            }
+        }
+        while (true){   
+            x+=xminus;
+            y+=yminus;
+            if(x==kingX && y==kingY)
+                break;
+            if(y!=kingY) { // !czy atak w pionie?
+                for (int k = 0; k < 5; k++) { //pion
+                    if (k == y)
+                        continue;
+                    if (data.getColor(x, k) == data.getSide()) {
+                        if (pieceCanMove(x, k, x, y))
+                            return true;
+                    }
+                }
+            }
+            if(x!=kingX) {// !czy atak w poziomie?
+                for (int k = 0; k < 5; k++) { //poziom
+                    if (k == x)
+                        continue;
+                    if (data.getColor(k, y) == data.getSide()) {
+                        if (pieceCanMove(k, y, x, y))
+                            return true;
+                    }
+                }
+            }
+            //skosy
+            for (int k = 1; k < 5; k++) {//1
+                if (y + k > 4 || x + k > 4)
+                    break;
+                if (data.getColor(x + k, y + k) == data.getSide()) {
+                    if (pieceCanMove(x + k, y + k, x, y))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//2
+                if (y - k < 0 || x + k > 4)
+                    break;
+                if (data.getColor(x + k, y - k) == data.getSide()) {
+                    if (pieceCanMove(x + k, y - k, x, y))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//3
+                if (y + k > 4 || x - k < 0)
+                    break;
+                if (data.getColor(x - k, y + k) == data.getSide()) {
+                    if (pieceCanMove(x - k, y + k, x, y))
+                        return true;
+                }
+            }
+            for (int k = 1; k < 5; k++) {//4
+                if (y - k < 0 || x - k < 0)
+                    break;
+                if (data.getColor(x - k, y - k) == data.getSide()) {
+                    if (pieceCanMove(x - k, y - k, x, y))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isCheckmate(){
+        //sprawdzenie czy król może się poruszyć
+        int king = findKing(true);
+        int kingX = king % 5, kingY = king/5;
+        int attackerCount=0,attackerX=0,attackerY=0,attacker=0;
+        for (int i = -1; i < 2; i++) {
+            if(kingX+i<5 && kingX+i>-1) { //czy sprawdzany potencjalny ruch nie jest za szachownice
+                for (int j = -1; j < 2; j++) {
+                    if (i != 0 && j != 0) {
+                        if (kingY + j < 5 && kingY + j > -1) { // tak jak dla x
+                            if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j))
+                                return false; //bo krol ma mozliwosc ruchu na nieatakowane pole
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < 5; i++) {//y
+            for (int j = 0; j < 5; j++) {//x
+                if(data.getColor(j,i)==data.getXside()){
+                    if(pieceAttackKing(j,i,king)){
+                        attacker=data.getPiece(j,i);
+                        attackerX=j;
+                        attackerY=i;
+                        attackerCount++;
+                        if(attackerCount > 1) {
+                            return true; //bo krol nie moze się ruszyc a atakowany jest przez 2 figury
+                        }
+                    }
+                }
+            }
+        }
+        if(attackerCanKilled(attackerX, attackerY)){
+            return false;
+        }
+        switch (attacker){
+            case 1:
+            case 2:
+                return true;
+            case 3: {
+                if (!diagonalAttackCanDefend(attackerX, attackerY, king))
+                    return true;
+                break;
+            }
+            case 4: {
+                if (!fileOrRankAttackCanDefend(attackerX, attackerY, king))
+                    return true;
+                break;
+            }
+            case 5: {
+                if (attackerX == kingX || attackerY == kingY) {
+                    if (!fileOrRankAttackCanDefend(attackerX, attackerY, king))
+                        return true;
+                } else if (attackerX - attackerY == kingX - kingY || attackerX + attackerY == kingX + kingY) {
+                    if (!diagonalAttackCanDefend(attackerX, attackerY, king))
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2){ // kompletne (docelowo) sprawdzenie poprawności ruchu
         if(x1==x2 && y1==y2)
             return MoveCorrectEnum.FAIL;
@@ -360,15 +673,29 @@ public class ChessMechanic {
             }
             else{
                 data.setIsCheck(isCheckAfterMove(true));
+                boolean mate;
+                if(data.getIsCheck()) {
+                    mate = isCheckmate();
+                }else{
+                    mate = false;
+                }
                 boolean promotion = isPromotionAfterMove();
                 data.undoMove();
                 if(promotion){
                     return MoveCorrectEnum.PROMOTION;
                 }
                 if(data.getIsCheck()){
-                    return MoveCorrectEnum.CHECK;
+                    if(mate){
+                        return MoveCorrectEnum.CHECKMATE;
+                    }else {
+                        return MoveCorrectEnum.CHECK;
+                    }
                 }else {
-                    return MoveCorrectEnum.GOOD;
+                    if (mate) {
+                        return MoveCorrectEnum.STALEMATE;
+                    }else {
+                        return MoveCorrectEnum.GOOD;
+                    }
                 }
             }
         }
@@ -379,15 +706,29 @@ public class ChessMechanic {
             return MoveCorrectEnum.FAIL;
         }
         data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola data.
+        boolean mate;
+        if(data.getIsCheck()) {
+            mate = isCheckmate();
+        }else{
+            mate = false;
+        }
         boolean promotion = isPromotionAfterMove();
         data.undoMove();// cofnięcie ruchu
         if(promotion){
             return MoveCorrectEnum.PROMOTION;
         }
-        if (data.getIsCheck()) {
-            return MoveCorrectEnum.CHECK;
+        if(data.getIsCheck()){
+            if(mate){
+                return MoveCorrectEnum.CHECKMATE;
+            }else {
+                return MoveCorrectEnum.CHECK;
+            }
         }else {
-            return MoveCorrectEnum.GOOD;//ruch poprawny
+            if (mate) {
+                return MoveCorrectEnum.STALEMATE;
+            }else {
+                return MoveCorrectEnum.GOOD;
+            }
         }
 
     }
