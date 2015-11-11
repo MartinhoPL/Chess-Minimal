@@ -104,7 +104,6 @@ public class ChessMechanic {
                 }
             }
         }
-
     }
 
     public boolean bishopMoveIsCorrect(int x1, int y1, int x2, int y2) {
@@ -492,7 +491,7 @@ public class ChessMechanic {
                 xminus = -1;
             }
         }
-        while (true){   
+        while (true){
             x+=xminus;
             y+=yminus;
             if(x==kingX && y==kingY)
@@ -552,6 +551,681 @@ public class ChessMechanic {
             }
         }
         return false;
+    }
+
+    public void pawnStalemate(int x, int y, int tab[][]) {
+        if(tab[x][y]!=-1){
+            tab[x][y] = 0;
+        }
+        int minus = 1; //czarne przeciwnika
+        if (data.getXside() == 1) {
+            minus = -1;//biale
+        }
+        if (x - 1 > -1) {
+            if (data.getColor(x - 1, y) == 0) { //pole wolne
+                tab[x - 1][y + minus] = -1;
+            } else if (data.getColor(x - 1, y) == data.getXside()) {
+                tab[x - 1][y + minus] = -1;
+            }
+        }
+        if (x + 1 < 5) {
+            if (data.getColor(x + 1, y) == 0) { //pole wolne
+                tab[x + 1][y + minus] = -1;
+            } else if (data.getColor(x + 1, y) == data.getXside()) {
+                tab[x - 1][y + minus] = -1;
+            }
+        }
+    }
+
+    public void knightStalemate(int x, int y, int tab[][]) {
+        if(tab[x][y]!=-1){
+            tab[x][y] = 0;
+        }
+        if (x + 1 < 5) {
+            if (y + 2 < 5) {
+                if (data.getColor(x + 1, y + 2) != data.getSide()) {
+                    tab[x + 1][y + 2] = -1;
+                }
+            }
+            if (y - 2 > -1) {
+                if (data.getColor(x + 1, y - 2) != data.getSide()) {
+                    tab[x + 1][y - 2] = -1;
+                }
+            }
+            if (x + 2 < 5) {
+                if (y + 1 < 5) {
+                    if (data.getColor(x + 2, y + 1) != data.getSide()) {
+                        tab[x + 2][y + 1] = -1;
+                    }
+                }
+                if (y - 1 > -1) {
+                    if (data.getColor(x + 2, y + 1) != data.getSide()) {
+                        tab[x + 2][y - 1] = -1;
+                    }
+                }
+            }
+        }
+        if (x - 1 > -1) {
+            if (y + 2 < 5) {
+                if (data.getColor(x - 1, y + 2) != data.getSide()) {
+                    tab[x - 1][y + 2] = -1;
+                }
+            }
+            if (y - 2 > -1) {
+                if (data.getColor(x - 1, y - 2) != data.getSide()) {
+                    tab[x - 1][y - 2] = -1;
+                }
+            }
+            if (x - 2 > -1) {
+                if (y + 1 < 5) {
+                    if (data.getColor(x - 2, y + 1) != data.getSide()) {
+                        tab[x - 2][y + 1] = -1;
+                    }
+                }
+                if (y - 1 > -1) {
+                    if (data.getColor(x - 2, y + 1) != data.getSide()) {
+                        tab[x - 2][y - 1] = -1;
+                    }
+                }
+            }
+        }
+    }
+
+    public void bishopStalemate(int x, int y, int tab[][],int kingPos) {
+        if(tab[x][y]!=-1){
+            tab[x][y] = 0;
+        }
+        int piece, color, side = data.getSide(), xside = data.getXside();
+        int kingX = kingPos % 5, kingY = kingPos / 5;
+        boolean leftUp = false, rightUp = false, rightDown = false, leftDown = false;
+        if (x - y == kingX - kingY) {
+            if (x - kingX < 0) {
+                rightDown = true;
+            } else {
+                leftUp = true;
+            }
+        }
+        if (x + y == kingX + kingY) {
+            if (x - kingX > 0) {
+                rightUp = true;
+            } else {
+                leftDown = true;
+            }
+        }
+        //1 rightDown
+        for (int i = 1; x + i < 5 && y + i < 5; i++) {
+            color = data.getColor(x + i, y + i);
+            if (color == 0) {
+                tab[x + i][y + i] = -1;
+            } else if (color == xside) {
+                tab[x + i][y + i] = -1;
+                break;
+            } else {//color == side
+                if (rightDown) {
+                    piece = data.getPiece(x + i, y + i);
+                    if (piece == 1) {
+                        if (side == 1) {
+                            if (i == 1) {
+                                tab[x + i][y + i] = 2;
+                            } else {
+                                tab[x + i][y + i] = 3;
+                            }
+                        } else {
+                            tab[x + i][y + i] = 3;
+                        }
+                    }
+                    if (piece == 3 || piece == 5) {
+                        tab[x + i][y + i] = 2;
+                    } else {
+                        tab[x + i][y + i] = 3;
+                    }
+                    for (int j = i + 1; x + j < 5 && y + j < 5; j++) {
+                        if (data.getColor(x + j, y + j) != 0) {
+                            if (data.getPiece(x + j, y + j) == 6 && data.getColor(x + j, y + j) == side) {
+                                break;
+                            } else {
+                                tab[x + i][y + i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//leftDown
+        for (int i = 1; x - i > -1 && y + i < 5; i++) {
+            color = data.getColor(x - i, y + i);
+            if (color == 0) {
+                tab[x - i][y + i] = -1;
+            } else if (color == xside) {
+                tab[x - i][y + i] = -1;
+                break;
+            } else {//color == side
+                if (leftDown) {
+                    piece = data.getPiece(x - i, y + i);
+                    if (piece == 1) {
+                        if (side == 1) {
+                            if (i == 1) {
+                                tab[x - i][y + i] = 2;
+                            } else {
+                                tab[x - i][y + i] = 3;
+                            }
+                        } else {
+                            tab[x - i][y + i] = 3;
+                        }
+                    }
+                    if (piece == 3 || piece == 5) {
+                        tab[x - i][y + i] = 2;
+                    } else {
+                        tab[x - i][y + i] = 3;
+                    }
+                    for (int j = i + 1; x - j > -1 && y + j < 5; j++) {
+                        if (data.getColor(x - j, y + j) != 0) {
+                            if (data.getPiece(x - j, y + j) == 6 && data.getColor(x - j, y + j) == side) {
+                                break;
+                            } else {
+                                tab[x - i][y + i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//leftUp
+        for (int i = 1; x - i > -1 && y - i > -1; i++) {
+            color = data.getColor(x - i, y - i);
+            if (color == 0) {
+                tab[x - i][y - i] = -1;
+            } else if (color == xside) {
+                tab[x - i][y - i] = -1;
+                break;
+            } else {//color == side
+                if (leftUp) {
+                    piece = data.getPiece(x - i, y - i);
+                    if (piece == 1) {
+                        if (side == 2) {
+                            if (i == 1) {
+                                tab[x - i][y - i] = 2;
+                            } else {
+                                tab[x - i][y - i] = 3;
+                            }
+                        } else {
+                            tab[x - i][y - i] = 3;
+                        }
+                    }
+                    if (piece == 3 || piece == 5) {
+                        tab[x - i][y - i] = 2;
+                    } else {
+                        tab[x - i][y - i] = 3;
+                    }
+                    for (int j = i + 1; x - j > -1 && y - j > -1; j++) {
+                        if (data.getColor(x - j, y - j) != 0) {
+                            if (data.getPiece(x - j, y - j) == 6 && data.getColor(x - j, y - j) == side) {
+                                break;
+                            } else {
+                                tab[x - i][y - i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//rightUp
+        for (int i = 1; x + i < 5 && y - i > -1; i++) {
+            color = data.getColor(x + i, y - i);
+            if (color == 0) {
+                tab[x + i][y - i] = -1;
+            } else if (color == xside) {
+                tab[x + i][y - i] = -1;
+                break;
+            } else {//color == side
+                if (rightUp) {
+                    piece = data.getPiece(x + i, y - i);
+                    if (piece == 1) {
+                        if (side == 2) {
+                            if (i == 1) {
+                                tab[x + i][y - i] = 2;
+                            } else {
+                                tab[x + i][y - i] = 3;
+                            }
+                        } else {
+                            tab[x + i][y - i] = 3;
+                        }
+                    }
+                    if (piece == 3 || piece == 5) {
+                        tab[x + i][y - i] = 2;
+                    } else {
+                        tab[x + i][y - i] = 3;
+                    }
+                    for (int j = i + 1; x + j < 5 && y - j > -1; j++) {
+                        if (data.getColor(x + j, y - j) != 0) {
+                            if (data.getPiece(x + j, y - j) == 6 && data.getColor(x + j, y - j) == side) {
+                                break;
+                            } else {
+                                tab[x + i][y - i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public void rookStalemate(int x, int y, int tab[][],int kingPos) {
+        if(tab[x][y]!=-1){
+            tab[x][y] = 0;
+        }
+        int piece, color, side = data.getSide(), xside = data.getXside();
+        int kingX = kingPos % 5, kingY = kingPos / 5;
+        boolean up, right, down, left;
+        up = right = down = left = false;
+        if (x == kingX) {
+            if (y > kingY) {
+                up = true;
+            } else {
+                down = true;
+            }
+        }
+        if (y == kingY) {
+            if (x > kingX) {
+                left = true;
+            } else {
+                right = true;
+            }
+        }//right
+        for (int i = 1; x + i < 5; i++) {
+            color = data.getColor(x + i, y);
+            if (color == 0) {
+                tab[x + i][y] = -1;
+            } else if (color == xside) {
+                tab[x + i][y] = -1;
+                break;
+            } else { //color==site
+                if (right) {
+                    piece = data.getPiece(x + i, y);
+                    if (piece == 4 || piece == 5) {
+                        tab[x + i][y] = 2;
+                    } else {
+                        tab[x + i][y] = 3;
+                    }
+                    for (int j = i + 1; x + j < 5; j++) {
+                        if (data.getColor(x + j, y) != 0) {
+                            if (data.getPiece(x + j, y) == 6 && data.getColor(x + j, y) == side) {
+                                break;
+                            } else {
+                                tab[x + i][y] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//left
+        for (int i = 1; x - i > -1; i++) {
+            color = data.getColor(x - i, y);
+            if (color == 0) {
+                tab[x - i][y] = -1;
+            } else if (color == xside) {
+                tab[x - i][y] = -1;
+                break;
+            } else { //color==site
+                if (right) {
+                    piece = data.getPiece(x - i, y);
+                    if (piece == 4 || piece == 5) {
+                        tab[x - i][y] = 2;
+                    } else {
+                        tab[x - i][y] = 3;
+                    }
+                    for (int j = i + 1; x - j > -1; j++) {
+                        if (data.getColor(x - j, y) != 0) {
+                            if (data.getPiece(x - j, y) == 6 && data.getColor(x - j, y) == side) {
+                                break;
+                            } else {
+                                tab[x - i][y] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//up
+        for (int i = 1; y - i > -1; i++) {
+            color = data.getColor(x, y - i);
+            if (color == 0) {
+                tab[x][y - i] = -1;
+            } else if (color == xside) {
+                tab[x][y - i] = -1;
+                break;
+            } else { //color==site
+                if (right) {
+                    piece = data.getPiece(x, y - i);
+                    if (piece == 4 || piece == 5) {
+                        tab[x][y - i] = 2;
+                    } else {
+                        tab[x][y - i] = 3;
+                    }
+                    for (int j = i + 1; y - j > -1; j++) {
+                        if (data.getColor(x, y - j) != 0) {
+                            if (data.getPiece(x, y - j) == 6 && data.getColor(x, y - j) == side) {
+                                break;
+                            } else {
+                                tab[x][y - i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }//down
+        for (int i = 1; y + i < 5; i++) {
+            color = data.getColor(x, y + i);
+            if (color == 0) {
+                tab[x][y + i] = -1;
+            } else if (color == xside) {
+                tab[x][y + i] = -1;
+                break;
+            } else { //color==site
+                if (right) {
+                    piece = data.getPiece(x, y + i);
+                    if (piece == 4 || piece == 5) {
+                        tab[x][y + i] = 2;
+                    } else {
+                        tab[x][y + i] = 3;
+                    }
+                    for (int j = i + 1; y + j < 5; j++) {
+                        if (data.getColor(x, y + j) != 0) {
+                            if (data.getPiece(x, y + j) == 6 && data.getColor(x, y + j) == side) {
+                                break;
+                            } else {
+                                tab[x][y + i] = 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
+    }
+
+    public void kingStalemate(int x, int y, int tab[][]){
+        tab[x][y] = 0;
+        int piece, color, side = data.getSide(), xside = data.getXside();
+        for (int i = -1; i < 2; i++) {//y
+            if(y+i<0 || y+i>4)
+                continue;
+            for (int j = -1; j < 2; j++) {//x
+                if((i==0 && j==0) || x+j<0 || x+j>4)
+                    continue;
+                color = data.getColor(x+j,y+i);
+                if(color==0 || color == xside){
+                    tab[x+j][y+i] = -1;
+                }
+            }
+        }
+    }
+
+    public boolean pawnCanMove(int x, int y) {
+        int yminus = 1;
+        if (data.getSide() == 1) { //czy biale?
+            yminus = -1;
+        }
+        if (data.getColor(x, y + yminus) == 0)  //pole przed pionem wolne?
+            return true;
+        if ((x + 1 < 5 && data.getColor(x + 1, y + yminus) == data.getXside())
+                || (x - 1 > -1 && data.getColor(x - 1, y + yminus) == data.getXside())) {
+            return true;//czy mozna bic?
+        }
+        return false;
+    }
+
+    public boolean knightCanMove(int x, int y) {
+        int side = data.getSide();
+        if (x + 1 < 5) {
+            if (y + 2 < 5) {
+                if (data.getColor(x + 1, y + 2) != side)
+                    return true;
+            }
+            if (y - 2 > -1) {
+                if (data.getColor(x + 1, y - 2) != side)
+                    return true;
+            }
+            if (x + 2 < 5) {
+                if (y + 1 < 5) {
+                    if (data.getColor(x + 2, y + 1) != side)
+                        return true;
+                }
+                if (y - 1 > -1) {
+                    if (data.getColor(x + 2, y - 1) != side)
+                        return true;
+                }
+            }
+        }
+        if (x - 1 > -1) {
+            if (y + 2 < 5) {
+                if (data.getColor(x - 1, y + 2) != side)
+                    return true;
+            }
+            if (y - 2 > -1) {
+                if (data.getColor(x - 1, y - 2) != side)
+                    return true;
+            }
+            if (x - 2 > -1) {
+                if (y + 1 < 5) {
+                    if (data.getColor(x - 2, y + 1) != side)
+                        return true;
+                }
+                if (y - 1 > -1) {
+                    if (data.getColor(x - 2, y - 1) != side)
+                        return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean bishopCanMove(int x, int y) {
+        boolean leftUp, rightUp, rightDown, leftDown;
+        leftUp = leftDown = rightDown = rightUp = true;
+        int site = data.getSide();
+        for (int i = 0; i < 5; i++) {
+            if (x + i < 5) {
+                if (rightDown && y + i < 5) {
+                    if (data.getColor(x + i, y + i) != site) {
+                        return true;
+                    } else {
+                        rightDown = false;
+                    }
+                }
+                if (rightUp && y - i > -1) {
+                    if (data.getColor(x + i, y - i) != site) {
+                        return true;
+                    } else {
+                        rightUp = false;
+                    }
+                }
+            }
+            if (x - i > -1) {
+                if (leftDown && y + i < 5) {
+                    if (data.getColor(x - i, y + i) != site) {
+                        return true;
+                    } else {
+                        leftDown = false;
+                    }
+
+                }
+                if (leftUp && y - i > -1) {
+                    if (data.getColor(x - i, y - i) != site) {
+                        return true;
+                    } else {
+                        leftUp = false;
+                    }
+
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean rookCanMove(int x, int y) {
+        boolean up, right, down, left;
+        up = right = down = left = true;
+        int site = data.getSide();
+        for (int i = 0; i < 5; i++) {
+            if (right && x + i < 5) {
+                if (data.getColor(x + i, y) != site) {
+                    return true;
+                } else {
+                    right = false;
+                }
+            }
+            if (left && x - i > -1) {
+                if (data.getColor(x - i, y) != site) {
+                    return true;
+                } else {
+                    left = false;
+                }
+            }
+            if (down && y + i < 5) {
+                if (data.getColor(x, y + i) != site) {
+                    return true;
+                } else {
+                    down = false;
+                }
+            }
+            if (up && y - i > -1) {
+                if (data.getColor(x, y - i) != site) {
+                    return true;
+                } else {
+                    up = false;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean kingCanMove(int x, int y,int tab[][]) {
+        for (int i = -1; i < 2; i++) {//y
+            if (y + i < 0 || y + i > 4)
+                continue;
+            for (int j = -1; j < 2; j++) {//x
+                if ((i == 0 && j == 0) || x + j < 0 || x + j > 4)
+                    continue;
+                if (tab[x + j][y + i] == 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isStalemate() {
+        int king = findKing(true);
+        int tab[][] = new int[5][5]; // -1 atakowane(pole wolne i przeciwnika); 0 jak -1 tylko nieatakowane
+        for (int i = 0; i < 5; i++) {// 1 nasze niezwiazane; 2 nasze zwiazane ale moze zabic wiazacego
+            for (int j = 0; j < 5; j++) {// 3 jak 2 tylko bez mozliwosci zabicia
+                tab[i][j] = 1;
+            }
+        }
+        int xside = data.getXside(), side = data.getSide(), color, piece;
+        for (int i = 0; i < 5; i++) {//x
+            for (int j = 0; j < 5; j++) {//y
+                color = data.getColor(j, i);
+                if (color == side) {
+                    continue;
+                } else if (color == xside) {
+                    if (tab[i][j] == 1)
+                        tab[i][j] = 0;
+                    piece = data.getPiece(i, j);
+                    switch (piece) {
+                        case 1: {//pion
+                            pawnStalemate(i, j, tab);
+                            break;
+                        }
+                        case 2: {//kuc
+                            knightStalemate(i, j, tab);
+                            break;
+                        }
+                        case 3: {
+                            bishopStalemate(i, j, tab, king);
+                            break;
+                        }
+                        case 4: {
+                            rookStalemate(i, j, tab, king);
+                            break;
+                        }
+                        case 5: {
+                            rookStalemate(i, j, tab, king);
+                            bishopStalemate(i, j, tab, king);
+                            break;
+                        }
+                        case 6: {
+                            kingStalemate(i, j, tab);
+                            break;
+                        }
+                    }
+                }
+            }
+
+        }
+        //koniec etapu 1 - ustalenia pomocniczej TABlicy
+        //etap 2 interesuja nas tylko elementy tab o wartosci 1 lub 2
+        //czyli niezwiązane lub związane z mozliwoscia bicia wiazacej figury
+        for (int i = 0; i < 5; i++) {//y
+            for (int j = 0; j < 5; j++) {//x
+                if (tab[j][i] < 1 || tab[j][i] == 3) //-1,0,3
+                    continue;
+                if (tab[j][i] == 2)//2
+                    return false;
+                piece = data.getPiece(j, i);//1
+                switch (piece) {
+                    case 1: {//pion
+                        if (pawnCanMove(j, i)) {
+                            return false;
+                        }
+                        break;
+                    }
+                    case 2: {//kuc
+                        if (knightCanMove(j, i)) {
+                            return false;
+                        }
+                        break;
+                    }
+                    case 3: {//goniec
+                        if (bishopCanMove(j, i)) {
+                            return false;
+                        }
+                        break;
+                    }
+                    case 4: {//wieza
+                        if (rookCanMove(j, i)) {
+                            return false;
+                        }
+                        break;
+                    }
+                    case 5: {//hetman
+                        if (rookCanMove(j, i) || bishopCanMove(j, i)) {
+                            return false;
+                        }
+                        break;
+                    }
+                    case 6: {//krol
+                        if (kingCanMove(j, i, tab)) {
+                            return false;
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     public boolean isCheckmate(){
@@ -677,7 +1351,7 @@ public class ChessMechanic {
                 if(data.getIsCheck()) {
                     mate = isCheckmate();
                 }else{
-                    mate = false;
+                    mate = isStalemate();
                 }
                 boolean promotion = isPromotionAfterMove();
                 data.undoMove();
@@ -710,7 +1384,7 @@ public class ChessMechanic {
         if(data.getIsCheck()) {
             mate = isCheckmate();
         }else{
-            mate = false;
+            mate = isStalemate();
         }
         boolean promotion = isPromotionAfterMove();
         data.undoMove();// cofnięcie ruchu
