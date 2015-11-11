@@ -145,8 +145,10 @@ public class ChessBoardView {
                                 makePromotion(x, y);
                                 break;
                             case CHECKMATE:
+                                movePiece(startX, startY, x, y);
                                 break;
                             case STALEMATE:
+                                movePiece(startX, startY, x, y);
                                 break;
                             case CHECK:
                                 movePiece(startX, startY, x, y);
