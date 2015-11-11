@@ -290,8 +290,22 @@ public class ChessMechanic {
         return false;
     }
 
-    public void promotion(int x,int y,int piece){
-        data.promotion(x,y,piece);
+    public MoveCorrectEnum promotion(int x,int y,int piece) {
+        data.promotion(x, y, piece);
+        data.setIsCheck(isCheckAfterMove(true));
+        if (data.getIsCheck()) {
+            if (isCheckmate()) {
+                return MoveCorrectEnum.CHECKMATE;
+            } else {
+                return MoveCorrectEnum.CHECK;
+            }
+        } else {
+            if (isStalemate()) {
+                return MoveCorrectEnum.STALEMATE;
+            } else {
+                return MoveCorrectEnum.GOOD;
+            }
+        }
     }
 
     public boolean isPromotionAfterMove(){
