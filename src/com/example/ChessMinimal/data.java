@@ -93,6 +93,24 @@ public class Data {
         this.side = a;
     }
 
+    public void makeMove(byte[] move, Data data) {
+        if (move[2] != 4) {
+            if (move[0] != move[1]) {
+                data.piece[move[1]] = data.piece[move[0]];//wykonanie ruchu
+                data.color[move[1]] = data.color[move[0]];
+                data.color[move[0]] = 0;
+                data.piece[move[0]] = 0;
+            }
+        } else {
+            if (move[0] != move[1]) {
+                data.piece[move[1]] = move[3];//wykonanie ruchu
+                data.color[move[1]] = data.color[move[0]];
+                data.color[move[0]] = 0;
+                data.piece[move[0]] = 0;
+            }
+        }
+    }
+
     public void makeMove(int x1, int y1, int x2, int y2){
         if(x1!=x2|| y1!=y2) {
             lastMove.setAll(x1, y1, x2, y2, this.piece[x2 + y2 * 5], this.color[x2 + y2 * 5]);
