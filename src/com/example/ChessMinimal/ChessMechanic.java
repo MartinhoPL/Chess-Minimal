@@ -3,22 +3,23 @@ package com.example.ChessMinimal;
 public class ChessMechanic {
     Data data; //wskaznik na klase data by moc sprawdzac polozenie pionow
 
-    ChessMechanic(){}
-
-    ChessMechanic(Data data){
-        this.data=data;
+    ChessMechanic() {
     }
 
-    public int findKing(boolean isMyKing){ // jak w nazwie
-        for(int i=0;i<5;i++){//y
-            for(int j=0;j<5;j++) {//x
-                if (data.getPiece(j, i) == 6){
+    ChessMechanic(Data data) {
+        this.data = data;
+    }
+
+    public int findKing(boolean isMyKing) { // jak w nazwie
+        for (int i = 0; i < 5; i++) {//y
+            for (int j = 0; j < 5; j++) {//x
+                if (data.getPiece(j, i) == 6) {
                     if (isMyKing) {
-                        if ((data.getSide() == data.getColor(j, i))){
+                        if ((data.getSide() == data.getColor(j, i))) {
                             return i * 5 + j;
                         }
                     } else {
-                        if ((data.getSide() != data.getColor(j, i))){
+                        if ((data.getSide() != data.getColor(j, i))) {
                             return i * 5 + j;
                         }
                     }
@@ -28,37 +29,38 @@ public class ChessMechanic {
         return -1;
     }
 
-    public boolean pawnCanAttack(int x1, int y1, int x2, int y2){
-        if (y1 - y2 == 1 ){
-            if(data.getColor(x1,y1)==1){
-                if(x1 - x2 == 1 || x1 - x2 == -1){
+    public boolean pawnCanAttack(int x1, int y1, int x2, int y2) {
+        if (y1 - y2 == 1) {
+            if (data.getColor(x1, y1) == 1) {
+                if (x1 - x2 == 1 || x1 - x2 == -1) {
                     return true;
-                }else {
+                } else {
                     return false;
                 }
-            }else {
+            } else {
                 return false;
             }
-        }else if ( y1 - y2 == -1 ){
-            if(data.getColor(x1,y1)==2){
-                if(x1 - x2 == 1 || x1 - x2 == -1){
+        } else if (y1 - y2 == -1) {
+            if (data.getColor(x1, y1) == 2) {
+                if (x1 - x2 == 1 || x1 - x2 == -1) {
                     return true;
-                }else {
+                } else {
                     return false;
                 }
-            }else {
+            } else {
                 return false;
             }
-        }else {
+        } else {
             return false;
         }
     }
 
-    public boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2){
-        if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
+    public boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2) {
+        int myColor = data.getColor(x1, y1), moveColor = data.getColor(x2, y2);
+        if (myColor == moveColor) {
             return false;
         }
-        if (data.getSide() == 1) {
+        if (myColor == 1) {
             if (y1 - y2 != 1) {//czy ruch o jedno pole do przodu białe
                 return false;
             }
@@ -67,17 +69,17 @@ public class ChessMechanic {
                 return false;
             }
         }
-        if(data.getColor(x2,y2)==0 && x1-x2==0) {
+        if (moveColor == 0 && x1 - x2 == 0) {
             return true;
         }
-        if ((x1 - x2 == 1 || x1 - x2 == -1) && (data.getColor(x2, y2) == data.getXside() )) {//czy poprawne bicie pionem
+        if ((x1 - x2 == 1 || x1 - x2 == -1) && (moveColor != 0)) {//czy poprawne bicie pionem
             return true;
         } else {
             return false;
         }
     }
 
-    public boolean knigthMoveIsCorrect(int x1, int y1, int x2, int y2){//ruchy konia
+    public boolean knigthMoveIsCorrect(int x1, int y1, int x2, int y2) {//ruchy konia
         if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
             return false;
         }
@@ -184,10 +186,10 @@ public class ChessMechanic {
         }
     }
 
-    public boolean kingAttackPiece(int x1, int y1, int x2, int y2){
-        int piece = data.setZero(x2,y2);
+    public boolean kingAttackPiece(int x1, int y1, int x2, int y2) {
+        int piece = data.setZero(x2, y2);
         boolean result = kingMoveIsCorrect(x1, y1, x2, y2);
-        data.resetZero(x2,y2,piece);
+        data.resetZero(x2, y2, piece);
         return result;
     }
 
@@ -199,16 +201,17 @@ public class ChessMechanic {
         } else if (x1 - x2 == 0 && y1 - y2 == 0) {
             return false;
         }
-        if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
+        int myColor = data.getColor(x1, y1), moveColor = data.getColor(x2, y2);
+        if (moveColor == myColor) {
             return false;
-        }else if(data.getColor(x2, y2) != 0) {
+        } else if (moveColor != 0) {
             return kingAttackPiece(x1, y1, x2, y2);
         }
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 5; i++) {
-                int piece = data.getPiece(i, j);
-                if (piece != 0) {
-                    if (data.getColor(i, j) != data.getSide()) {
+                if (data.getColor(i, j) != myColor) {
+                    int piece = data.getPiece(i, j);
+                    if (piece != 0) {
                         switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
                             case 1: {//pion (tylko do przodu o jedno pole)
                                 if (pawnCanAttack(i, j, x2, y2)) {
@@ -256,47 +259,47 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean isCheckAfterMove(boolean myKing){//czy po ruchu doszlo do szacha
-        int king=findKing(myKing);
-        int kingX=king%5, kingY=king/5;
+    public boolean isCheckAfterMove(boolean myKing) {//czy po ruchu doszlo do szacha
+        int king = findKing(myKing);
+        int kingX = king % 5, kingY = king / 5;
         int side;
-        if(myKing){
+        if (myKing) {
             side = data.getSide();
         } else {
             side = data.getXside();
         }
-        for(int j = 0 ; j < 5 ; j++){
-            for (int i = 0; i < 5 ; i++) {
-                int piece = data.getPiece(i,j);
-                if(piece != 0){
-                    if(data.getColor(i,j) != side){
+        for (int j = 0; j < 5; j++) {
+            for (int i = 0; i < 5; i++) {
+                int piece = data.getPiece(i, j);
+                if (piece != 0) {
+                    if (data.getColor(i, j) != side) {
                         switch (piece) {//sprawdzanie czy dana figura może wykonać ruch na pole króla
                             case 1: {//pion
-                                if(pawnMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (pawnMoveIsCorrect(i, j, kingX, kingY)) {
                                     return true;
                                 }
                                 break;
                             }
                             case 2: {//kon
-                                if(knigthMoveIsCorrect(i,j,kingX,kingY)) {
+                                if (knigthMoveIsCorrect(i, j, kingX, kingY)) {
                                     return true;
                                 }
                                 break;
                             }
-                            case 3:{//goniec
-                                if(bishopMoveIsCorrect(i,j,kingX,kingY)) {
+                            case 3: {//goniec
+                                if (bishopMoveIsCorrect(i, j, kingX, kingY)) {
                                     return true;
                                 }
                                 break;
                             }
-                            case 4:{//wieza
-                                if(rookMoveIsCorrect(i,j,kingX,kingY)) {
+                            case 4: {//wieza
+                                if (rookMoveIsCorrect(i, j, kingX, kingY)) {
                                     return true;
                                 }
                                 break;
                             }
-                            case 5:{//hetman
-                                if(queenMoveIsCorrect(i, j, kingX, kingY)) {
+                            case 5: {//hetman
+                                if (queenMoveIsCorrect(i, j, kingX, kingY)) {
                                     return true;
                                 }
                                 break;
@@ -311,7 +314,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public MoveCorrectEnum promotion(int x,int y,int piece) {
+    public MoveCorrectEnum promotion(int x, int y, int piece) {
         data.promotion(x, y, piece);
         data.setIsCheck(isCheckAfterMove(true));
         if (data.getIsCheck()) {
@@ -329,18 +332,18 @@ public class ChessMechanic {
         }
     }
 
-    public boolean isPromotionAfterMove(){
+    public boolean isPromotionAfterMove() {
         for (int i = 0; i < 5; i++) {
-            if(data.getPiece(i,0)==1 || data.getPiece(i,4)==1)
+            if (data.getPiece(i, 0) == 1 || data.getPiece(i, 4) == 1)
                 return true;
         }
         return false;
     }
 
-    public boolean pieceAttackKing(int x, int y, int king){
-        int kingX = king % 5, kingY = king/5;
+    public boolean pieceAttackKing(int x, int y, int king) {
+        int kingX = king % 5, kingY = king / 5;
         int piece = data.getPiece(x, y);
-        switch (piece){
+        switch (piece) {
             case 1: {
                 if (pawnCanAttack(x, y, kingX, kingY))
                     return true;
@@ -370,12 +373,12 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean attackerCanKilled(int x, int y){
+    public boolean attackerCanKilled(int x, int y) {
         for (int i = 0; i < 5; i++) {//y
             for (int j = 0; j < 5; j++) { //x
-                if(data.getColor(j,i)==data.getSide()){
-                    int piece = data.getPiece(j,i);
-                    switch (piece){
+                if (data.getColor(j, i) == data.getSide()) {
+                    int piece = data.getPiece(j, i);
+                    switch (piece) {
                         case 1: {
                             if (pawnCanAttack(j, i, x, y))
                                 return true;
@@ -445,8 +448,8 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean diagonalAttackCanDefend(int x, int y,int king) {
-        int kingX = king % 5, kingY = king / 5;
+    public boolean diagonalAttackCanDefend(int x, int y, int king) {
+        int kingX = king % 5, kingY = king / 5, myColor = data.getColor(kingX, kingY);
         int xminus = 1, yminus = 1, i = y, j = x; //czy linia ruchu jest pusta
         if (x > kingX) {
             xminus = -1; //czy w lewo do krola
@@ -462,7 +465,7 @@ public class ChessMechanic {
             for (int k = 0; k < 5; k++) { //pion
                 if (k == i)
                     continue;
-                if (data.getColor(j, k) == data.getSide()) {
+                if (data.getColor(j, k) == myColor) {
                     if (pieceCanMove(j, k, j, i))
                         return true;
                 }
@@ -471,7 +474,7 @@ public class ChessMechanic {
             for (int k = 0; k < 5; k++) { //poziom
                 if (k == j)
                     continue;
-                if (data.getColor(k, i) == data.getSide()) {
+                if (data.getColor(k, i) == myColor) {
                     if (pieceCanMove(k, i, j, i))
                         return true;
                 }
@@ -480,7 +483,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//1
                 if (i + k > 4 || j + k > 4)
                     break;
-                if (data.getColor(j + k, i + k) == data.getSide()) {
+                if (data.getColor(j + k, i + k) == myColor) {
                     if (pieceCanMove(j + k, i + k, j, i))
                         return true;
                 }
@@ -488,7 +491,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//2
                 if (i - k < 0 || j + k > 4)
                     break;
-                if (data.getColor(j + k, i - k) == data.getSide()) {
+                if (data.getColor(j + k, i - k) == myColor) {
                     if (pieceCanMove(j + k, i - k, j, i))
                         return true;
                 }
@@ -496,7 +499,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//3
                 if (i + k > 4 || j - k < 0)
                     break;
-                if (data.getColor(j - k, i + k) == data.getSide()) {
+                if (data.getColor(j - k, i + k) == myColor) {
                     if (pieceCanMove(j - k, i + k, j, i))
                         return true;
                 }
@@ -504,7 +507,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//4
                 if (i - k < 0 || j - k < 0)
                     break;
-                if (data.getColor(j - k, i - k) == data.getSide()) {
+                if (data.getColor(j - k, i - k) == myColor) {
                     if (pieceCanMove(j - k, i - k, j, i))
                         return true;
                 }
@@ -513,8 +516,8 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean fileOrRankAttackCanDefend(int x, int y,int king) {
-        int kingX = king % 5, kingY = king / 5;
+    public boolean fileOrRankAttackCanDefend(int x, int y, int king) {
+        int kingX = king % 5, kingY = king / 5, myColor = data.getColor(kingX, kingY);
         int xminus = 1, yminus = 1;
         if (x == kingX) { // file - pion
             xminus = 0;
@@ -527,26 +530,26 @@ public class ChessMechanic {
                 xminus = -1;
             }
         }
-        while (true){
-            x+=xminus;
-            y+=yminus;
-            if(x==kingX && y==kingY)
+        while (true) {
+            x += xminus;
+            y += yminus;
+            if (x == kingX && y == kingY)
                 break;
-            if(y!=kingY) { // !czy atak w pionie?
+            if (y != kingY) { // !czy atak w pionie?
                 for (int k = 0; k < 5; k++) { //pion
                     if (k == y)
                         continue;
-                    if (data.getColor(x, k) == data.getSide()) {
+                    if (data.getColor(x, k) == myColor) {
                         if (pieceCanMove(x, k, x, y))
                             return true;
                     }
                 }
             }
-            if(x!=kingX) {// !czy atak w poziomie?
+            if (x != kingX) {// !czy atak w poziomie?
                 for (int k = 0; k < 5; k++) { //poziom
                     if (k == x)
                         continue;
-                    if (data.getColor(k, y) == data.getSide()) {
+                    if (data.getColor(k, y) == myColor) {
                         if (pieceCanMove(k, y, x, y))
                             return true;
                     }
@@ -556,7 +559,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//1
                 if (y + k > 4 || x + k > 4)
                     break;
-                if (data.getColor(x + k, y + k) == data.getSide()) {
+                if (data.getColor(x + k, y + k) == myColor) {
                     if (pieceCanMove(x + k, y + k, x, y))
                         return true;
                 }
@@ -564,7 +567,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//2
                 if (y - k < 0 || x + k > 4)
                     break;
-                if (data.getColor(x + k, y - k) == data.getSide()) {
+                if (data.getColor(x + k, y - k) == myColor) {
                     if (pieceCanMove(x + k, y - k, x, y))
                         return true;
                 }
@@ -572,7 +575,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//3
                 if (y + k > 4 || x - k < 0)
                     break;
-                if (data.getColor(x - k, y + k) == data.getSide()) {
+                if (data.getColor(x - k, y + k) == myColor) {
                     if (pieceCanMove(x - k, y + k, x, y))
                         return true;
                 }
@@ -580,7 +583,7 @@ public class ChessMechanic {
             for (int k = 1; k < 5; k++) {//4
                 if (y - k < 0 || x - k < 0)
                     break;
-                if (data.getColor(x - k, y - k) == data.getSide()) {
+                if (data.getColor(x - k, y - k) == myColor) {
                     if (pieceCanMove(x - k, y - k, x, y))
                         return true;
                 }
@@ -590,7 +593,7 @@ public class ChessMechanic {
     }
 
     public void pawnStalemate(int x, int y, int tab[][]) {
-        if(tab[x][y]!=-1){
+        if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
         int minus = 1; //czarne przeciwnika
@@ -614,7 +617,7 @@ public class ChessMechanic {
     }
 
     public void knightStalemate(int x, int y, int tab[][]) {
-        if(tab[x][y]!=-1){
+        if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
         if (x + 1 < 5) {
@@ -667,8 +670,8 @@ public class ChessMechanic {
         }
     }
 
-    public void bishopStalemate(int x, int y, int tab[][],int kingPos) {
-        if(tab[x][y]!=-1){
+    public void bishopStalemate(int x, int y, int tab[][], int kingPos) {
+        if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
         int piece, color, side = data.getSide(), xside = data.getXside();
@@ -851,8 +854,8 @@ public class ChessMechanic {
         }
     }
 
-    public void rookStalemate(int x, int y, int tab[][],int kingPos) {
-        if(tab[x][y]!=-1){
+    public void rookStalemate(int x, int y, int tab[][], int kingPos) {
+        if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
         int piece, color, side = data.getSide(), xside = data.getXside();
@@ -991,18 +994,18 @@ public class ChessMechanic {
         }
     }
 
-    public void kingStalemate(int x, int y, int tab[][]){
+    public void kingStalemate(int x, int y, int tab[][]) {
         tab[x][y] = 0;
         int piece, color, side = data.getSide(), xside = data.getXside();
         for (int i = -1; i < 2; i++) {//y
-            if(y+i<0 || y+i>4)
+            if (y + i < 0 || y + i > 4)
                 continue;
             for (int j = -1; j < 2; j++) {//x
-                if((i==0 && j==0) || x+j<0 || x+j>4)
+                if ((i == 0 && j == 0) || x + j < 0 || x + j > 4)
                     continue;
-                color = data.getColor(x+j,y+i);
-                if(color==0 || color == xside){
-                    tab[x+j][y+i] = -1;
+                color = data.getColor(x + j, y + i);
+                if (color == 0 || color == xside) {
+                    tab[x + j][y + i] = -1;
                 }
             }
         }
@@ -1147,7 +1150,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean kingCanMove(int x, int y,int tab[][]) {
+    public boolean kingCanMove(int x, int y, int tab[][]) {
         for (int i = -1; i < 2; i++) {//y
             if (y + i < 0 || y + i > 4)
                 continue;
@@ -1267,13 +1270,13 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean isCheckmate(){
+    public boolean isCheckmate() {
         //sprawdzenie czy król może się poruszyć
         int king = findKing(true);
-        int kingX = king % 5, kingY = king/5;
-        int attackerCount=0,attackerX=0,attackerY=0,attacker=0;
+        int kingX = king % 5, kingY = king / 5;
+        int attackerCount = 0, attackerX = 0, attackerY = 0, attacker = 0;
         for (int i = -1; i < 2; i++) {
-            if(kingX+i<5 && kingX+i>-1) { //czy sprawdzany potencjalny ruch nie jest za szachownice
+            if (kingX + i < 5 && kingX + i > -1) { //czy sprawdzany potencjalny ruch nie jest za szachownice
                 for (int j = -1; j < 2; j++) {
                     if (i == 0 && j == 0) {
                         continue;
@@ -1288,23 +1291,23 @@ public class ChessMechanic {
         }
         for (int i = 0; i < 5; i++) {//y
             for (int j = 0; j < 5; j++) {//x
-                if(data.getColor(j,i)==data.getXside()){
-                    if(pieceAttackKing(j,i,king)){
-                        attacker=data.getPiece(j,i);
-                        attackerX=j;
-                        attackerY=i;
+                if (data.getColor(j, i) == data.getXside()) {
+                    if (pieceAttackKing(j, i, king)) {
+                        attacker = data.getPiece(j, i);
+                        attackerX = j;
+                        attackerY = i;
                         attackerCount++;
-                        if(attackerCount > 1) {
+                        if (attackerCount > 1) {
                             return true; //bo krol nie moze się ruszyc a atakowany jest przez 2 figury
                         }
                     }
                 }
             }
         }
-        if(attackerCanKilled(attackerX, attackerY)){
+        if (attackerCanKilled(attackerX, attackerY)) {
             return false;
         }
-        switch (attacker){
+        switch (attacker) {
             case 1:
             case 2:
                 return true;
