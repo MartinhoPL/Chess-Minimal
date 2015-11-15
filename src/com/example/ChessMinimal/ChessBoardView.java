@@ -30,6 +30,8 @@ public class ChessBoardView {
     private int imageResourceDrag;
     private ChessMechanic chessMechanic;
     private TextView textView;
+    private boolean whiteNext = true;
+    private boolean lock = false;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
         this.textView = textView;
@@ -85,6 +87,8 @@ public class ChessBoardView {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 int s = motionEvent.getAction();
                 if (s == MotionEvent.ACTION_DOWN) {
+                    if (lock)
+                        return true;
                     startX = x;
                     startY = y;
                     try {
@@ -112,6 +116,8 @@ public class ChessBoardView {
 
             public boolean onDrag(View v, DragEvent event) {
                 try {
+                    if (lock)
+                        return true;
                     int dragAction = event.getAction();
                     View dragView = (View) event.getLocalState();
                     if (dragAction == DragEvent.ACTION_DRAG_EXITED) {
@@ -146,9 +152,17 @@ public class ChessBoardView {
                                 break;
                             case CHECKMATE:
                                 movePiece(startX, startY, x, y);
+                                if (whiteNext) {
+                                    endGame(1);
+                                }
+                                else
+                                {
+                                    endGame(-1);
+                                }
                                 break;
                             case STALEMATE:
                                 movePiece(startX, startY, x, y);
+                                endGame(0);
                                 break;
                             case CHECK:
                                 movePiece(startX, startY, x, y);
@@ -173,62 +187,79 @@ public class ChessBoardView {
 
     }
 
+    private void endGame(final int result) { //-1 - wygrały białe, 0 - remis, 1 - wygrały czarne
+        AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
+        final int[] imageResource = new int[1];
+        switch(result)
+        {
+            case -1:
+                builder.setMessage("Wygrały białe!")
+                        .setTitle("Koniec gry");
+
+                break;
+            case 0:
+                builder.setMessage("Remis!")
+                        .setTitle("Koniec gry");
+                break;
+            case 1:
+                builder.setMessage("Wygrały czarne!")
+                        .setTitle("Koniec gry");
+                break;
+        }
+
+
+        AlertDialog alert = builder.create();
+        alert.show();
+        lock = true;
+    }
+
     private void makePromotion(final int x, final int y) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
-        final String[] items = {"Hetman", "Goniec", "Skoczek", "Wie�a"};
+        final String[] items = {"Hetman", "Goniec", "Skoczek", "Wie�a"};
         final int[] imageResource = new int[1];
         builder.setTitle("Wybierz bierke")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        switch(which)
-                        {
+                        switch (which) {
                             case 0:
                                 if (y == 0) {
                                     imageResource[0] = R.drawable.whitequeen;
-                                }
-                                else
-                                {
+                                } else {
                                     imageResource[0] = R.drawable.blackqueen;
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                chessMechanic.promotion(x, y, 5);
+                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 5));
                                 break;
                             case 1:
                                 if (y == 0) {
                                     imageResource[0] = R.drawable.whitebishop;
-                                }
-                                else
-                                {
+                                } else {
                                     imageResource[0] = R.drawable.blackbishop;
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                chessMechanic.promotion(x, y, 3);
+                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 3));
                                 break;
                             case 2:
                                 if (y == 0) {
                                     imageResource[0] = R.drawable.whiteknight;
-                                }
-                                else
-                                {
+                                } else {
                                     imageResource[0] = R.drawable.blackknight;
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                chessMechanic.promotion(x, y, 2);
+                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 2));
                                 break;
                             case 3:
                                 if (y == 0) {
                                     imageResource[0] = R.drawable.whiterook;
-                                }
-                                else
-                                {
+                                } else {
                                     imageResource[0] = R.drawable.blackrock;
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                chessMechanic.promotion(x, y, 4);
+                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 4));
                                 break;
                         }
                         dialog.cancel();
@@ -238,8 +269,30 @@ public class ChessBoardView {
         alert.show();
     }
 
+    private void CheckSituationAfterPromotion(MoveCorrectEnum promotion) {
+        switch (promotion){
+            case GOOD:
+
+                break;
+            case CHECKMATE:
+                if (whiteNext) {
+                    endGame(1);
+                }
+                else
+                {
+                    endGame(-1);
+                }
+                break;
+            case STALEMATE:
+                endGame(0);
+                break;
+            case CHECK:
+                break;
+        }
+    }
+
     private void changeTextViewForNextTurn() {
-        if (textView.getText() == whitesMoveString) {
+        if (!whiteNext) {
             textView.setText("Ruch czarnych");
         }
         else
@@ -318,6 +371,11 @@ public class ChessBoardView {
             imageButtons[x1][y1].setTag(-0);
             imageButtons[x2][y2].setImageResource(imageResourceDrag);
             imageButtons[x2][y2].setTag(imageResourceDrag);
+            if (x1 != x2 || y1 != y2)
+            {
+                whiteNext = !whiteNext;
+                changeTextViewForNextTurn();
+            }
     }
 
     public TableRow[] getTableRows() {
