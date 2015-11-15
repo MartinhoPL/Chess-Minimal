@@ -44,26 +44,43 @@ public class Data {
         color=init_color.clone();
         lastMove = new Move(-1,-1,-1,-1,-1,-1);
     }
+
     public int getPiece(int x, int y){
         if(x<5 && x>-1)
             if(y<5 && y>-1)
                 return piece[x+y*5];
         return -1;
     }
+
     public int getSide(){
         return this.side;
     }
+
     public int getXside(){
         return this.xside;
     }
+
     public int getColor(int x, int y){
         if(x<5 && x>-1)
             if(y<5 && y>-1)
                 return color[x+y*5];
         return -1;
     }
+
     public boolean getIsCheck(){
         return this.isCheck;
+    }
+
+    public int setZero ( int x, int y){
+        int piece = this.getPiece(x, y) + this.getColor(x, y) * 10;
+        this.color[x + y * 5] = 0;
+        this.piece[x + y * 5] = 0;
+        return piece;
+    }
+
+    public void resetZero(int x, int y ,int piece){
+        this.color[x + y * 5] = piece / 10;
+        this.piece[x + y * 5] = piece % 10;
     }
 
     public void setIsCheck(boolean isCheck){

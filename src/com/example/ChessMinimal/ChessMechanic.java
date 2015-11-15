@@ -184,16 +184,25 @@ public class ChessMechanic {
         }
     }
 
+    public boolean kingAttackPiece(int x1, int y1, int x2, int y2){
+        int piece = data.setZero(x2,y2);
+        boolean result = kingMoveIsCorrect(x1, y1, x2, y2);
+        data.resetZero(x2,y2,piece);
+        return result;
+    }
+
     public boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2) {
-        if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
-            return false;
-        }
         if (x1 - x2 > 1 || x1 - x2 < -1) {
             return false;//ruch tylko o jedno pole
         } else if (y1 - y2 > 1 || y1 - y2 < -1) {
             return false;//ruch o jedno pole
         } else if (x1 - x2 == 0 && y1 - y2 == 0) {
             return false;
+        }
+        if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
+            return false;
+        }else if(data.getColor(x2, y2) != 0) {
+            return kingAttackPiece(x1, y1, x2, y2);
         }
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 5; i++) {
@@ -375,6 +384,7 @@ public class ChessMechanic {
                         case 2: {
                             if (knigthMoveIsCorrect(j, i, x, y))
                                 return false;
+                            break;
                         }
                         case 3: {
                             if (bishopMoveIsCorrect(j, i, x, y))
@@ -446,8 +456,8 @@ public class ChessMechanic {
         }
         //sprawdzamy czy można zasłonić linię ataku
         while (true) {
-            i += xminus;
-            j += yminus;
+            i += yminus;
+            j += xminus;
             if (j == kingX || i == kingY) break;
             for (int k = 0; k < 5; k++) { //pion
                 if (k == i)
@@ -1061,7 +1071,7 @@ public class ChessMechanic {
         boolean leftUp, rightUp, rightDown, leftDown;
         leftUp = leftDown = rightDown = rightUp = true;
         int site = data.getSide();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 1; i < 5; i++) {
             if (x + i < 5) {
                 if (rightDown && y + i < 5) {
                     if (data.getColor(x + i, y + i) != site) {
@@ -1104,7 +1114,7 @@ public class ChessMechanic {
         boolean up, right, down, left;
         up = right = down = left = true;
         int site = data.getSide();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 1; i < 5; i++) {
             if (right && x + i < 5) {
                 if (data.getColor(x + i, y) != site) {
                     return true;
