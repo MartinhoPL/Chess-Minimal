@@ -2,6 +2,23 @@
 <resources>
     <string name="app_name">MyActivity</string>
     <string name="WhitesMove">Ruch białych</string>
+    <string name="AreYouSure">Czy jesteś pewien?</string>
+    <string name="GiveUp">Poddaj się</string>
+    <string name="Rook">Wieża</string>
+    <string name="Queen">Hetman</string>
+    <string name="Bishop">Goniec</string>
+    <string name="Pawn">Skoczek</string>
+    <string name="BlacksMove">Ruch czarnych</string>
+    <string name="WhiteWon">Wygrały białe!</string>
+    <string name="GameEnds">Koniec gry</string>
+    <string name="Draw">Remis!</string>
+    <string name="BlackWon">Wygrały czarne!</string>
+    <string name="ChoosePiece">Wybierz bierkę</string>
+    <string name="SuggestDraw">Proponuj remis</string>
+    <string name="No">Nie</string>
+    <string name="Yes">Tak</string>
+    <string name="WhiteSuggestDraw">Białe proponują remis. Zgadzasz się?</string>
+    <string name="BlackSuggestDraw">Czaene proponują remis. Zgadzasz się?</string>
     <string-array name="gameModeSpinnerItems">
         <item>Human White</item>
     </string-array>

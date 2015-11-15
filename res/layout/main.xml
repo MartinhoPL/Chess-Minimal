@@ -17,11 +17,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Start"
+                    android:onClick="onStartButtonClick"
                     android:id="@+id/startButton" android:layout_weight="0.5" android:textSize="30dp"/>
             <Button
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:text="Ustawienia"
+                    android:onClick="onSettingsButtonClick"
                     android:id="@+id/settingsButton" android:layout_weight="0.2" android:textSize="30dp"/>
         </LinearLayout>
         <LinearLayout
