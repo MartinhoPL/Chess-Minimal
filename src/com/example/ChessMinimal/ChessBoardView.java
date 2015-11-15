@@ -1,12 +1,10 @@
 package com.example.ChessMinimal;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -14,8 +12,6 @@ import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-
-import static com.example.ChessMinimal.R.string.WhitesMove;
 
 public class ChessBoardView {
 
@@ -30,7 +26,7 @@ public class ChessBoardView {
     private int imageResourceDrag;
     private ChessMechanic chessMechanic;
     private TextView textView;
-    private boolean whiteNext = true;
+    public boolean whiteNext = true;
     private boolean lock = false;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
@@ -187,37 +183,35 @@ public class ChessBoardView {
 
     }
 
-    private void endGame(final int result) { //-1 - wygrały białe, 0 - remis, 1 - wygrały czarne
+    public void endGame(final int result) { //-1 - wygrały białe, 0 - remis, 1 - wygrały czarne
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
-        final int[] imageResource = new int[1];
         switch(result)
         {
             case -1:
-                builder.setMessage("Wygrały białe!")
-                        .setTitle("Koniec gry");
+                builder.setMessage(context.getString(R.string.WhiteWon));
 
                 break;
             case 0:
-                builder.setMessage("Remis!")
-                        .setTitle("Koniec gry");
+                builder.setMessage(context.getString(R.string.Draw));
                 break;
             case 1:
-                builder.setMessage("Wygrały czarne!")
-                        .setTitle("Koniec gry");
+                builder.setMessage(context.getString(R.string.BlackWon));
+
                 break;
         }
-
+        builder.setTitle(context.getString(R.string.GameEnds));
 
         AlertDialog alert = builder.create();
         alert.show();
         lock = true;
+        ((MyActivity)context).gameState = GameStateEnum.BLOCKED;
     }
 
     private void makePromotion(final int x, final int y) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
-        final String[] items = {"Hetman", "Goniec", "Skoczek", "Wie�a"};
+        final String[] items = {context.getString(R.string.Queen), context.getString(R.string.Bishop), context.getString(R.string.Pawn), context.getString(R.string.Rook)};
         final int[] imageResource = new int[1];
-        builder.setTitle("Wybierz bierke")
+        builder.setTitle(context.getString(R.string.ChoosePiece))
                 .setItems(items, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which) {
@@ -293,7 +287,7 @@ public class ChessBoardView {
 
     private void changeTextViewForNextTurn() {
         if (!whiteNext) {
-            textView.setText("Ruch czarnych");
+            textView.setText(context.getString(R.string.BlacksMove));
         }
         else
         {
@@ -375,6 +369,7 @@ public class ChessBoardView {
             {
                 whiteNext = !whiteNext;
                 changeTextViewForNextTurn();
+                ((MyActivity)context).gameState = GameStateEnum.STARTED;
             }
     }
 

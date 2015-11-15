@@ -1,7 +1,9 @@
 package com.example.ChessMinimal;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ClipData;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
@@ -11,7 +13,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 public class MyActivity extends Activity {
-    private GameStateEnum gameState;
+    public GameStateEnum gameState;
     private Data data;
     private ChessBoardView chessBoardView;
 
@@ -31,7 +33,14 @@ public class MyActivity extends Activity {
     }
 
     public void onStartButtonClick(View view) {
-        gameState = GameStateEnum.STARTED;
+       // gameState = GameStateEnum.STARTED;
+        gameState = GameStateEnum.BLOCKED;
+        data=new Data();
+        setContentView(R.layout.main);
+        TableLayout chessBoardLayout = (TableLayout)findViewById(R.id.chessBoardLayout);
+        TextView textView = (TextView) findViewById(R.id.textView);
+        chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
+        chessBoardView.createBoard();
     }
 
     public void onPauseButtonClick(View view) {
@@ -41,5 +50,93 @@ public class MyActivity extends Activity {
             gameState = GameStateEnum.STARTED;
         }
     }
+
+    public void onSettingsButtonClick(View view) {
+        setContentView(R.layout.settings);
+    }
+
+    public void onGiveUpButtonClick(View view) {
+        if (gameState == GameStateEnum.BLOCKED)
+            return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.AreYouSure))
+                    .setTitle(getString(R.string.GiveUp))
+                    .setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    if (chessBoardView.whiteNext) {
+                                        chessBoardView.endGame(1);
+                                    } else {
+                                        chessBoardView.endGame(-1);
+                                    }
+                                }
+                            }
+                    )
+                    .setNegativeButton(getString(R.string.No), new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+
+                                }
+                            }
+                    );
+
+
+            AlertDialog alert = builder.create();
+            alert.show();
+        }
+
+    public void onDrawButtonClick(View view) {
+        if (gameState == GameStateEnum.BLOCKED)
+            return;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.AreYouSure))
+                .setTitle(getString(R.string.SuggestDraw)).setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        askForDraw();
+                    }
+                }
+        )
+                .setNegativeButton(getString(R.string.No), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }
+                );
+
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void askForDraw() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        String message;
+        if (chessBoardView.whiteNext)
+        {
+            message = getString(R.string.WhiteSuggestDraw);
+        }
+        else
+        {
+            message = getString(R.string.BlackSuggestDraw);
+        }
+        builder.setMessage("")
+                .setMessage(message)
+                .setTitle(getString(R.string.SuggestDraw))
+                .setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                    chessBoardView.endGame(0);
+                            }
+                        }
+                )
+                .setNegativeButton(getString(R.string.No), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+
+                            }
+                        }
+                );
+
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
 }
 
