@@ -298,11 +298,11 @@ public class ChessBoardView {
     private int getimageResourceForCell(int x, int y)
     {
         int imageResource = 0;
-        switch (data.init_piece[x + y*5]){
+        switch (Fixed.INIT_PIECE[x + y*Fixed.YHEIGHT]){
             case 0:
                 break;
             case 1:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource = R.drawable.blackpawn;
                 } else
                 {
@@ -310,7 +310,7 @@ public class ChessBoardView {
                 }
                 break;
             case 2:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource = R.drawable.blackknight;
                 } else
                 {
@@ -318,7 +318,7 @@ public class ChessBoardView {
                 }
                 break;
             case 3:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource =  R.drawable.blackbishop;
                 } else
                 {
@@ -326,7 +326,7 @@ public class ChessBoardView {
                 }
                 break;
             case 4:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource = R.drawable.blackrock;
                 } else
                 {
@@ -334,7 +334,7 @@ public class ChessBoardView {
                 }
                 break;
             case 5:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource =  R.drawable.blackqueen;
                 } else
                 {
@@ -342,7 +342,7 @@ public class ChessBoardView {
                 }
                 break;
             case 6:
-                if(data.init_color[x + y*5] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
                     imageResource =  R.drawable.blackking;
                 } else
                 {
@@ -352,7 +352,7 @@ public class ChessBoardView {
         }
         return imageResource;
     }
-    
+
     public void setCellColor(int color, int x ,int y)
     {
         imageButtons[x][y].setBackgroundColor(color);

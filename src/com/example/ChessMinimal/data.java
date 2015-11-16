@@ -10,7 +10,7 @@ public class Data {
     private int xside;  //strona niewykonujaca ruchu
     //private int castle;    // jak wyglada roszada?
     //czy jest podwojny ruch piona na planszy 5x5?
-    //private int fifty; // liczba ruchow (polruchow?) od bicia lub ruchu pionem ==50->remis
+    private int fifty; // liczba ruchow (polruchow?) od bicia lub ruchu pionem ==50->remis
     //ograniczenia w szukaniu ruchow;
     private int max_time;
     private int max_depth;
@@ -19,37 +19,24 @@ public class Data {
     private int start_time;
     private int stop_time;
     private Move lastMove;
-    public int[] init_color = {
-            2, 2, 2, 2, 2,
-            2, 2, 2, 2, 2,
-            0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1,
-            1, 1, 1, 1, 1,
-    };
-    public int[] init_piece = {// wie�a ko� goniec hetman kr�l
-            4, 2, 3, 5, 6,
-            1, 1, 1, 1, 1,
-            0, 0, 0, 0, 0,
-            1, 1, 1, 1, 1,
-            4, 2, 3, 5, 6,
-    };
+
 
     Data() {
         isCheck = false;
         side = 1;
         xside = 2;
         fifty = 0;
-        piece = new int[25];
-        piece = init_piece.clone();
-        color = new int[25];
-        color = init_color.clone();
+        //    piece = new int[25];
+        piece = Fixed.INIT_PIECE.clone();
+        //    color = new int[25];
+        color = Fixed.INIT_COLOR.clone();
         lastMove = new Move(-1, -1, -1, -1, -1, -1);
     }
 
     public int getPiece(int x, int y) {
-        if (x < 5 && x > -1)
-            if (y < 5 && y > -1)
-                return piece[x + y * 5];
+        if (x < Fixed.XWIDTH && x > -1)
+            if (y < Fixed.YHEIGHT && y > -1)
+                return piece[x + y * Fixed.XWIDTH];
         return -1;
     }
 
@@ -62,9 +49,9 @@ public class Data {
     }
 
     public int getColor(int x, int y) {
-        if (x < 5 && x > -1)
-            if (y < 5 && y > -1)
-                return color[x + y * 5];
+        if (x < Fixed.XWIDTH && x > -1)
+            if (y < Fixed.YHEIGHT && y > -1)
+                return color[x + y * Fixed.XWIDTH];
         return -1;
     }
 
@@ -74,14 +61,14 @@ public class Data {
 
     public int setZero(int x, int y) {
         int piece = this.getPiece(x, y) + this.getColor(x, y) * 10;
-        this.color[x + y * 5] = 0;
-        this.piece[x + y * 5] = 0;
+        this.color[x + y * Fixed.XWIDTH] = 0;
+        this.piece[x + y * Fixed.XWIDTH] = 0;
         return piece;
     }
 
     public void resetZero(int x, int y, int piece) {
-        this.color[x + y * 5] = piece / 10;
-        this.piece[x + y * 5] = piece % 10;
+        this.color[x + y * Fixed.XWIDTH] = piece / 10;
+        this.piece[x + y * Fixed.XWIDTH] = piece % 10;
     }
 
     public void setIsCheck(boolean isCheck) {
@@ -116,27 +103,27 @@ public class Data {
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (x1 != x2 || y1 != y2) {
-            lastMove.setAll(x1, y1, x2, y2, this.piece[x2 + y2 * 5], this.color[x2 + y2 * 5]);
-            this.piece[x2 + y2 * 5] = this.piece[x1 + y1 * 5];//wykonanie ruchu
-            this.color[x2 + y2 * 5] = this.color[x1 + y1 * 5];
-            this.color[x1 + y1 * 5] = 0;
-            this.piece[x1 + y1 * 5] = 0;
+            lastMove.setAll(x1, y1, x2, y2, this.piece[x2 + y2 * Fixed.XWIDTH], this.color[x2 + y2 * Fixed.XWIDTH]);
+            this.piece[x2 + y2 * Fixed.XWIDTH] = this.piece[x1 + y1 * Fixed.XWIDTH];//wykonanie ruchu
+            this.color[x2 + y2 * Fixed.XWIDTH] = this.color[x1 + y1 * Fixed.XWIDTH];
+            this.color[x1 + y1 * Fixed.XWIDTH] = 0;
+            this.piece[x1 + y1 * Fixed.XWIDTH] = 0;
             changeSite();
         }
     }
 
     public void undoMove() {
         if (lastMove.getX1() != -1) {
-            this.color[lastMove.getX1() + lastMove.getY1() * 5] = this.color[lastMove.getX2() + lastMove.getY2() * 5];
-            this.piece[lastMove.getX1() + lastMove.getY1() * 5] = this.piece[lastMove.getX2() + lastMove.getY2() * 5];
-            this.piece[lastMove.getX2() + lastMove.getY2() * 5] = lastMove.getBeatenPiece();
-            this.color[lastMove.getX2() + lastMove.getY2() * 5] = lastMove.getBeatenColor();
+            this.color[lastMove.getX1() + lastMove.getY1() * Fixed.XWIDTH] = this.color[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH];
+            this.piece[lastMove.getX1() + lastMove.getY1() * Fixed.XWIDTH] = this.piece[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH];
+            this.piece[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH] = lastMove.getBeatenPiece();
+            this.color[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH] = lastMove.getBeatenColor();
             changeSite();
             lastMove.setX1(-1);
         }
     }
 
     public void promotion(int x, int y, int piece) {
-        this.piece[5 * y + x] = piece;
+        this.piece[Fixed.XWIDTH * y + x] = piece;
     }
 }

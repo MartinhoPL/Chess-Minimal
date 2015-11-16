@@ -11,16 +11,16 @@ public class ChessMechanic {
     }
 
     public int findKing(boolean isMyKing) { // jak w nazwie
-        for (int i = 0; i < 5; i++) {//y
-            for (int j = 0; j < 5; j++) {//x
+        for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
+            for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (data.getPiece(j, i) == 6) {
                     if (isMyKing) {
                         if ((data.getSide() == data.getColor(j, i))) {
-                            return i * 5 + j;
+                            return i * Fixed.XWIDTH + j;
                         }
                     } else {
                         if ((data.getSide() != data.getColor(j, i))) {
-                            return i * 5 + j;
+                            return i * Fixed.XWIDTH + j;
                         }
                     }
                 }
@@ -261,15 +261,15 @@ public class ChessMechanic {
 
     public boolean isCheckAfterMove(boolean myKing) {//czy po ruchu doszlo do szacha
         int king = findKing(myKing);
-        int kingX = king % 5, kingY = king / 5;
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int side;
         if (myKing) {
             side = data.getSide();
         } else {
             side = data.getXside();
         }
-        for (int j = 0; j < 5; j++) {
-            for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < Fixed.YHEIGHT; j++) {
+            for (int i = 0; i < Fixed.XWIDTH; i++) {
                 int piece = data.getPiece(i, j);
                 if (piece != 0) {
                     if (data.getColor(i, j) != side) {
@@ -333,15 +333,15 @@ public class ChessMechanic {
     }
 
     public boolean isPromotionAfterMove() {
-        for (int i = 0; i < 5; i++) {
-            if (data.getPiece(i, 0) == 1 || data.getPiece(i, 4) == 1)
+        for (int i = 0; i < Fixed.XWIDTH; i++) {
+            if (data.getPiece(i, 0) == 1 || data.getPiece(i, Fixed.YHEIGHT - 1) == 1)
                 return true;
         }
         return false;
     }
 
     public boolean pieceAttackKing(int x, int y, int king) {
-        int kingX = king % 5, kingY = king / 5;
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int piece = data.getPiece(x, y);
         switch (piece) {
             case 1: {
@@ -374,8 +374,8 @@ public class ChessMechanic {
     }
 
     public boolean attackerCanKilled(int x, int y) {
-        for (int i = 0; i < 5; i++) {//y
-            for (int j = 0; j < 5; j++) { //x
+        for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
+            for (int j = 0; j < Fixed.XWIDTH; j++) { //x
                 if (data.getColor(j, i) == data.getSide()) {
                     int piece = data.getPiece(j, i);
                     switch (piece) {
@@ -449,7 +449,11 @@ public class ChessMechanic {
     }
 
     public boolean diagonalAttackCanDefend(int x, int y, int king) {
-        int kingX = king % 5, kingY = king / 5, myColor = data.getColor(kingX, kingY);
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH, myColor = data.getColor(kingX, kingY);
+        int size = Fixed.XWIDTH;
+        if (size < Fixed.YHEIGHT) {
+            size = Fixed.YHEIGHT;
+        }
         int xminus = 1, yminus = 1, i = y, j = x; //czy linia ruchu jest pusta
         if (x > kingX) {
             xminus = -1; //czy w lewo do krola
@@ -462,7 +466,7 @@ public class ChessMechanic {
             i += yminus;
             j += xminus;
             if (j == kingX || i == kingY) break;
-            for (int k = 0; k < 5; k++) { //pion
+            for (int k = 0; k < Fixed.YHEIGHT; k++) { //pion
                 if (k == i)
                     continue;
                 if (data.getColor(j, k) == myColor) {
@@ -471,7 +475,7 @@ public class ChessMechanic {
                 }
             }
 
-            for (int k = 0; k < 5; k++) { //poziom
+            for (int k = 0; k < Fixed.XWIDTH; k++) { //poziom
                 if (k == j)
                     continue;
                 if (data.getColor(k, i) == myColor) {
@@ -480,31 +484,31 @@ public class ChessMechanic {
                 }
             }
             //skosy
-            for (int k = 1; k < 5; k++) {//1
-                if (i + k > 4 || j + k > 4)
+            for (int k = 1; k < size; k++) {//1
+                if (i + k > Fixed.YHEIGHT - 1 || j + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(j + k, i + k) == myColor) {
                     if (pieceCanMove(j + k, i + k, j, i))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//2
-                if (i - k < 0 || j + k > 4)
+            for (int k = 1; k < size; k++) {//2
+                if (i - k < 0 || j + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(j + k, i - k) == myColor) {
                     if (pieceCanMove(j + k, i - k, j, i))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//3
-                if (i + k > 4 || j - k < 0)
+            for (int k = 1; k < size; k++) {//3
+                if (i + k > Fixed.YHEIGHT - 1 || j - k < 0)
                     break;
                 if (data.getColor(j - k, i + k) == myColor) {
                     if (pieceCanMove(j - k, i + k, j, i))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//4
+            for (int k = 1; k < size; k++) {//4
                 if (i - k < 0 || j - k < 0)
                     break;
                 if (data.getColor(j - k, i - k) == myColor) {
@@ -517,8 +521,12 @@ public class ChessMechanic {
     }
 
     public boolean fileOrRankAttackCanDefend(int x, int y, int king) {
-        int kingX = king % 5, kingY = king / 5, myColor = data.getColor(kingX, kingY);
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH, myColor = data.getColor(kingX, kingY);
         int xminus = 1, yminus = 1;
+        int size = Fixed.XWIDTH;
+        if (size < Fixed.YHEIGHT) {
+            size = Fixed.YHEIGHT;
+        }
         if (x == kingX) { // file - pion
             xminus = 0;
             if (y > kingY) {//czy w dol do krola?
@@ -536,7 +544,7 @@ public class ChessMechanic {
             if (x == kingX && y == kingY)
                 break;
             if (y != kingY) { // !czy atak w pionie?
-                for (int k = 0; k < 5; k++) { //pion
+                for (int k = 0; k < Fixed.YHEIGHT; k++) { //pion
                     if (k == y)
                         continue;
                     if (data.getColor(x, k) == myColor) {
@@ -546,7 +554,7 @@ public class ChessMechanic {
                 }
             }
             if (x != kingX) {// !czy atak w poziomie?
-                for (int k = 0; k < 5; k++) { //poziom
+                for (int k = 0; k < Fixed.XWIDTH; k++) { //poziom
                     if (k == x)
                         continue;
                     if (data.getColor(k, y) == myColor) {
@@ -556,31 +564,31 @@ public class ChessMechanic {
                 }
             }
             //skosy
-            for (int k = 1; k < 5; k++) {//1
-                if (y + k > 4 || x + k > 4)
+            for (int k = 1; k < size; k++) {//1
+                if (y + k > Fixed.YHEIGHT - 1 || x + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(x + k, y + k) == myColor) {
                     if (pieceCanMove(x + k, y + k, x, y))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//2
-                if (y - k < 0 || x + k > 4)
+            for (int k = 1; k < size; k++) {//2
+                if (y - k < 0 || x + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(x + k, y - k) == myColor) {
                     if (pieceCanMove(x + k, y - k, x, y))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//3
-                if (y + k > 4 || x - k < 0)
+            for (int k = 1; k < size; k++) {//3
+                if (y + k > Fixed.YHEIGHT - 1 || x - k < 0)
                     break;
                 if (data.getColor(x - k, y + k) == myColor) {
                     if (pieceCanMove(x - k, y + k, x, y))
                         return true;
                 }
             }
-            for (int k = 1; k < 5; k++) {//4
+            for (int k = 1; k < size; k++) {//4
                 if (y - k < 0 || x - k < 0)
                     break;
                 if (data.getColor(x - k, y - k) == myColor) {
@@ -607,7 +615,7 @@ public class ChessMechanic {
                 tab[x - 1][y + minus] = -1;
             }
         }
-        if (x + 1 < 5) {
+        if (x + 1 < Fixed.XWIDTH) {
             if (data.getColor(x + 1, y) == 0) { //pole wolne
                 tab[x + 1][y + minus] = -1;
             } else if (data.getColor(x + 1, y) == data.getXside()) {
@@ -620,8 +628,8 @@ public class ChessMechanic {
         if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
-        if (x + 1 < 5) {
-            if (y + 2 < 5) {
+        if (x + 1 < Fixed.XWIDTH) {
+            if (y + 2 < Fixed.YHEIGHT) {
                 if (data.getColor(x + 1, y + 2) != data.getSide()) {
                     tab[x + 1][y + 2] = -1;
                 }
@@ -631,8 +639,8 @@ public class ChessMechanic {
                     tab[x + 1][y - 2] = -1;
                 }
             }
-            if (x + 2 < 5) {
-                if (y + 1 < 5) {
+            if (x + 2 < Fixed.XWIDTH) {
+                if (y + 1 < Fixed.YHEIGHT) {
                     if (data.getColor(x + 2, y + 1) != data.getSide()) {
                         tab[x + 2][y + 1] = -1;
                     }
@@ -645,7 +653,7 @@ public class ChessMechanic {
             }
         }
         if (x - 1 > -1) {
-            if (y + 2 < 5) {
+            if (y + 2 < Fixed.YHEIGHT) {
                 if (data.getColor(x - 1, y + 2) != data.getSide()) {
                     tab[x - 1][y + 2] = -1;
                 }
@@ -656,7 +664,7 @@ public class ChessMechanic {
                 }
             }
             if (x - 2 > -1) {
-                if (y + 1 < 5) {
+                if (y + 1 < Fixed.YHEIGHT) {
                     if (data.getColor(x - 2, y + 1) != data.getSide()) {
                         tab[x - 2][y + 1] = -1;
                     }
@@ -683,8 +691,7 @@ public class ChessMechanic {
             } else {
                 leftUp = true;
             }
-        }
-        if (x + y == kingX + kingY) {
+        } else if (x + y == kingX + kingY) {
             if (x - kingX > 0) {
                 rightUp = true;
             } else {
@@ -692,7 +699,7 @@ public class ChessMechanic {
             }
         }
         //1 rightDown
-        for (int i = 1; x + i < 5 && y + i < 5; i++) {
+        for (int i = 1; x + i < Fixed.XWIDTH && y + i < Fixed.YHEIGHT; i++) {
             color = data.getColor(x + i, y + i);
             if (color == 0) {
                 tab[x + i][y + i] = -1;
@@ -718,7 +725,7 @@ public class ChessMechanic {
                     } else {
                         tab[x + i][y + i] = 3;
                     }
-                    for (int j = i + 1; x + j < 5 && y + j < 5; j++) {
+                    for (int j = i + 1; x + j < Fixed.XWIDTH && y + j < Fixed.YHEIGHT; j++) {
                         if (data.getColor(x + j, y + j) != 0) {
                             if (data.getPiece(x + j, y + j) == 6 && data.getColor(x + j, y + j) == side) {
                                 break;
@@ -732,7 +739,7 @@ public class ChessMechanic {
                 break;
             }
         }//leftDown
-        for (int i = 1; x - i > -1 && y + i < 5; i++) {
+        for (int i = 1; x - i > -1 && y + i < Fixed.YHEIGHT; i++) {
             color = data.getColor(x - i, y + i);
             if (color == 0) {
                 tab[x - i][y + i] = -1;
@@ -758,7 +765,7 @@ public class ChessMechanic {
                     } else {
                         tab[x - i][y + i] = 3;
                     }
-                    for (int j = i + 1; x - j > -1 && y + j < 5; j++) {
+                    for (int j = i + 1; x - j > -1 && y + j < Fixed.YHEIGHT; j++) {
                         if (data.getColor(x - j, y + j) != 0) {
                             if (data.getPiece(x - j, y + j) == 6 && data.getColor(x - j, y + j) == side) {
                                 break;
@@ -812,7 +819,7 @@ public class ChessMechanic {
                 break;
             }
         }//rightUp
-        for (int i = 1; x + i < 5 && y - i > -1; i++) {
+        for (int i = 1; x + i < Fixed.XWIDTH && y - i > -1; i++) {
             color = data.getColor(x + i, y - i);
             if (color == 0) {
                 tab[x + i][y - i] = -1;
@@ -838,7 +845,7 @@ public class ChessMechanic {
                     } else {
                         tab[x + i][y - i] = 3;
                     }
-                    for (int j = i + 1; x + j < 5 && y - j > -1; j++) {
+                    for (int j = i + 1; x + j < Fixed.XWIDTH && y - j > -1; j++) {
                         if (data.getColor(x + j, y - j) != 0) {
                             if (data.getPiece(x + j, y - j) == 6 && data.getColor(x + j, y - j) == side) {
                                 break;
@@ -859,7 +866,7 @@ public class ChessMechanic {
             tab[x][y] = 0;
         }
         int piece, color, side = data.getSide(), xside = data.getXside();
-        int kingX = kingPos % 5, kingY = kingPos / 5;
+        int kingX = kingPos % Fixed.XWIDTH, kingY = kingPos / Fixed.XWIDTH;
         boolean up, right, down, left;
         up = right = down = left = false;
         if (x == kingX) {
@@ -876,7 +883,7 @@ public class ChessMechanic {
                 right = true;
             }
         }//right
-        for (int i = 1; x + i < 5; i++) {
+        for (int i = 1; x + i < Fixed.XWIDTH; i++) {
             color = data.getColor(x + i, y);
             if (color == 0) {
                 tab[x + i][y] = -1;
@@ -891,7 +898,7 @@ public class ChessMechanic {
                     } else {
                         tab[x + i][y] = 3;
                     }
-                    for (int j = i + 1; x + j < 5; j++) {
+                    for (int j = i + 1; x + j < Fixed.XWIDTH; j++) {
                         if (data.getColor(x + j, y) != 0) {
                             if (data.getPiece(x + j, y) == 6 && data.getColor(x + j, y) == side) {
                                 break;
@@ -963,7 +970,7 @@ public class ChessMechanic {
                 break;
             }
         }//down
-        for (int i = 1; y + i < 5; i++) {
+        for (int i = 1; y + i < Fixed.YHEIGHT; i++) {
             color = data.getColor(x, y + i);
             if (color == 0) {
                 tab[x][y + i] = -1;
@@ -978,7 +985,7 @@ public class ChessMechanic {
                     } else {
                         tab[x][y + i] = 3;
                     }
-                    for (int j = i + 1; y + j < 5; j++) {
+                    for (int j = i + 1; y + j < Fixed.YHEIGHT; j++) {
                         if (data.getColor(x, y + j) != 0) {
                             if (data.getPiece(x, y + j) == 6 && data.getColor(x, y + j) == side) {
                                 break;
@@ -998,10 +1005,10 @@ public class ChessMechanic {
         tab[x][y] = 0;
         int piece, color, side = data.getSide(), xside = data.getXside();
         for (int i = -1; i < 2; i++) {//y
-            if (y + i < 0 || y + i > 4)
+            if (y + i < 0 || y + i > Fixed.YHEIGHT - 1)
                 continue;
             for (int j = -1; j < 2; j++) {//x
-                if ((i == 0 && j == 0) || x + j < 0 || x + j > 4)
+                if ((i == 0 && j == 0) || x + j < 0 || x + j > Fixed.XWIDTH - 1)
                     continue;
                 color = data.getColor(x + j, y + i);
                 if (color == 0 || color == xside) {
@@ -1018,7 +1025,7 @@ public class ChessMechanic {
         }
         if (data.getColor(x, y + yminus) == 0)  //pole przed pionem wolne?
             return true;
-        if ((x + 1 < 5 && data.getColor(x + 1, y + yminus) == data.getXside())
+        if ((x + 1 < Fixed.XWIDTH && data.getColor(x + 1, y + yminus) == data.getXside())
                 || (x - 1 > -1 && data.getColor(x - 1, y + yminus) == data.getXside())) {
             return true;//czy mozna bic?
         }
@@ -1027,8 +1034,8 @@ public class ChessMechanic {
 
     public boolean knightCanMove(int x, int y) {
         int side = data.getSide();
-        if (x + 1 < 5) {
-            if (y + 2 < 5) {
+        if (x + 1 < Fixed.XWIDTH) {
+            if (y + 2 < Fixed.YHEIGHT) {
                 if (data.getColor(x + 1, y + 2) != side)
                     return true;
             }
@@ -1036,8 +1043,8 @@ public class ChessMechanic {
                 if (data.getColor(x + 1, y - 2) != side)
                     return true;
             }
-            if (x + 2 < 5) {
-                if (y + 1 < 5) {
+            if (x + 2 < Fixed.XWIDTH) {
+                if (y + 1 < Fixed.YHEIGHT) {
                     if (data.getColor(x + 2, y + 1) != side)
                         return true;
                 }
@@ -1048,7 +1055,7 @@ public class ChessMechanic {
             }
         }
         if (x - 1 > -1) {
-            if (y + 2 < 5) {
+            if (y + 2 < Fixed.YHEIGHT) {
                 if (data.getColor(x - 1, y + 2) != side)
                     return true;
             }
@@ -1057,7 +1064,7 @@ public class ChessMechanic {
                     return true;
             }
             if (x - 2 > -1) {
-                if (y + 1 < 5) {
+                if (y + 1 < Fixed.YHEIGHT) {
                     if (data.getColor(x - 2, y + 1) != side)
                         return true;
                 }
@@ -1074,9 +1081,9 @@ public class ChessMechanic {
         boolean leftUp, rightUp, rightDown, leftDown;
         leftUp = leftDown = rightDown = rightUp = true;
         int site = data.getSide();
-        for (int i = 1; i < 5; i++) {
-            if (x + i < 5) {
-                if (rightDown && y + i < 5) {
+        for (int i = 1; i < Fixed.XWIDTH; i++) {
+            if (x + i < Fixed.XWIDTH) {
+                if (rightDown && y + i < Fixed.YHEIGHT) {
                     if (data.getColor(x + i, y + i) != site) {
                         return true;
                     } else {
@@ -1092,7 +1099,7 @@ public class ChessMechanic {
                 }
             }
             if (x - i > -1) {
-                if (leftDown && y + i < 5) {
+                if (leftDown && y + i < Fixed.YHEIGHT) {
                     if (data.getColor(x - i, y + i) != site) {
                         return true;
                     } else {
@@ -1117,8 +1124,8 @@ public class ChessMechanic {
         boolean up, right, down, left;
         up = right = down = left = true;
         int site = data.getSide();
-        for (int i = 1; i < 5; i++) {
-            if (right && x + i < 5) {
+        for (int i = 1; i < Fixed.XWIDTH; i++) {
+            if (right && x + i < Fixed.XWIDTH) {
                 if (data.getColor(x + i, y) != site) {
                     return true;
                 } else {
@@ -1132,7 +1139,7 @@ public class ChessMechanic {
                     left = false;
                 }
             }
-            if (down && y + i < 5) {
+            if (down && y + i < Fixed.YHEIGHT) {
                 if (data.getColor(x, y + i) != site) {
                     return true;
                 } else {
@@ -1152,10 +1159,10 @@ public class ChessMechanic {
 
     public boolean kingCanMove(int x, int y, int tab[][]) {
         for (int i = -1; i < 2; i++) {//y
-            if (y + i < 0 || y + i > 4)
+            if (y + i < 0 || y + i > Fixed.YHEIGHT - 1)
                 continue;
             for (int j = -1; j < 2; j++) {//x
-                if ((i == 0 && j == 0) || x + j < 0 || x + j > 4)
+                if ((i == 0 && j == 0) || x + j < 0 || x + j > Fixed.XWIDTH - 1)
                     continue;
                 if (tab[x + j][y + i] == 0) {
                     return true;
@@ -1167,15 +1174,15 @@ public class ChessMechanic {
 
     public boolean isStalemate() {
         int king = findKing(true);
-        int tab[][] = new int[5][5]; // -1 atakowane(pole wolne i przeciwnika); 0 jak -1 tylko nieatakowane
-        for (int i = 0; i < 5; i++) {// 1 nasze niezwiazane; 2 nasze zwiazane ale moze zabic wiazacego
-            for (int j = 0; j < 5; j++) {// 3 jak 2 tylko bez mozliwosci zabicia
+        int tab[][] = new int[Fixed.XWIDTH][Fixed.YHEIGHT]; // -1 atakowane(pole wolne i przeciwnika); 0 jak -1 tylko nieatakowane
+        for (int i = 0; i < Fixed.XWIDTH; i++) {// 1 nasze niezwiazane; 2 nasze zwiazane ale moze zabic wiazacego
+            for (int j = 0; j < Fixed.YHEIGHT; j++) {// 3 jak 2 tylko bez mozliwosci zabicia
                 tab[i][j] = 1;
             }
         }
         int xside = data.getXside(), side = data.getSide(), color, piece;
-        for (int i = 0; i < 5; i++) {//y
-            for (int j = 0; j < 5; j++) {//x
+        for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
+            for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 color = data.getColor(j, i);
                 if (color == side) {
                     continue;
@@ -1220,8 +1227,8 @@ public class ChessMechanic {
         //koniec etapu 1 - ustalenia pomocniczej TABlicy
         //etap 2 interesuja nas tylko elementy tab o wartosci 1 lub 2
         //czyli niezwiązane lub związane z mozliwoscia bicia wiazacej figury
-        for (int i = 0; i < 5; i++) {//y
-            for (int j = 0; j < 5; j++) {//x
+        for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
+            for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (tab[j][i] < 1 || tab[j][i] == 3) //-1,0,3
                     continue;
                 if (tab[j][i] == 2)//2
@@ -1273,15 +1280,15 @@ public class ChessMechanic {
     public boolean isCheckmate() {
         //sprawdzenie czy król może się poruszyć
         int king = findKing(true);
-        int kingX = king % 5, kingY = king / 5;
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int attackerCount = 0, attackerX = 0, attackerY = 0, attacker = 0;
         for (int i = -1; i < 2; i++) {
-            if (kingX + i < 5 && kingX + i > -1) { //czy sprawdzany potencjalny ruch nie jest za szachownice
+            if (kingX + i < Fixed.XWIDTH && kingX + i > -1) { //czy sprawdzany potencjalny ruch nie jest za szachownice
                 for (int j = -1; j < 2; j++) {
                     if (i == 0 && j == 0) {
                         continue;
                     } else {
-                        if (kingY + j < 5 && kingY + j > -1) { // tak jak dla x
+                        if (kingY + j < Fixed.YHEIGHT && kingY + j > -1) { // tak jak dla x
                             if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j))
                                 return false; //bo krol ma mozliwosc ruchu na nieatakowane pole
                         }
@@ -1289,8 +1296,8 @@ public class ChessMechanic {
                 }
             }
         }
-        for (int i = 0; i < 5; i++) {//y
-            for (int j = 0; j < 5; j++) {//x
+        for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
+            for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (data.getColor(j, i) == data.getXside()) {
                     if (pieceAttackKing(j, i, king)) {
                         attacker = data.getPiece(j, i);
