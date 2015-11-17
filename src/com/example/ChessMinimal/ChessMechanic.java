@@ -1173,6 +1173,10 @@ public class ChessMechanic {
     }
 
     public boolean isStalemate() {
+        boolean isCheckmatePossible = false;
+        int knigths[] = new int[2], bishops[] = new int[2], bishopsColor[] = new int[2];
+        knigths[0] = knigths [1] = bishops [0] = bishops [1] = 0;
+        bishopsColor[0] = bishopsColor[1] = -1;
         int king = findKing(true);
         int tab[][] = new int[Fixed.XWIDTH][Fixed.YHEIGHT]; // -1 atakowane(pole wolne i przeciwnika); 0 jak -1 tylko nieatakowane
         for (int i = 0; i < Fixed.XWIDTH; i++) {// 1 nasze niezwiazane; 2 nasze zwiazane ale moze zabic wiazacego
@@ -1185,6 +1189,32 @@ public class ChessMechanic {
             for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 color = data.getColor(j, i);
                 if (color == side) {
+                    piece = data.getPiece(j,i);
+                    if(!isCheckmatePossible){
+                        switch (piece) {
+                            case 1:
+                            case 4:
+                            case 5: {
+                                isCheckmatePossible = true;
+                            }
+                            case 2: {
+                                knigths[color - 1]++;
+                                if (knigths[color - 1] > 1) {
+                                    isCheckmatePossible = true;
+                                }
+                            }
+                            case 3: {
+                                bishops[color - 1]++;
+                                if (bishops[color - 1] > 1) {
+                                    if ((bishopsColor[color - 1] != -1) && (bishopsColor[color - 1] != (j + i) % 2)) {
+                                        isCheckmatePossible = true;
+                                    }
+                                } else {
+                                    bishopsColor[color - 1] = (i + j) % 2;
+                                }
+                            }
+                        }
+                    }
                     continue;
                 } else if (color == xside) {
                     if (tab[j][i] == 1)
@@ -1192,22 +1222,47 @@ public class ChessMechanic {
                     piece = data.getPiece(j, i);
                     switch (piece) {
                         case 1: {//pion
+                            if(!isCheckmatePossible){
+                                isCheckmatePossible = true;
+                            }
                             pawnStalemate(j, i, tab);
                             break;
                         }
                         case 2: {//kuc
+                            if (!isCheckmatePossible) {
+                                knigths[color - 1]++;
+                                if (knigths[color - 1] > 1) {
+                                    isCheckmatePossible = true;
+                                }
+                            }
                             knightStalemate(j, i, tab);
                             break;
                         }
                         case 3: {
+                            if (!isCheckmatePossible) {
+                                bishops[color - 1]++;
+                                if (bishops[color - 1] > 1) {
+                                    if ((bishopsColor[color - 1]!= -1) &&(bishopsColor[color - 1] != (j + i) % 2)) {
+                                        isCheckmatePossible = true;
+                                    }
+                                } else {
+                                    bishopsColor[color - 1] = (i + j) % 2;
+                                }
+                            }
                             bishopStalemate(j, i, tab, king);
                             break;
                         }
                         case 4: {
+                            if(!isCheckmatePossible){
+                                isCheckmatePossible = true;
+                            }
                             rookStalemate(j, i, tab, king);
                             break;
                         }
                         case 5: {
+                            if(!isCheckmatePossible){
+                                isCheckmatePossible = true;
+                            }
                             rookStalemate(j, i, tab, king);
                             bishopStalemate(j, i, tab, king);
                             break;
@@ -1227,6 +1282,10 @@ public class ChessMechanic {
         //koniec etapu 1 - ustalenia pomocniczej TABlicy
         //etap 2 interesuja nas tylko elementy tab o wartosci 1 lub 2
         //czyli niezwiązane lub związane z mozliwoscia bicia wiazacej figury
+        if(!isCheckmatePossible) {
+            if ((knigths[0] == 0 || bishops[0] == 0) && (knigths[1] == 0 || bishops[1] == 0))
+                return true;
+        }
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (tab[j][i] < 1 || tab[j][i] == 3) //-1,0,3
