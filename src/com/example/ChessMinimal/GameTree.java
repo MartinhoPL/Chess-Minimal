@@ -13,7 +13,7 @@ public class GameTree {
 
     private int nodeChildrenArrayIndex;
 
-    private int []nodeChildrenNumber;
+    private int []nodeChildren;
 
     private Data data;
 
@@ -21,64 +21,83 @@ public class GameTree {
 
     GameTree(Data data, ChessMechanic chessMechanic) {
         moves = new byte[MAX_MOVES][4];
-        nodeChildrenNumber = new int[MAX_MOVES];
+        nodeChildren = new int[MAX_MOVES];
         this.data = data;
         this.chessMechanic = chessMechanic;
         nodeChildrenArrayIndex = 0;
         movesIndex = 0;
     }
 
-//    public void generateGameTree(int depth) {
-////        for (int i = 0; i < depth; i++){
-//            generateGameTreeLevel();
-////        }
-//    }
+    public void generateGameTree(int depth) {
+        if(depth == 0) {
+            return;
+        }
+        Data generatedData = data;
+        if(movesIndex == 0) {
+            byte []move = new byte[4];
+            moves[movesIndex++] = move;
+            nodeChildren[nodeChildrenArrayIndex++] = 1;
+        }
+        generateGameTreeLevel(generatedData);
+        while (depth > 0) {
+            int poczatek = nodeChildren[nodeChildrenArrayIndex - 1];
+            int koniec = nodeChildren[nodeChildrenArrayIndex];
+            for (int i = poczatek; i < koniec; i++) {
+                generatedData.makeMove(moves[i], generatedData);
+                generateGameTreeLevel(generatedData);
+                generatedData.makeMove(moves[i], generatedData);
+                nodeChildrenArrayIndex++;
+                nodeChildren[nodeChildrenArrayIndex] = nodeChildren[nodeChildrenArrayIndex - 1];
+            }
+            depth--;
+        }
+    }
 
-    private void generateGameTreeLevel(int node) {
+    private void generateGameTreeLevel(Data generatedData) {
         for(int i = 0; i < 5; i++){
             for(int j = 0 ; j < 5; j++) {
-                if(data.color[data.calculateArrayIndexForCoords(j, i)] == data.getSide()) {
-                    switch (data.getPiece(j, i))
+                if(generatedData.color[generatedData.calculateArrayIndexForCoords(j, i)] == generatedData.getSide()) {
+                    switch (generatedData.getPiece(j, i))
                     {
                         case 1: {
-                            nodeChildrenNumber[node] = movesIndex;
-                            if(generatePawnMoves(j, i)){
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if(generatePawnMoves(j, i, generatedData)){
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
                         case 2: {
-                            nodeChildrenNumber[node] = movesIndex;
-                            if (generateKnightMoves(j, i)) {
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if (generateKnightMoves(j, i, generatedData)) {
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
                         case 3:{
-                            nodeChildrenNumber[node] = movesIndex;
-                            if (generateBishopMoves(j, i)) {
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if (generateBishopMoves(j, i, generatedData)) {
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
                         case 4: {
-                            nodeChildrenNumber[node] = movesIndex;
-                            if (generateRookMoves(j, i)) {
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if (generateRookMoves(j, i, generatedData)) {
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
                         case 5: {
-                            nodeChildrenNumber[node] = movesIndex;
-                            if (generateQueenMoves(j, i)) {
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if (generateQueenMoves(j, i, generatedData)) {
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
                         case 6:{
-                            nodeChildrenNumber[node] = movesIndex;
-                            if (generateKingMoves(j, i)) {
-                                node++;
+                            nodeChildren[nodeChildrenArrayIndex] = movesIndex;
+                            if (generateKingMoves(j, i, generatedData)) {
+                                nodeChildrenArrayIndex++;
                             }
                             break;
                         }
@@ -89,184 +108,189 @@ public class GameTree {
 
     }
 
-    private boolean generateRookMoves(int x, int y){
-        boolean anyMovePossible = false;
+    private boolean generateRookMoves(int x, int y, Data generatedData){
+        boolean wynik = false;
         for(int i=0; i<5; i++){
             int destX = i;
-            if(generateMoveFromTo(x, y, destX, y) != null) {
-                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-                anyMovePossible = true;
+            if(generateMoveFromTo(x, y, destX, y, generatedData) != null) {
+                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+                wynik = true;
             }
             int destY = i;
-            if(generateMoveFromTo(x, y, x, destY) != null) {
-                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-                anyMovePossible = true;
+            if(generateMoveFromTo(x, y, x, destY, generatedData) != null) {
+                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+                wynik = true;
             }
         }
-        return anyMovePossible;
+        return wynik;
 
     }
 
-    private boolean generateBishopMoves(int x, int y){
-        boolean anyMovePossible = false;
-        int difference = x - y;
+    private boolean generateBishopMoves(int x, int y, Data generatedData){
+        boolean wynik = false;
         for(int i=0; i<5; i++){
             int destX = i;
-            if(generateMoveFromTo(x, y, destX, y) != null) {
-                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-                anyMovePossible = true;
+            if(generateMoveFromTo(x, y, destX, y, generatedData) != null) {
+                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+                wynik = true;
             }
             int destY = i;
-            if(generateMoveFromTo(x, y, x, destY) != null) {
-                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-                anyMovePossible = true;
+            if(generateMoveFromTo(x, y, x, destY, generatedData) != null) {
+                moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+                wynik = true;
             }
         }
-        return anyMovePossible;
+        return wynik;
 
     }
-    private boolean generateKingMoves(int x, int y){
+    private boolean generateKingMoves(int x, int y, Data generatedData){
         int destX = x + 1;
-        if (generateMoveFromTo(x, y, destX, y) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-            return true;
+        boolean wynik = false;
+
+        if (generateMoveFromTo(x, y, destX, y, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+            wynik = true;
         }
         int destY = y + 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destY = y - 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destX = x - 1;
-        if (generateMoveFromTo(x, y, destX, y) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, y);
-            return true;
+        if (generateMoveFromTo(x, y, destX, y, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, y, generatedData);
+            wynik = true;
         }
         destY = y + 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY, generatedData);
+            wynik = true;
         }
         destY = y - 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
-        if (generateMoveFromTo(x, y, destX, y) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, y, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY, generatedData);
+            wynik = true;
         }
-        return true;
+        return wynik;
 
     }
-    private boolean generateQueenMoves(int x, int y){
-        return (generateBishopMoves(x, y) || generateRookMoves(x, y));
+    private boolean generateQueenMoves(int x, int y, Data generatedData){
+        return (generateBishopMoves(x, y, generatedData) || generateRookMoves(x, y, generatedData));
     }
-    private boolean generatePawnMoves(int x, int y){
+    private boolean generatePawnMoves(int x, int y, Data generatedData){
         int destY;
+        boolean wynik = false;
+
         if(data.getSide() == 1) {
             destY = y + 1;
         } else {
             destY = y - 1;
         }
-        if (generateMoveFromTo(x, y, x, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY);
-            return true;
+        if (generateMoveFromTo(x, y, x, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, x, destY, generatedData);
+            wynik = true;
         }
 
         int destX = x + 1;
-        if (generateMoveFromTo(x, y, x, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, x, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
 
         destX = x - 1;
-        if (generateMoveFromTo(x, y, x, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, x, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
-        return false;
+        return wynik;
 
     }
-    private boolean generateKnightMoves(int x, int y){
+    private boolean generateKnightMoves(int x, int y, Data generatedData){
         int destX, destY;
+        boolean wynik = false;
         destX = x + 2;
         destY = y + 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            nodeChildrenArrayIndex++;
+            wynik = true;
         }
         destY = y - 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destX = x - 2;
         destY = y + 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destY = y - 1;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destX = x + 1;
         destY = y + 2;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destY = y - 2;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destX = x - 1;
         destY = y + 2;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
         destY = y - 2;
-        if (generateMoveFromTo(x, y, destX, destY) != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY);
-            return true;
+        if (generateMoveFromTo(x, y, destX, destY, generatedData) != null) {
+            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData);
+            wynik = true;
         }
-        return false;
+        return wynik;
     }
 
-    private byte[] generateMoveFromTo(int x, int y, int destX, int destY) {
+    private byte[] generateMoveFromTo(int x, int y, int destX, int destY, Data generatedData) {
         byte[] move = new byte[4];
         boolean moveCorrect = true;
         switch (chessMechanic.isMoveCorrect(x, y, destX, destY)){
             case GOOD:{
-                move[3] = 0;
+                move[2] = 0;
                 break;
             }
             case CHECK:{
-                move[3] = 1;
+                move[2] = 1;
                 break;
             }
             case PROMOTION:{
-                move[3] = 8;
+                move[2] = 4;
                 break;
             }
             case STALEMATE:{
-                move[3] = 4;
+                move[2] = 16;
                 break;
             }
             case CHECKMATE:{
-                move[3] = 2;
+                move[2] = 2;
                 break;
             }
             case FAIL:{
@@ -275,10 +299,15 @@ public class GameTree {
             }
         }
         if (moveCorrect) {
-            move[0] = (byte)data.calculateArrayIndexForCoords(x,y);
+            move[0] = (byte)data.calculateArrayIndexForCoords(x, y);
             move[1] = (byte)data.calculateArrayIndexForCoords(destX, destY);
         }
+        nodeChildren[nodeChildrenArrayIndex]++;
         return move;
+    }
+
+    private boolean isTransposition() {
+        return false;
     }
 
     public byte[][] getMoves() {
@@ -305,12 +334,12 @@ public class GameTree {
         this.nodeChildrenArrayIndex = nodeChildrenArrayIndex;
     }
 
-    public int[] getNodeChildrenNumber() {
-        return nodeChildrenNumber;
+    public int[] getnodeChildren() {
+        return nodeChildren;
     }
 
-    public void setNodeChildrenNumber(int[] nodeChildrenNumber) {
-        this.nodeChildrenNumber = nodeChildrenNumber;
+    public void setnodeChildren(int[] nodeChildren) {
+        this.nodeChildren = nodeChildren;
     }
 
     public Data getData() {

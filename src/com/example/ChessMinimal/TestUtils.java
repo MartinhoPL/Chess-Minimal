@@ -9,31 +9,29 @@ import java.util.Scanner;
 public final class TestUtils {
 
     private TestUtils(){};
-    public static String convertMoveToPGNFormat(SimpleMove move){
+    public static String convertMoveToPGNFormat(byte []move){
         String wynik = "";
-        char a = (char)('a' + (move.from % 5));
-        String b = Integer.toString(move.from/5);
+        char a = (char)('a' + (move[0] % 5));
+        String b = Integer.toString(move[0]/5);
         wynik = a + b;
-        a = (char)('a' + (move.to % 5));
-        b = Integer.toString(move.to/5);
+        a = (char)('a' + (move[1] % 5));
+        b = Integer.toString(move[1]/5);
 
         wynik += "-" + a + b;
 
         return wynik;
     }
 
-    public static void saveMovesToFile(SimpleMove[] moves, int[] nodeChildrenNumbers, String filename) throws IOException{
-        int i = 0;
+    public static void saveMovesToFile(byte[][] moves, int[] nodeChildrenNumbers, String filename) throws IOException{
         int j = 0;
-        int pom = nodeChildrenNumbers[i];
+        int pom = nodeChildrenNumbers[0];
 
         PrintWriter printWriter = new PrintWriter(filename);
-        for(SimpleMove move : moves ) {
-            printWriter.print(convertMoveToPGNFormat(move)+ ", ");
+        for(int i = 0; i < moves.length; i++) {
+            printWriter.print(convertMoveToPGNFormat(moves[i])+ ", ");
             j++;
             if(j >= pom) {
                 printWriter.print('\n');
-                i++;
                 pom = nodeChildrenNumbers[i];
                 j=0;
             }
