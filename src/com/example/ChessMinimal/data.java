@@ -126,4 +126,92 @@ public class Data {
     public void promotion(int x, int y, int piece) {
         this.piece[Fixed.XWIDTH * y + x] = piece;
     }
+
+    public static int calculateArrayIndexForCoords(int x, int y){
+        return (y * 5) + x;
+    }
+
+    public Move getLastMove() {
+        return lastMove;
+    }
+
+    public void setLastMove(Move lastMove) {
+        this.lastMove = lastMove;
+    }
+
+    public int getMax_depth() {
+        return max_depth;
+    }
+
+    public void setMax_depth(int max_depth) {
+        this.max_depth = max_depth;
+    }
+
+    public boolean isCheck() {
+        return isCheck;
+    }
+
+    public int getStart_time() {
+        return start_time;
+    }
+
+    public void setStart_time(int start_time) {
+        this.start_time = start_time;
+    }
+
+    public int getStop_time() {
+        return stop_time;
+    }
+
+    public void setStop_time(int stop_time) {
+        this.stop_time = stop_time;
+    }
+
+    public int[] getColor() {
+        return color;
+    }
+
+    public void setColor(int[] color) {
+        this.color = color;
+    }
+
+    public int[] getPiece() {
+        return piece;
+    }
+
+    public void setPiece(int[] piece) {
+        this.piece = piece;
+    }
+
+    public void setSide(int side) {
+        this.side = side;
+    }
+
+    public void setXside(int xside) {
+        this.xside = xside;
+    }
+
+    public int getCastle() {
+        return castle;
+    }
+
+    public void setCastle(int castle) {
+        this.castle = castle;
+    }
+
+    public int getFifty() {
+        return fifty;
+    }
+
+    public void setFifty(int fifty) {
+        this.fifty = fifty;
+    }
+
+    public int getMax_time() {
+        return max_time;
+    }
+
+    public void setMax_time(int max_time) {
+        this.max_time = max_time;
+    }
 }

@@ -5,9 +5,6 @@ import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.DragEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TextView;
@@ -136,6 +133,15 @@ public class MyActivity extends Activity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+    public void onButtonClick(View view) throws Exception{
+//        Data data = new Data();
+//        data.setPiece(TestUtils.loadPositionFromFile("pozycja.txt"));
+//        data.setColor(TestUtils.loadPositionFromFile("kolor.txt"));
+        ChessMechanic chessMechanic = new ChessMechanic(data);
+        GameTree gameTree = new GameTree(data, chessMechanic);
+//        gameTree.generateGameTree(1);
+//        TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildrenNumber(), "testowanko.txt");
     }
 
 }
