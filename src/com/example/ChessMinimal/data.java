@@ -160,6 +160,67 @@ public class Data {
         this.piece[Fixed.XWIDTH * y + x] = piece;
     }
 
+    //na podstawie planszy z data wypelnia tablice posiotionNumber (dwuelementowa) przyklad tworzenia liczby:
+    //dla data.color=0 positionNumber[0] *= 16 i nastepny przebieg petli
+    //dla pozostalych positionNumber[0] = 16 * positionNumber[0] + (data.color[i] - 1] * 6 + data.piece[i]
+    public void convertPositionToNumber(long positionNumber[], Data data){
+        positionNumber[0] = 0;
+        positionNumber[1] = 0;
+        long simplePosition = 0;
+        for (int i = 0; i < 16; i++) {
+            positionNumber[0] *= 16;
+            if(data.color[i] != 0) {
+                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            }else {
+                simplePosition = 0;
+            }
+            positionNumber[0] += simplePosition;
+        }
+        for (int i = 16; i < 25; i++) {
+            positionNumber[1] *= 16;
+            if(data.color[i] != 0) {
+                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            }else {
+                simplePosition = 0;
+            }
+            positionNumber[1] += simplePosition;
+        }
+    }
+
+    //odwraca dzialanie powyzszej funkcji za pomoca tablicy positionNumber wypelnia plansze w data
+    public void convertNumberToPosition(long positionNumber[], Data data) {
+        long simplePosition = 0;
+        for (int i = 24; i > 15; i++) {
+            simplePosition = positionNumber[1] % 16;
+            if(simplePosition < 7){
+                data.piece[i] = ((int) simplePosition);
+                if(simplePosition == 0){
+                    data.color[i] = 0;
+                }else {
+                    data.color[i] = 1;
+                }
+            }else {
+                data.piece[i] = ((int) simplePosition - 6);
+                data.color[i] = 2;
+            }
+            positionNumber[1] /= 16;
+        }
+        for (int i = 15; i > -1; i++) {
+            simplePosition = positionNumber[0] % 16;
+            if(simplePosition < 7){
+                data.piece[i] = ((int) simplePosition);
+                if(simplePosition == 0){
+                    data.color[i] = 0;
+                }else {
+                    data.color[i] = 1;
+                }
+            }else {
+                data.piece[i] = ((int) simplePosition - 6);
+                data.color[i] = 2;
+            }
+            positionNumber[0] /= 16;
+        }
+    }
     public static int calculateArrayIndexForCoords(int x, int y){
         return (y * 5) + x;
     }
