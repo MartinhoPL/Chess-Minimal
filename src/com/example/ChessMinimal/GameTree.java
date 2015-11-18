@@ -19,11 +19,11 @@ public class GameTree {
 
     private ChessMechanic chessMechanic;
 
-    GameTree(Data data, ChessMechanic chessMechanic) {
+    GameTree(Data data) {
         moves = new byte[MAX_MOVES][4];
         nodeChildren = new int[MAX_MOVES];
         this.data = data;
-        this.chessMechanic = chessMechanic;
+        this.chessMechanic = new ChessMechanic(data);
         nodeChildrenArrayIndex = 0;
         movesIndex = 0;
     }
@@ -47,7 +47,11 @@ public class GameTree {
                 generateGameTreeLevel(generatedData);
                 generatedData.makeMove(moves[i], generatedData);
                 nodeChildrenArrayIndex++;
-                nodeChildren[nodeChildrenArrayIndex] = nodeChildren[nodeChildrenArrayIndex - 1];
+                if(depth > 1) { //dla pozostalych
+                    nodeChildren[nodeChildrenArrayIndex] = nodeChildren[nodeChildrenArrayIndex - 1];
+                } else { //dla lisci
+                    nodeChildren[nodeChildrenArrayIndex] = -1;
+                }
             }
             depth--;
         }
@@ -334,11 +338,11 @@ public class GameTree {
         this.nodeChildrenArrayIndex = nodeChildrenArrayIndex;
     }
 
-    public int[] getnodeChildren() {
+    public int[] getNodeChildren() {
         return nodeChildren;
     }
 
-    public void setnodeChildren(int[] nodeChildren) {
+    public void setNodeChildren(int[] nodeChildren) {
         this.nodeChildren = nodeChildren;
     }
 
