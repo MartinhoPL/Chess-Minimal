@@ -285,7 +285,7 @@ public class GameTree {
         return moves;
     }
 
-    public void setMoves(byte[] moves) {
+    public void setMoves(byte[][] moves) {
         this.moves = moves;
     }
 
