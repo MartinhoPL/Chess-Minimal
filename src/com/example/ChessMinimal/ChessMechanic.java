@@ -10,6 +10,13 @@ public class ChessMechanic {
         this.data = data;
     }
 
+    public boolean isInsideBoard(int x, int y){
+        if(x < 0 || y < 0 || x >= Fixed.XWIDTH || y >= Fixed.YHEIGHT) {
+            return false;
+        }
+        return true;
+    }
+
     public int findKing(boolean isMyKing) { // jak w nazwie
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) {//x
@@ -1405,6 +1412,9 @@ public class ChessMechanic {
             return MoveCorrectEnum.FAIL;
         if (data.getColor(x2, y2) == data.getSide())
             return MoveCorrectEnum.FAIL;
+        if(!isInsideBoard(x2, y2)) {
+            return  MoveCorrectEnum.FAIL;
+        }
         int piece1 = data.getPiece(x1, y1);
         if (data.getColor(x1, y1) != data.getSide()) //czy wybrana bierka jest przeciwnika lub puste pole
             return MoveCorrectEnum.FAIL;

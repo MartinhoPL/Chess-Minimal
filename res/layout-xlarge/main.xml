@@ -144,4 +144,16 @@
                 android:id="@+id/imageButton2" android:minHeight="50dp" android:minWidth="50dp"
                 android:background="@android:color/background_dark"/>
     </LinearLayout>
+    <Button
+            android:layout_width="222dp"
+            android:layout_height="wrap_content"
+            android:text="Generate To File"
+            android:id="@+id/generateButton" android:layout_weight="0.09" android:layout_gravity="center_horizontal"
+            android:onClick="generateTree"/>
+    <Button
+            android:layout_width="218dp"
+            android:layout_height="wrap_content"
+            android:text="Alfa Beta "
+            android:id="@+id/alfaBetaButton" android:layout_gravity="center_horizontal" android:layout_weight="0.10"
+            android:onClick="alfaBeta"/>
 </LinearLayout>

@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 public class MyActivity extends Activity {
     public GameStateEnum gameState;
     private Data data;
@@ -118,7 +120,7 @@ public class MyActivity extends Activity {
                 .setTitle(getString(R.string.SuggestDraw))
                 .setPositiveButton(getString(R.string.Yes), new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                    chessBoardView.endGame(0);
+                                chessBoardView.endGame(0);
                             }
                         }
                 )
@@ -132,6 +134,21 @@ public class MyActivity extends Activity {
 
         AlertDialog alert = builder.create();
         alert.show();
+    }
+
+    public void alfaBeta(){
+
+
+    }
+
+    public void generateTree(View view) {
+        GameTree gameTree = new GameTree(data);
+        gameTree.generateGameTree(2);
+        try {
+            TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildren(), "C:/Users/Mikolaj/Desktop/file.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
