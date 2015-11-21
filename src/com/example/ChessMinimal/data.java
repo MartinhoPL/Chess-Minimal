@@ -18,8 +18,7 @@ public class Data {
     //czas rozpoczecia szukania i maksymalny czas zaakonczenia
     private int start_time;
     private int stop_time;
-    private Move lastMove;
-
+    private Move lastMove;private int capture;
 
     Data() {
         isCheck = false;
@@ -223,6 +222,14 @@ public class Data {
     }
     public static int calculateArrayIndexForCoords(int x, int y){
         return (y * 5) + x;
+    }
+
+    public void setCapture(int x, int y){
+        this.capture = this.piece[Fixed.XWIDTH * y + x];
+    }
+
+    public int getCapture(){
+        return this.capture;
     }
 
     public Move getLastMove() {

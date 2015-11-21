@@ -1477,18 +1477,21 @@ public class ChessMechanic {
                 }
                 data.undoMove();
                 if (promotion) {
+                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.PROMOTION;
                 } else {
                     if (data.getIsCheck()) {
                         if (mate) {
                             return MoveCorrectEnum.CHECKMATE;
                         } else {
+                            data.setCapture(x2, y2);
                             return MoveCorrectEnum.CHECK;
                         }
                     } else {
                         if (mate) {
                             return MoveCorrectEnum.STALEMATE;
                         } else {
+                            data.setCapture(x2, y2);
                             return MoveCorrectEnum.GOOD;
                         }
                     }
@@ -1513,18 +1516,21 @@ public class ChessMechanic {
         }
         data.undoMove();// cofnięcie ruchu
         if (promotion) {
+            data.setCapture(x2, y2);
             return MoveCorrectEnum.PROMOTION;
         } else {
             if (data.getIsCheck()) {
                 if (mate) {
                     return MoveCorrectEnum.CHECKMATE;
                 } else {
+                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.CHECK;
                 }
             } else {
                 if (mate) {
                     return MoveCorrectEnum.STALEMATE;
                 } else {
+                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.GOOD;
                 }
             }
