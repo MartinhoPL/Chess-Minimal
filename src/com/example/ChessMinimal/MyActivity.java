@@ -143,7 +143,7 @@ public class MyActivity extends Activity {
 
     public void generateTree(View view) {
         GameTree gameTree = new GameTree(data);
-        gameTree.generateGameTree(9);
+        gameTree.generateGameTree(6);
         try {
             TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildren(), "C:/Users/Mikolaj/Desktop/file.txt");
         } catch (IOException e) {
