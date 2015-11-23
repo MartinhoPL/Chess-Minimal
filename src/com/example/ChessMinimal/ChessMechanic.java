@@ -1,23 +1,18 @@
 package com.example.ChessMinimal;
 
-public class ChessMechanic {
-    Data data; //wskaznik na klase data by moc sprawdzac polozenie pionow
+public final class ChessMechanic {
 
-    ChessMechanic() {
+    private ChessMechanic() {
     }
 
-    ChessMechanic(Data data) {
-        this.data = data;
-    }
-
-    public boolean isInsideBoard(int x, int y){
+    public static boolean isInsideBoard(int x, int y, Data data){
         if(x < 0 || y < 0 || x >= Fixed.XWIDTH || y >= Fixed.YHEIGHT) {
             return false;
         }
         return true;
     }
 
-    public int findKing(boolean isMyKing) { // jak w nazwie
+    public static int findKing(boolean isMyKing, Data data) { // jak w nazwie
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (data.getPiece(j, i) == 6) {
@@ -36,7 +31,7 @@ public class ChessMechanic {
         return -1;
     }
 
-    public boolean pawnCanAttack(int x1, int y1, int x2, int y2) {
+    public static boolean pawnCanAttack(int x1, int y1, int x2, int y2, Data data) {
         if (y1 - y2 == 1) {
             if (data.getColor(x1, y1) == 1) {
                 if (x1 - x2 == 1 || x1 - x2 == -1) {
@@ -62,7 +57,7 @@ public class ChessMechanic {
         }
     }
 
-    public boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2) {
+    public static boolean pawnMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {
         int myColor = data.getColor(x1, y1), moveColor = data.getColor(x2, y2);
         if (myColor == moveColor) {
             return false;
@@ -86,7 +81,7 @@ public class ChessMechanic {
         }
     }
 
-    public boolean knigthMoveIsCorrect(int x1, int y1, int x2, int y2) {//ruchy konia
+    public static boolean knigthMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {//ruchy konia
         if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
             return false;
         }
@@ -121,7 +116,7 @@ public class ChessMechanic {
         }
     }
 
-    public boolean bishopMoveIsCorrect(int x1, int y1, int x2, int y2) {
+    public static boolean bishopMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {
         if (x1 - y1 != x2 - y2 && x1 + y1 != x2 + y2) {
             return false;  //czy ruch po skosie
         }
@@ -146,7 +141,7 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean rookMoveIsCorrect(int x1, int y1, int x2, int y2) {
+    public static boolean rookMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {
         if (data.getColor(x2, y2) == data.getColor(x1, y1)) {
             return false;
         }
@@ -175,15 +170,15 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean queenMoveIsCorrect(int x1, int y1, int x2, int y2) {
+    public static boolean queenMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {
         if (x1 == x2 || y1 == y2) {
-            if (rookMoveIsCorrect(x1, y1, x2, y2)) {
+            if (rookMoveIsCorrect(x1, y1, x2, y2, data)) {
                 return true;
             } else {
                 return false;
             }
         } else if (x1 - x2 == y1 - y2 || x1 - x2 == y2 - y1) {
-            if (bishopMoveIsCorrect(x1, y1, x2, y2)) {
+            if (bishopMoveIsCorrect(x1, y1, x2, y2, data)) {
                 return true;
             } else {
                 return false;
@@ -193,14 +188,14 @@ public class ChessMechanic {
         }
     }
 
-    public boolean kingAttackPiece(int x1, int y1, int x2, int y2) {
+    public static boolean kingAttackPiece(int x1, int y1, int x2, int y2, Data data) {
         int piece = data.setZero(x2, y2);
-        boolean result = kingMoveIsCorrect(x1, y1, x2, y2);
+        boolean result = kingMoveIsCorrect(x1, y1, x2, y2, data);
         data.resetZero(x2, y2, piece);
         return result;
     }
 
-    public boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2) {
+    public static boolean kingMoveIsCorrect(int x1, int y1, int x2, int y2, Data data) {
         if (x1 - x2 > 1 || x1 - x2 < -1) {
             return false;//ruch tylko o jedno pole
         } else if (y1 - y2 > 1 || y1 - y2 < -1) {
@@ -212,7 +207,7 @@ public class ChessMechanic {
         if (moveColor == myColor) {
             return false;
         } else if (moveColor != 0) {
-            return kingAttackPiece(x1, y1, x2, y2);
+            return kingAttackPiece(x1, y1, x2, y2, data);
         }
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 5; i++) {
@@ -221,31 +216,31 @@ public class ChessMechanic {
                     if (piece != 0) {
                         switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
                             case 1: {//pion (tylko do przodu o jedno pole)
-                                if (pawnCanAttack(i, j, x2, y2)) {
+                                if (pawnCanAttack(i, j, x2, y2, data)) {
                                     return false;
                                 }
                                 break;
                             }
                             case 2: {//kon  ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
-                                if (knigthMoveIsCorrect(i, j, x2, y2)) {
+                                if (knigthMoveIsCorrect(i, j, x2, y2, data)) {
                                     return false;
                                 }
                                 break;
                             }
                             case 3: {//goniec
-                                if (bishopMoveIsCorrect(i, j, x2, y2)) {
+                                if (bishopMoveIsCorrect(i, j, x2, y2, data)) {
                                     return false;
                                 }
                                 break;
                             }
                             case 4: {//wieza
-                                if (rookMoveIsCorrect(i, j, x2, y2)) {
+                                if (rookMoveIsCorrect(i, j, x2, y2, data)) {
                                     return false;
                                 }
                                 break;
                             }
                             case 5: {//hetman
-                                if (queenMoveIsCorrect(i, j, x2, y2)) {
+                                if (queenMoveIsCorrect(i, j, x2, y2, data)) {
                                     return false;
                                 }
                                 break;
@@ -266,8 +261,8 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean isCheckAfterMove(boolean myKing) {//czy po ruchu doszlo do szacha
-        int king = findKing(myKing);
+    public static boolean isCheckAfterMove(boolean myKing, Data data) {//czy po ruchu doszlo do szacha
+        int king = findKing(myKing, data);
         int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int side;
         if (myKing) {
@@ -282,31 +277,31 @@ public class ChessMechanic {
                     if (data.getColor(i, j) != side) {
                         switch (piece) {//sprawdzanie czy dana figura może wykonać ruch na pole króla
                             case 1: {//pion
-                                if (pawnMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (pawnMoveIsCorrect(i, j, kingX, kingY, data)) {
                                     return true;
                                 }
                                 break;
                             }
                             case 2: {//kon
-                                if (knigthMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (knigthMoveIsCorrect(i, j, kingX, kingY, data)) {
                                     return true;
                                 }
                                 break;
                             }
                             case 3: {//goniec
-                                if (bishopMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (bishopMoveIsCorrect(i, j, kingX, kingY, data)) {
                                     return true;
                                 }
                                 break;
                             }
                             case 4: {//wieza
-                                if (rookMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (rookMoveIsCorrect(i, j, kingX, kingY, data)) {
                                     return true;
                                 }
                                 break;
                             }
                             case 5: {//hetman
-                                if (queenMoveIsCorrect(i, j, kingX, kingY)) {
+                                if (queenMoveIsCorrect(i, j, kingX, kingY, data)) {
                                     return true;
                                 }
                                 break;
@@ -321,17 +316,17 @@ public class ChessMechanic {
         return false;
     }
 
-    public MoveCorrectEnum promotion(int x, int y, int piece) {
+    public static MoveCorrectEnum promotion(int x, int y, int piece, Data data) {
         data.promotion(x, y, piece);
-        data.setIsCheck(isCheckAfterMove(true));
+        data.setIsCheck(isCheckAfterMove(true, data));
         if (data.getIsCheck()) {
-            if (isCheckmate()) {
+            if (isCheckmate(data)) {
                 return MoveCorrectEnum.CHECKMATE;
             } else {
                 return MoveCorrectEnum.CHECK;
             }
         } else {
-            if (isStalemate()) {
+            if (isStalemate(data)) {
                 return MoveCorrectEnum.STALEMATE;
             } else {
                 return MoveCorrectEnum.GOOD;
@@ -339,7 +334,7 @@ public class ChessMechanic {
         }
     }
 
-    public boolean isPromotionAfterMove() {
+    public static boolean isPromotionAfterMove(Data data) {
         for (int i = 0; i < Fixed.XWIDTH; i++) {
             if (data.getPiece(i, 0) == 1 || data.getPiece(i, Fixed.YHEIGHT - 1) == 1)
                 return true;
@@ -347,32 +342,32 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean pieceAttackKing(int x, int y, int king) {
+    public static boolean pieceAttackKing(int x, int y, int king, Data data) {
         int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int piece = data.getPiece(x, y);
         switch (piece) {
             case 1: {
-                if (pawnCanAttack(x, y, kingX, kingY))
+                if (pawnCanAttack(x, y, kingX, kingY, data))
                     return true;
                 break;
             }
             case 2: {
-                if (knigthMoveIsCorrect(x, y, kingX, kingY))
+                if (knigthMoveIsCorrect(x, y, kingX, kingY, data))
                     return true;
                 break;
             }
             case 3: {
-                if (bishopMoveIsCorrect(x, y, kingX, kingY))
+                if (bishopMoveIsCorrect(x, y, kingX, kingY, data))
                     return true;
                 break;
             }
             case 4: {
-                if (rookMoveIsCorrect(x, y, kingX, kingY))
+                if (rookMoveIsCorrect(x, y, kingX, kingY, data))
                     return true;
                 break;
             }
             case 5: {
-                if (queenMoveIsCorrect(x, y, kingX, kingY))
+                if (queenMoveIsCorrect(x, y, kingX, kingY, data))
                     return true;
                 break;
             }
@@ -380,34 +375,34 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean attackerCanKilled(int x, int y) {
+    public static boolean attackerCanKilled(int x, int y, Data data) {
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) { //x
                 if (data.getColor(j, i) == data.getSide()) {
                     int piece = data.getPiece(j, i);
                     switch (piece) {
                         case 1: {
-                            if (pawnCanAttack(j, i, x, y))
+                            if (pawnCanAttack(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 2: {
-                            if (knigthMoveIsCorrect(j, i, x, y))
+                            if (knigthMoveIsCorrect(j, i, x, y, data))
                                 return false;
                             break;
                         }
                         case 3: {
-                            if (bishopMoveIsCorrect(j, i, x, y))
+                            if (bishopMoveIsCorrect(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 4: {
-                            if (rookMoveIsCorrect(j, i, x, y))
+                            if (rookMoveIsCorrect(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 5: {
-                            if (queenMoveIsCorrect(j, i, x, y))
+                            if (queenMoveIsCorrect(j, i, x, y, data))
                                 return true;
                             break;
                         }
@@ -418,35 +413,35 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean pieceCanMove(int x1, int y1, int x2, int y2) {
+    public static boolean pieceCanMove(int x1, int y1, int x2, int y2, Data data) {
         int piece = data.getPiece(x1, y1);
         switch (piece) {
             case 1: {//pion
-                if (pawnMoveIsCorrect(x1, y1, x2, y2)) {
+                if (pawnMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return true;
                 }
                 break;
             }
             case 2: {//kon
-                if (knigthMoveIsCorrect(x1, y1, x2, y2)) {
+                if (knigthMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return true;
                 }
                 break;
             }
             case 3: {//goniec
-                if (bishopMoveIsCorrect(x1, y1, x2, y2)) {
+                if (bishopMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return true;
                 }
                 break;
             }
             case 4: {//wieza
-                if (rookMoveIsCorrect(x1, y1, x2, y2)) {
+                if (rookMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return true;
                 }
                 break;
             }
             case 5: {//hetman
-                if (queenMoveIsCorrect(x1, y1, x2, y2)) {
+                if (queenMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return true;
                 }
                 break;
@@ -455,7 +450,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean diagonalAttackCanDefend(int x, int y, int king) {
+    public static boolean diagonalAttackCanDefend(int x, int y, int king, Data data) {
         int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH, myColor = data.getColor(kingX, kingY);
         int size = Fixed.XWIDTH;
         if (size < Fixed.YHEIGHT) {
@@ -477,7 +472,7 @@ public class ChessMechanic {
                 if (k == i)
                     continue;
                 if (data.getColor(j, k) == myColor) {
-                    if (pieceCanMove(j, k, j, i))
+                    if (pieceCanMove(j, k, j, i, data))
                         return true;
                 }
             }
@@ -486,7 +481,7 @@ public class ChessMechanic {
                 if (k == j)
                     continue;
                 if (data.getColor(k, i) == myColor) {
-                    if (pieceCanMove(k, i, j, i))
+                    if (pieceCanMove(k, i, j, i, data))
                         return true;
                 }
             }
@@ -495,7 +490,7 @@ public class ChessMechanic {
                 if (i + k > Fixed.YHEIGHT - 1 || j + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(j + k, i + k) == myColor) {
-                    if (pieceCanMove(j + k, i + k, j, i))
+                    if (pieceCanMove(j + k, i + k, j, i, data))
                         return true;
                 }
             }
@@ -503,7 +498,7 @@ public class ChessMechanic {
                 if (i - k < 0 || j + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(j + k, i - k) == myColor) {
-                    if (pieceCanMove(j + k, i - k, j, i))
+                    if (pieceCanMove(j + k, i - k, j, i, data))
                         return true;
                 }
             }
@@ -511,7 +506,7 @@ public class ChessMechanic {
                 if (i + k > Fixed.YHEIGHT - 1 || j - k < 0)
                     break;
                 if (data.getColor(j - k, i + k) == myColor) {
-                    if (pieceCanMove(j - k, i + k, j, i))
+                    if (pieceCanMove(j - k, i + k, j, i, data))
                         return true;
                 }
             }
@@ -519,7 +514,7 @@ public class ChessMechanic {
                 if (i - k < 0 || j - k < 0)
                     break;
                 if (data.getColor(j - k, i - k) == myColor) {
-                    if (pieceCanMove(j - k, i - k, j, i))
+                    if (pieceCanMove(j - k, i - k, j, i, data))
                         return true;
                 }
             }
@@ -527,7 +522,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean fileOrRankAttackCanDefend(int x, int y, int king) {
+    public static boolean fileOrRankAttackCanDefend(int x, int y, int king, Data data) {
         int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH, myColor = data.getColor(kingX, kingY);
         int xminus = 1, yminus = 1;
         int size = Fixed.XWIDTH;
@@ -555,7 +550,7 @@ public class ChessMechanic {
                     if (k == y)
                         continue;
                     if (data.getColor(x, k) == myColor) {
-                        if (pieceCanMove(x, k, x, y))
+                        if (pieceCanMove(x, k, x, y, data))
                             return true;
                     }
                 }
@@ -565,7 +560,7 @@ public class ChessMechanic {
                     if (k == x)
                         continue;
                     if (data.getColor(k, y) == myColor) {
-                        if (pieceCanMove(k, y, x, y))
+                        if (pieceCanMove(k, y, x, y, data))
                             return true;
                     }
                 }
@@ -575,7 +570,7 @@ public class ChessMechanic {
                 if (y + k > Fixed.YHEIGHT - 1 || x + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(x + k, y + k) == myColor) {
-                    if (pieceCanMove(x + k, y + k, x, y))
+                    if (pieceCanMove(x + k, y + k, x, y, data))
                         return true;
                 }
             }
@@ -583,7 +578,7 @@ public class ChessMechanic {
                 if (y - k < 0 || x + k > Fixed.XWIDTH - 1)
                     break;
                 if (data.getColor(x + k, y - k) == myColor) {
-                    if (pieceCanMove(x + k, y - k, x, y))
+                    if (pieceCanMove(x + k, y - k, x, y, data))
                         return true;
                 }
             }
@@ -591,7 +586,7 @@ public class ChessMechanic {
                 if (y + k > Fixed.YHEIGHT - 1 || x - k < 0)
                     break;
                 if (data.getColor(x - k, y + k) == myColor) {
-                    if (pieceCanMove(x - k, y + k, x, y))
+                    if (pieceCanMove(x - k, y + k, x, y, data))
                         return true;
                 }
             }
@@ -599,7 +594,7 @@ public class ChessMechanic {
                 if (y - k < 0 || x - k < 0)
                     break;
                 if (data.getColor(x - k, y - k) == myColor) {
-                    if (pieceCanMove(x - k, y - k, x, y))
+                    if (pieceCanMove(x - k, y - k, x, y, data))
                         return true;
                 }
             }
@@ -607,7 +602,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public void pawnStalemate(int x, int y, int tab[][]) {
+    public static void pawnStalemate(int x, int y, int tab[][], Data data) {
         if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
@@ -631,7 +626,7 @@ public class ChessMechanic {
         }
     }
 
-    public void knightStalemate(int x, int y, int tab[][]) {
+    public static void knightStalemate(int x, int y, int tab[][], Data data) {
         if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
@@ -685,7 +680,7 @@ public class ChessMechanic {
         }
     }
 
-    public void bishopStalemate(int x, int y, int tab[][], int kingPos) {
+    public static void bishopStalemate(int x, int y, int tab[][], int kingPos, Data data) {
         if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
@@ -868,7 +863,7 @@ public class ChessMechanic {
         }
     }
 
-    public void rookStalemate(int x, int y, int tab[][], int kingPos) {
+    public static void rookStalemate(int x, int y, int tab[][], int kingPos, Data data) {
         if (tab[x][y] != -1) {
             tab[x][y] = 0;
         }
@@ -1008,7 +1003,7 @@ public class ChessMechanic {
         }
     }
 
-    public void kingStalemate(int x, int y, int tab[][]) {
+    public static void kingStalemate(int x, int y, int tab[][], Data data) {
         tab[x][y] = 0;
         int piece, color, side = data.getSide(), xside = data.getXside();
         for (int i = -1; i < 2; i++) {//y
@@ -1025,7 +1020,7 @@ public class ChessMechanic {
         }
     }
 
-    public boolean pawnCanMove(int x, int y) {
+    public static boolean pawnCanMove(int x, int y, Data data) {
         int yminus = 1;
         if (data.getSide() == 1) { //czy biale?
             yminus = -1;
@@ -1039,7 +1034,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean knightCanMove(int x, int y) {
+    public static boolean knightCanMove(int x, int y, Data data) {
         int side = data.getSide();
         if (x + 1 < Fixed.XWIDTH) {
             if (y + 2 < Fixed.YHEIGHT) {
@@ -1084,7 +1079,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean bishopCanMove(int x, int y) {
+    public static boolean bishopCanMove(int x, int y, Data data) {
         boolean leftUp, rightUp, rightDown, leftDown;
         leftUp = leftDown = rightDown = rightUp = true;
         int site = data.getSide();
@@ -1127,7 +1122,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean rookCanMove(int x, int y) {
+    public static boolean rookCanMove(int x, int y, Data data) {
         boolean up, right, down, left;
         up = right = down = left = true;
         int site = data.getSide();
@@ -1164,7 +1159,7 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean kingCanMove(int x, int y, int tab[][]) {
+    public static boolean kingCanMove(int x, int y, int tab[][], Data data) {
         for (int i = -1; i < 2; i++) {//y
             if (y + i < 0 || y + i > Fixed.YHEIGHT - 1)
                 continue;
@@ -1179,12 +1174,12 @@ public class ChessMechanic {
         return false;
     }
 
-    public boolean isStalemate() {
+    public static boolean isStalemate(Data data) {
         boolean isCheckmatePossible = false;
         int knigths[] = new int[2], bishops[] = new int[2], bishopsColor[] = new int[2];
         knigths[0] = knigths [1] = bishops [0] = bishops [1] = 0;
         bishopsColor[0] = bishopsColor[1] = -1;
-        int king = findKing(true);
+        int king = findKing(true, data);
         int tab[][] = new int[Fixed.XWIDTH][Fixed.YHEIGHT]; // -1 atakowane(pole wolne i przeciwnika); 0 jak -1 tylko nieatakowane
         for (int i = 0; i < Fixed.XWIDTH; i++) {// 1 nasze niezwiazane; 2 nasze zwiazane ale moze zabic wiazacego
             for (int j = 0; j < Fixed.YHEIGHT; j++) {// 3 jak 2 tylko bez mozliwosci zabicia
@@ -1232,7 +1227,7 @@ public class ChessMechanic {
                             if(!isCheckmatePossible){
                                 isCheckmatePossible = true;
                             }
-                            pawnStalemate(j, i, tab);
+                            pawnStalemate(j, i, tab, data);
                             break;
                         }
                         case 2: {//kuc
@@ -1242,7 +1237,7 @@ public class ChessMechanic {
                                     isCheckmatePossible = true;
                                 }
                             }
-                            knightStalemate(j, i, tab);
+                            knightStalemate(j, i, tab, data);
                             break;
                         }
                         case 3: {
@@ -1256,26 +1251,26 @@ public class ChessMechanic {
                                     bishopsColor[color - 1] = (i + j) % 2;
                                 }
                             }
-                            bishopStalemate(j, i, tab, king);
+                            bishopStalemate(j, i, tab, king, data);
                             break;
                         }
                         case 4: {
                             if(!isCheckmatePossible){
                                 isCheckmatePossible = true;
                             }
-                            rookStalemate(j, i, tab, king);
+                            rookStalemate(j, i, tab, king, data);
                             break;
                         }
                         case 5: {
                             if(!isCheckmatePossible){
                                 isCheckmatePossible = true;
                             }
-                            rookStalemate(j, i, tab, king);
-                            bishopStalemate(j, i, tab, king);
+                            rookStalemate(j, i, tab, king, data);
+                            bishopStalemate(j, i, tab, king, data);
                             break;
                         }
                         case 6: {
-                            kingStalemate(j, i, tab);
+                            kingStalemate(j, i, tab, data);
                             break;
                         }
                     }
@@ -1302,37 +1297,37 @@ public class ChessMechanic {
                 piece = data.getPiece(j, i);//1
                 switch (piece) {
                     case 1: {//pion
-                        if (pawnCanMove(j, i)) {
+                        if (pawnCanMove(j, i, data)) {
                             return false;
                         }
                         break;
                     }
                     case 2: {//kuc
-                        if (knightCanMove(j, i)) {
+                        if (knightCanMove(j, i, data)) {
                             return false;
                         }
                         break;
                     }
                     case 3: {//goniec
-                        if (bishopCanMove(j, i)) {
+                        if (bishopCanMove(j, i, data)) {
                             return false;
                         }
                         break;
                     }
                     case 4: {//wieza
-                        if (rookCanMove(j, i)) {
+                        if (rookCanMove(j, i, data)) {
                             return false;
                         }
                         break;
                     }
                     case 5: {//hetman
-                        if (rookCanMove(j, i) || bishopCanMove(j, i)) {
+                        if (rookCanMove(j, i, data) || bishopCanMove(j, i, data)) {
                             return false;
                         }
                         break;
                     }
                     case 6: {//krol
-                        if (kingCanMove(j, i, tab)) {
+                        if (kingCanMove(j, i, tab, data)) {
                             return false;
                         }
                         break;
@@ -1343,9 +1338,9 @@ public class ChessMechanic {
         return true;
     }
 
-    public boolean isCheckmate() {
+    public static boolean isCheckmate(Data data) {
         //sprawdzenie czy król może się poruszyć
-        int king = findKing(true);
+        int king = findKing(true, data);
         int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
         int attackerCount = 0, attackerX = 0, attackerY = 0, attacker = 0;
         for (int i = -1; i < 2; i++) {
@@ -1355,7 +1350,7 @@ public class ChessMechanic {
                         continue;
                     } else {
                         if (kingY + j < Fixed.YHEIGHT && kingY + j > -1) { // tak jak dla x
-                            if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j))
+                            if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j, data))
                                 return false; //bo krol ma mozliwosc ruchu na nieatakowane pole
                         }
                     }
@@ -1365,7 +1360,7 @@ public class ChessMechanic {
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) {//x
                 if (data.getColor(j, i) == data.getXside()) {
-                    if (pieceAttackKing(j, i, king)) {
+                    if (pieceAttackKing(j, i, king, data)) {
                         attacker = data.getPiece(j, i);
                         attackerX = j;
                         attackerY = i;
@@ -1377,7 +1372,7 @@ public class ChessMechanic {
                 }
             }
         }
-        if (attackerCanKilled(attackerX, attackerY)) {
+        if (attackerCanKilled(attackerX, attackerY, data)) {
             return false;
         }
         switch (attacker) {
@@ -1385,21 +1380,21 @@ public class ChessMechanic {
             case 2:
                 return true;
             case 3: {
-                if (diagonalAttackCanDefend(attackerX, attackerY, king))
+                if (diagonalAttackCanDefend(attackerX, attackerY, king, data))
                     return false;
                 break;
             }
             case 4: {
-                if (fileOrRankAttackCanDefend(attackerX, attackerY, king))
+                if (fileOrRankAttackCanDefend(attackerX, attackerY, king, data))
                     return false;
                 break;
             }
             case 5: {
                 if (attackerX == kingX || attackerY == kingY) {
-                    if (fileOrRankAttackCanDefend(attackerX, attackerY, king))
+                    if (fileOrRankAttackCanDefend(attackerX, attackerY, king, data))
                         return false;
                 } else if (attackerX - attackerY == kingX - kingY || attackerX + attackerY == kingX + kingY) {
-                    if (diagonalAttackCanDefend(attackerX, attackerY, king))
+                    if (diagonalAttackCanDefend(attackerX, attackerY, king, data))
                         return false;
                 }
             }
@@ -1407,12 +1402,12 @@ public class ChessMechanic {
         return true;
     }
 
-    public MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2) { // kompletne (docelowo) sprawdzenie poprawności ruchu
+    public static MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2, Data data) { // kompletne (docelowo) sprawdzenie poprawności ruchu
         if (x1 == x2 && y1 == y2)
             return MoveCorrectEnum.FAIL;
         if (data.getColor(x2, y2) == data.getSide())
             return MoveCorrectEnum.FAIL;
-        if(!isInsideBoard(x2, y2)) {
+        if(!isInsideBoard(x2, y2, data)) {
             return  MoveCorrectEnum.FAIL;
         }
         int piece1 = data.getPiece(x1, y1);
@@ -1423,37 +1418,37 @@ public class ChessMechanic {
                 return MoveCorrectEnum.FAIL;
             }
             case 1: {//pion (tylko do przodu o jedno pole)
-                if (!pawnMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!pawnMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 2: {//kon ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
-                if (!knigthMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!knigthMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 3: {//goniec
-                if (!bishopMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!bishopMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 4: {//wieza
-                if (!rookMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!rookMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 5: {//hetman
-                if (!queenMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!queenMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
             case 6: {//krol
-                if (!kingMoveIsCorrect(x1, y1, x2, y2)) {
+                if (!kingMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
@@ -1461,18 +1456,18 @@ public class ChessMechanic {
         }
         if (data.getIsCheck()) {//w przypadku szacha
             data.makeMove(x1, y1, x2, y2);
-            if (isCheckAfterMove(false)) {//sprawdzenie czy nadal król szachowany false bo makeMove zmienia stronę na ruchu
+            if (isCheckAfterMove(false, data)) {//sprawdzenie czy nadal król szachowany false bo makeMove zmienia stronę na ruchu
                 data.undoMove();
                 return MoveCorrectEnum.FAIL;// i zrócenie niepoprawności ruchu
             } else {
-                data.setIsCheck(isCheckAfterMove(true));
+                data.setIsCheck(isCheckAfterMove(true, data));
                 boolean mate = false;
-                boolean promotion = isPromotionAfterMove();
+                boolean promotion = isPromotionAfterMove(data);
                 if (!promotion) {
                     if (data.getIsCheck()) {
-                        mate = isCheckmate();
+                        mate = isCheckmate(data);
                     } else {
-                        mate = isStalemate();
+                        mate = isStalemate(data);
                     }
                 }
                 data.undoMove();
@@ -1500,18 +1495,18 @@ public class ChessMechanic {
         }
         //todo spytać o zachowywanie sekwencji ruchów
         data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
-        if (isCheckAfterMove(false)) {
+        if (isCheckAfterMove(false, data)) {
             data.undoMove();
             return MoveCorrectEnum.FAIL;
         }
-        data.setIsCheck(isCheckAfterMove(true));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola w data.
+        data.setIsCheck(isCheckAfterMove(true, data));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola w data.
         boolean mate = false;
-        boolean promotion = isPromotionAfterMove();
+        boolean promotion = isPromotionAfterMove(data);
         if (!promotion) {
             if (data.getIsCheck()) {
-                mate = isCheckmate();
+                mate = isCheckmate(data);
             } else {
-                mate = isStalemate();
+                mate = isStalemate(data);
             }
         }
         data.undoMove();// cofnięcie ruchu

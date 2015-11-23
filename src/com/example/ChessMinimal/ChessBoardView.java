@@ -24,7 +24,6 @@ public class ChessBoardView {
     private int startX;
     private int startY;
     private int imageResourceDrag;
-    private ChessMechanic chessMechanic;
     private TextView textView;
     public boolean whiteNext = true;
     private boolean lock = false;
@@ -37,7 +36,6 @@ public class ChessBoardView {
         this.tableLayout = tableLayout;
         this.data = data;
         this.context = context;
-        chessMechanic = new ChessMechanic(data);
     }
     
     public void createBoard(){
@@ -135,7 +133,7 @@ public class ChessBoardView {
                             }
                         }
                     } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
-                        switch (chessMechanic.isMoveCorrect(startX, startY, x, y)){
+                        switch (ChessMechanic.isMoveCorrect(startX, startY, x, y, data)){
                             case FAIL:
                                 movePiece(startX, startY, startX, startY);
                                 break;
@@ -223,7 +221,7 @@ public class ChessBoardView {
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 5));
+                                CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 5, data));
                                 break;
                             case 1:
                                 if (y == 0) {
@@ -233,7 +231,7 @@ public class ChessBoardView {
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 3));
+                                CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 3, data));
                                 break;
                             case 2:
                                 if (y == 0) {
@@ -243,7 +241,7 @@ public class ChessBoardView {
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 2));
+                                CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 2, data));
                                 break;
                             case 3:
                                 if (y == 0) {
@@ -253,7 +251,7 @@ public class ChessBoardView {
                                 }
                                 imageButtons[x][y].setImageResource(imageResource[0]);
                                 imageButtons[x][y].setTag(imageResource[0]);
-                                CheckSituationAfterPromotion(chessMechanic.promotion(x, y, 4));
+                                CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 4, data));
                                 break;
                         }
                         dialog.cancel();

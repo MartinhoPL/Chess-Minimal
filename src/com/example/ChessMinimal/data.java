@@ -113,20 +113,28 @@ public class Data {
             if (move[0] != move[1]) {
                 data.piece[move[0]] = 1;//wykonanie ruchu
                 data.color[move[0]] = data.color[move[1]];
-                data.color[move[1]] = 0;
-                data.piece[move[1]] = 0;
+                data.piece[move[1]] = capture;
+                if(capture == 0) {
+                    data.color[move[1]] = 0;
+                }else {
+                    if (data.color[move[0]] == 1) {
+                        data.color[move[1]] = 2;
+                    } else {
+                        data.color[move[1]] = 1;
+                    }
+                }
                 data.changeSite();
             }
         }else {
             if (move[0] != move[1]) {
                 data.piece[move[0]] = data.piece[move[1]];
                 data.color[move[0]] = data.color[move[1]];
-                data.color[move[1]] = move[3];
+                data.piece[move[1]] = move[3];
                 if(data.color[move[0]] == 1) {
-                    data.piece[move[1]] = 2;
+                    data.color[move[1]] = 2;
                 }
                 else{
-                    data.piece[move[1]] = 1;
+                    data.color[move[1]] = 1;
                 }
                 data.changeSite();
             }
