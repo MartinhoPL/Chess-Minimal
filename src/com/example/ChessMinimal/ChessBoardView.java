@@ -31,8 +31,8 @@ public class ChessBoardView {
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
         this.textView = textView;
         this.whitesMoveString = textView.getText();
-        tableRows = new TableRow[5];
-        imageButtons = new ImageButton[5][5];
+        tableRows = new TableRow[Fixed.YHEIGHT];
+        imageButtons = new ImageButton[Fixed.XWIDTH][Fixed.YHEIGHT];
         this.tableLayout = tableLayout;
         this.data = data;
         this.context = context;
@@ -41,12 +41,12 @@ public class ChessBoardView {
     public void createBoard(){
         int color;
         int imageResource;
-        for(int i = 0; i < 5; i++)
+        for(int i = 0; i < Fixed.YHEIGHT; i++)
         {
             createRow(i);
-            for(int j = 0; j < 5; j++)
+            for(int j = 0; j < Fixed.XWIDTH; j++)
             {
-                if((j + i*5) % 2 == 0){
+                if((j + i*Fixed.YHEIGHT) % 2 == 0){
                     color = Color.WHITE;
                 }
                 else {
@@ -125,9 +125,9 @@ public class ChessBoardView {
                             movePiece(startX, startY, startX, startY);
                             dragView.setVisibility(View.VISIBLE);
                         }
-                        for (int i = 0; i < 5 ; i++)
+                        for (int i = 0; i < Fixed.XWIDTH ; i++)
                         {
-                            for (int j = 0 ; j < 5 ; j++)
+                            for (int j = 0 ; j < Fixed.YHEIGHT ; j++)
                             {
                                 imageButtons[i][j].setImageResource((Integer)imageButtons[i][j].getTag());
                             }
@@ -293,14 +293,13 @@ public class ChessBoardView {
         }
     }
 
-    private int getimageResourceForCell(int x, int y)
-    {
+    private int getimageResourceForCell(int x, int y) {
         int imageResource = 0;
-        switch (Fixed.INIT_PIECE[x + y*Fixed.YHEIGHT]){
+        switch (Fixed.INIT_PIECE[x + y*Fixed.XWIDTH]){
             case 0:
                 break;
             case 1:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource = R.drawable.blackpawn;
                 } else
                 {
@@ -308,7 +307,7 @@ public class ChessBoardView {
                 }
                 break;
             case 2:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource = R.drawable.blackknight;
                 } else
                 {
@@ -316,7 +315,7 @@ public class ChessBoardView {
                 }
                 break;
             case 3:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource =  R.drawable.blackbishop;
                 } else
                 {
@@ -324,7 +323,7 @@ public class ChessBoardView {
                 }
                 break;
             case 4:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource = R.drawable.blackrock;
                 } else
                 {
@@ -332,7 +331,7 @@ public class ChessBoardView {
                 }
                 break;
             case 5:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource =  R.drawable.blackqueen;
                 } else
                 {
@@ -340,7 +339,7 @@ public class ChessBoardView {
                 }
                 break;
             case 6:
-                if(Fixed.INIT_COLOR[x + y*Fixed.YHEIGHT] == 2) {
+                if(Fixed.INIT_COLOR[x + y*Fixed.XWIDTH] == 2) {
                     imageResource =  R.drawable.blackking;
                 } else
                 {
