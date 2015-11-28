@@ -1198,12 +1198,14 @@ public final class ChessMechanic {
                             case 4:
                             case 5: {
                                 isCheckmatePossible = true;
+                                break;
                             }
                             case 2: {
                                 knigths[color - 1]++;
                                 if (knigths[color - 1] > 1) {
                                     isCheckmatePossible = true;
                                 }
+                                break;
                             }
                             case 3: {
                                 bishops[color - 1]++;
@@ -1214,6 +1216,7 @@ public final class ChessMechanic {
                                 } else {
                                     bishopsColor[color - 1] = (i + j) % 2;
                                 }
+                                break;
                             }
                         }
                     }
@@ -1240,7 +1243,7 @@ public final class ChessMechanic {
                             knightStalemate(j, i, tab, data);
                             break;
                         }
-                        case 3: {
+                        case 3: {//goniec
                             if (!isCheckmatePossible) {
                                 bishops[color - 1]++;
                                 if (bishops[color - 1] > 1) {
