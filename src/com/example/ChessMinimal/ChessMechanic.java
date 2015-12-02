@@ -375,6 +375,91 @@ public final class ChessMechanic {
         return false;
     }
 
+    public static boolean pieceBlocked(int x1, int y1, int x2, int y2 ,Data data) {
+        int king = findKing(true, data), piece = 0, color = 0, iterator = 1, iterator2 = 1;
+        int kingX = king % Fixed.XWIDTH, kingY = king / Fixed.XWIDTH;
+        if (kingX == x1) { // w tej samej kolumnie co krol
+            if (x1 == x2) {//ruch w obrebie kolumny
+                return false;
+            } else {
+                if (kingY > y1) { // krol nizej na planszy
+                    iterator = -1;
+                }
+                for (int i = y1 + iterator; i > -1 && i < Fixed.YHEIGHT; i += iterator) {
+                    color = data.getColor(x1, i);
+                    if (color == 0) {
+                        continue;
+                    } else if (color == data.getSide()) {
+                        return false;
+                    } else {
+                        piece = data.getPiece(x1, i);
+                        if (piece == 5 || piece == 4) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+        } else if (kingY == y1) { // w tym samym wierszu co krol
+            if (y1 == y2) {//ruch w obrebie wiersza
+                return false;
+            } else {
+                if (kingX > x1) { // krol nizej na planszy
+                    iterator = -1;
+                }
+                for (int i = x1 + iterator; i > -1 && i < Fixed.XWIDTH; i += iterator) {
+                    color = data.getColor(i, y1);
+                    if (color == 0) {
+                        continue;
+                    } else if (color == data.getSide()) {
+                        return false;
+                    } else {
+                        piece = data.getPiece(i, y1);
+                        if (piece == 5 || piece == 4) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                }
+                return false;
+            }
+        } else if (kingX + kingY == x1 + y1 || kingX - kingY == x1 - y1) { //ktorys ze skosow
+            if (kingX > x1) {
+                iterator = -1;
+            }
+            if (kingY > y1) {
+                iterator2 = -1;
+            }
+            int i = x1, j = y1;
+            while (true) {
+                i += iterator;
+                j += iterator2;
+                if (i < Fixed.XWIDTH && i > -1 && j < Fixed.YHEIGHT && j > -1) {
+                    color = data.getColor(i, j);
+                    if (color == 0) {
+                        continue;
+                    } else if (color == data.getSide()) {
+                        return false;
+                    } else {
+                        piece = data.getPiece(i, j);
+                        if (piece == 5 || piece == 3) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                } else {
+                    return false;
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
     public static boolean attackerCanKilled(int x, int y, Data data) {
         for (int i = 0; i < Fixed.YHEIGHT; i++) {//y
             for (int j = 0; j < Fixed.XWIDTH; j++) { //x
@@ -382,27 +467,27 @@ public final class ChessMechanic {
                     int piece = data.getPiece(j, i);
                     switch (piece) {
                         case 1: {
-                            if (pawnCanAttack(j, i, x, y, data))
+                            if (pawnCanAttack(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 2: {
-                            if (knigthMoveIsCorrect(j, i, x, y, data))
+                            if (knigthMoveIsCorrect(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
                                 return false;
                             break;
                         }
                         case 3: {
-                            if (bishopMoveIsCorrect(j, i, x, y, data))
+                            if (bishopMoveIsCorrect(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 4: {
-                            if (rookMoveIsCorrect(j, i, x, y, data))
+                            if (rookMoveIsCorrect(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
                                 return true;
                             break;
                         }
                         case 5: {
-                            if (queenMoveIsCorrect(j, i, x, y, data))
+                            if (queenMoveIsCorrect(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
                                 return true;
                             break;
                         }
