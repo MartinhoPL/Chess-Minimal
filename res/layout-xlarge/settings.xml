@@ -58,36 +58,7 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/spinner" android:layout_column="1" android:entries="@array/timeSpinnerItems"/>
         </TableRow>
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:id="@+id/mhvc">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Remis po 50 ruchach:"
-                    android:id="@+id/textView10" android:layout_column="0" android:textSize="40dp"
-                    android:singleLine="false" android:layout_margin="20dp"
-                    android:textColor="@android:color/background_dark"/>
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/checkBox3" android:layout_column="1" android:minHeight="50dp"
-                    android:minWidth="50dp" android:focusableInTouchMode="false" android:checked="true"/>
-        </TableRow>
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Roszada:"
-                    android:id="@+id/textView11" android:layout_column="0" android:textSize="40dp"
-                    android:layout_margin="20dp" android:textColor="@android:color/background_dark"/>
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/checkBox4" android:layout_column="1" android:checked="true"/>
-        </TableRow>
+
     </TableLayout>
     <TableLayout
             android:layout_width="match_parent"
@@ -134,4 +105,9 @@
                     android:textColor="@android:color/background_dark" android:layout_span="80"/>
         </TableRow>
     </TableLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" >
+        <Button android:onClick="onAcceptClick" android:layout_width="wrap_content" android:width="250dp" android:layout_marginLeft="290dp" android:layout_marginRight="200dp" android:text="Akceptuj" android:textSize="40dp" android:layout_marginBottom="100dp" android:layout_height="wrap_content"/>
+
+    </LinearLayout>
+
 </LinearLayout>

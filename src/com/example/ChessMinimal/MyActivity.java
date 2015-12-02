@@ -150,5 +150,10 @@ public class MyActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+    public void onAcceptClick(View view) {
+        setContentView(R.layout.main);
+        onStartButtonClick(view);
+    }
 }
 
