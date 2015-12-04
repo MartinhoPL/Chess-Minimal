@@ -3,6 +3,8 @@ package com.example.ChessMinimal;
 public class GameTree {
 
     private static final int MAX_MOVES = 1000000;
+    private static final int MAX_TRANSPOSITIONS = 100000;
+
 
     private byte [][]moves;
 
@@ -20,10 +22,12 @@ public class GameTree {
 
     private Data data;
 
+    private boolean checkTransposition;
+
     GameTree(Data data) {
         moves = new byte[MAX_MOVES][4];
         nodeChildren = new int[MAX_MOVES];
-        transpositons = new long[MAX_MOVES][2];
+        transpositons = new long[MAX_TRANSPOSITIONS][2];
         nodeFather = new int[MAX_MOVES];
         this.data = data;
         nodeChildrenArrayIndex = 0;
@@ -32,7 +36,7 @@ public class GameTree {
     }
 
     public void generateGameTree(int depth) {
-        boolean checkTransposition = false;
+        checkTransposition = false;
         int maxDepth = depth;
         Data generatedData = data;
         if(movesIndex == 0) {
@@ -43,62 +47,70 @@ public class GameTree {
         }
         int lastMoveIndex = movesIndex;
         generateGameTreeLevel(generatedData, 0);
+        depth--;
         if(lastMoveIndex != movesIndex) {
             nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
         }
         int poczatek = nodeChildren[nodeChildrenArrayIndex - 2];
         int koniec = nodeChildren[nodeChildrenArrayIndex - 1];
         while (depth > 0) {
-            transpositionMaxIndex = 0;
-            if(depth > 2 && maxDepth - depth > 2) {
+            if(maxDepth - depth >= 2) {
                 checkTransposition = true;
             } else {
                 checkTransposition = false;
             }
             for (int i = poczatek; i < koniec; i++) {
                 if(moves[i][2] != 2 && moves[i][2] != 16) {
-                    makeAllMovesToNextPosition(getPathToTheRoot(i), generatedData);
 
-                    if (!isTransposition(generatedData) && checkTransposition) {
-                        lastMoveIndex = movesIndex;
-                        generateGameTreeLevel(generatedData, i);
-                        if (lastMoveIndex != movesIndex) {
-                            nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
-                        }
-                    }
-                    undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
-                }
-            }
-            poczatek = koniec + 1;
-            koniec = nodeChildren[nodeChildrenArrayIndex - 1];
-            depth--;
-        }
-
-        boolean noSpecialMoves = false;
-        while(!noSpecialMoves) {// poglebienie drzewa gry
-            for(int i = poczatek; i < koniec; i++) {
-                if(moves[i][2] == 4 || moves[i][2] == 1 || moves[i][2] == 8) {
                     makeAllMovesToNextPosition(getPathToTheRoot(i), generatedData);
 
                     lastMoveIndex = movesIndex;
                     generateGameTreeLevel(generatedData, i);
-                    if(lastMoveIndex != movesIndex) {
+                    if (lastMoveIndex != movesIndex) {
                         nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
                     }
                     undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
                 }
-                poczatek = koniec + 1;
-                koniec = nodeChildren[nodeChildrenArrayIndex - 1];
-                if(poczatek >= koniec) {
-                    noSpecialMoves = true;
-                }
             }
+            poczatek = koniec;
+            koniec = nodeChildren[nodeChildrenArrayIndex - 1];
+            transpositionMaxIndex = 0;
+            depth--;
+
         }
+
+        while(nodeChildrenArrayIndex < movesIndex){
+            nodeChildren[nodeChildrenArrayIndex++] = -1;
+        }
+
+//        boolean noSpecialMoves = false;
+//        while(!noSpecialMoves) {// poglebienie drzewa gry
+//            for(int i = poczatek; i < koniec; i++) {
+//                if(moves[i][2] != 2 && moves[i][2] != 16) {
+//                    if (moves[i][2] == 4 || moves[i][2] == 8) {
+//                        makeAllMovesToNextPosition(getPathToTheRoot(i), generatedData);
+//
+//                        lastMoveIndex = movesIndex;
+//                        generateGameTreeLevel(generatedData, i);
+//                        if (lastMoveIndex != movesIndex) {
+//                            nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
+//                        }
+//                        undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
+//                    }
+//                }
+//            }
+//            poczatek = koniec;
+//            koniec = nodeChildren[nodeChildrenArrayIndex - 1];
+//            transpositionMaxIndex = 0;
+//            if(poczatek >= koniec) {
+//                noSpecialMoves = true;
+//            }
+//        }
     }
 
     private void generateGameTreeLevel(Data generatedData, int father) {
-        for(int i = 0; i < 5; i++){
-            for(int j = 0 ; j < 5; j++) {
+        for(int i = 0; i < Fixed.YHEIGHT; i++){
+            for(int j = 0 ; j < Fixed.XWIDTH; j++) {
                 if(generatedData.color[generatedData.calculateArrayIndexForCoords(j, i)] == generatedData.getSide()) {
                     switch (generatedData.getPiece(j, i))
                     {
@@ -320,7 +332,7 @@ public class GameTree {
         destY = y - 2;
         move = generateMoveFromTo(x, y, destX, destY, generatedData, father);
         if (move != null) {
-            moves[movesIndex++] = generateMoveFromTo(x, y, destX, destY, generatedData, father);
+            moves[movesIndex++] = move;
             wynik = true;
         }
         destX = x - 1;
@@ -368,7 +380,7 @@ public class GameTree {
                 return null;
             }
         }
-        if(generatedData.getCapture() != 0) {
+        if(generatedData.getCapture() != 0 && move[2] != 4) {
             move[2] = 8;
             move[3] = (byte)generatedData.getCapture();
         }
@@ -377,7 +389,18 @@ public class GameTree {
             move[1] = (byte)data.calculateArrayIndexForCoords(destX, destY);
             nodeFather[movesIndex] = father;
         }
+        if (checkTransposition) {
+            generatedData.makeMove(move, generatedData);
+            if(isTransposition(generatedData)) {
+                generatedData.undoMove(move, generatedData);
+                return null;
+            }
+            else {
+                generatedData.undoMove(move, generatedData);
+            }
+        }
         return move;
+
     }
 
     public int[] getPathToTheRoot(int i) {
@@ -395,7 +418,7 @@ public class GameTree {
         return path;
     }
 
-    private void makeAllMovesToNextPosition(int[] moveSequence, Data data) {
+    public void makeAllMovesToNextPosition(int[] moveSequence, Data data) {
         for (int i = moveSequence.length - 1; i >= 0; i--) {
             if(moveSequence[i] != 0) {
                 data.makeMove(moves[moveSequence[i]], data);
@@ -403,7 +426,7 @@ public class GameTree {
         }
     }
 
-    private void undoAllMovesToPreviousPosition(int[] moveSequence, Data data) {
+    public void undoAllMovesToPreviousPosition(int[] moveSequence, Data data) {
         for (int i = 0; i < moveSequence.length; i++) {
             if(moveSequence[i] == 0){
                 break;
@@ -415,7 +438,7 @@ public class GameTree {
         long []position = new long[2];
         data.convertPositionToNumber(position, data);
         for(int i = 0; i < transpositionMaxIndex; i++) {
-            if(position[0] == transpositons[i][0] && position[1] == transpositons[i][1]);
+            if(position[0] == transpositons[i][0] && position[1] == transpositons[i][1])
             {
                 return true;
             }
@@ -463,5 +486,9 @@ public class GameTree {
     public void setData(Data data) {
         this.data = data;
     }
+
+    public int getNodeChildrenAt(int i) {return nodeChildren[i];}
+
+    public byte[] getMovesAt(int i) {return moves[i];}
 
 }

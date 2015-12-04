@@ -25,9 +25,7 @@ public class Data {
         side = 1;
         xside = 2;
         fifty = 0;
-        //    piece = new int[25];
         piece = Fixed.INIT_PIECE.clone();
-        //    color = new int[25];
         color = Fixed.INIT_COLOR.clone();
         lastMove = new Move(-1, -1, -1, -1, -1, -1);
     }

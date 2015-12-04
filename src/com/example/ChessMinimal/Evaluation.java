@@ -4,16 +4,16 @@ package com.example.ChessMinimal;
  * Created by Dell on 2015-11-25.
  */
 public class Evaluation { // klasa odpowiedzialna za ocene ustawienia figur itp.
-    final static int  pawnValue = 30;
-    final static int  knightValue = 65;
-    final static int  bishopValue = 80;
-    final static int  rookValue = 130;
-    final static int  queenValue = 210;
+    final static int  pawnValue = 100;
+    final static int  knightValue = 280;
+    final static int  bishopValue = 320;
+    final static int  rookValue = 500;
+    final static int  queenValue = 880;
     final static int pawnEvalPos[] = {
             0, 0, 0, 0,
             5, 5, 5, 5,
-            10, 10, 10, 10,
-            15, 15, 15, 15,
+            20, 20, 20, 20,
+            40, 40, 40, 40,
             0, 0, 0, 0
     };
     final static int knightEvalPos[] = {
@@ -44,9 +44,9 @@ public class Evaluation { // klasa odpowiedzialna za ocene ustawienia figur itp.
              7,  6,  5,  4,
              3,  2,  1,  0,
     };
-    public int eval(Data data){
+    public int eval(Data data, int sideToPlay){
         int evalStat[] = {0, 0};
-        int color[] = data.getColor(), piece[] = data.getPiece() , side = data.getSide(), flip= 0;
+        int color[] = data.getColor(), piece[] = data.getPiece() , side = data.getXside(), flip = 0;
         for (int i = 0; i < Fixed.XWIDTH * Fixed.YHEIGHT; i++) {
             if(color[i] == 0){
                 continue;
@@ -78,10 +78,16 @@ public class Evaluation { // klasa odpowiedzialna za ocene ustawienia figur itp.
                 }
             }
         }
+        int result;
         if(side == 1) {
-            return evalStat[0] - evalStat[1];
+            result = evalStat[0] - evalStat[1];
         }else {
-            return evalStat[1] - evalStat[0];
+            result = evalStat[1] - evalStat[0];
         }
+        if(sideToPlay != side);
+        {
+            result = -result;
+        }
+        return result;
     }
 }
