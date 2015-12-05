@@ -69,7 +69,8 @@ public class GameTree {
                     if (lastMoveIndex != movesIndex) {
                         nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
                     }
-                    undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
+//                    undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
+                    generatedData = data;
                 }
             }
             poczatek = koniec;
@@ -445,6 +446,11 @@ public class GameTree {
         }
         transpositons[transpositionMaxIndex++] = position;
         return false;
+    }
+
+    public int hash(long position[]) {
+        int value = (int) ((position[0] + position[1]) % 47);
+        return value;
     }
 
     public byte[][] getMoves() {
