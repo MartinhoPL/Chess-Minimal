@@ -4,13 +4,11 @@ public class GameTree {
 
     private static final int MAX_MOVES = 1000000;
     private static final int MAX_TRANSPOSITIONS = 100000;
-
+    private static final int HASH_NUMBER = 12289;
 
     private byte [][]moves;
 
-    private long [][]transpositons;
-
-    private int transpositionMaxIndex;
+    private int [][]transpositons;
 
     private int movesIndex;
 
@@ -27,16 +25,15 @@ public class GameTree {
     GameTree(Data data) {
         moves = new byte[MAX_MOVES][4];
         nodeChildren = new int[MAX_MOVES];
-        transpositons = new long[MAX_TRANSPOSITIONS][2];
+        transpositons = new int[MAX_TRANSPOSITIONS][3];
         nodeFather = new int[MAX_MOVES];
         this.data = data;
         nodeChildrenArrayIndex = 0;
         movesIndex = 0;
-        transpositionMaxIndex = 0;
     }
 
     public void generateGameTree(int depth) {
-        checkTransposition = false;
+        resetGameTreeFields();
         int maxDepth = depth;
         Data generatedData = data;
         if(movesIndex == 0) {
@@ -55,6 +52,7 @@ public class GameTree {
         int koniec = nodeChildren[nodeChildrenArrayIndex - 1];
         while (depth > 0) {
             if(maxDepth - depth >= 2) {
+//                clearTranspositons();
                 checkTransposition = true;
             } else {
                 checkTransposition = false;
@@ -69,44 +67,63 @@ public class GameTree {
                     if (lastMoveIndex != movesIndex) {
                         nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
                     }
-//                    undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
-                    generatedData = data;
+                    undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
+//                    generatedData = data;
                 }
             }
             poczatek = koniec;
             koniec = nodeChildren[nodeChildrenArrayIndex - 1];
-            transpositionMaxIndex = 0;
             depth--;
 
         }
 
-        while(nodeChildrenArrayIndex < movesIndex){
-            nodeChildren[nodeChildrenArrayIndex++] = -1;
-        }
-
-//        boolean noSpecialMoves = false;
-//        while(!noSpecialMoves) {// poglebienie drzewa gry
-//            for(int i = poczatek; i < koniec; i++) {
+//        while(nodeChildrenArrayIndex < movesIndex){
+//            nodeChildren[nodeChildrenArrayIndex++] = -1;
+//        }
+        int pom = nodeChildrenArrayIndex - 1;
+//        nodeChildren[pom] = -1;
+        nodeChildrenArrayIndex--;
+        boolean noSpecialMoves = false;
+//        checkTransposition = false;
+        while(!noSpecialMoves) {// poglebienie drzewa gry
+            for(int i = poczatek; i < koniec; i++) {
 //                if(moves[i][2] != 2 && moves[i][2] != 16) {
-//                    if (moves[i][2] == 4 || moves[i][2] == 8) {
-//                        makeAllMovesToNextPosition(getPathToTheRoot(i), generatedData);
-//
-//                        lastMoveIndex = movesIndex;
-//                        generateGameTreeLevel(generatedData, i);
-//                        if (lastMoveIndex != movesIndex) {
-//                            nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
-//                        }
-//                        undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
-//                    }
+                    if (moves[i][2] == 4 || moves[i][2] == 8) {
+                        makeAllMovesToNextPosition(getPathToTheRoot(i), generatedData);
+
+                        lastMoveIndex = movesIndex;
+                        generateGameTreeLevel(generatedData, i);
+                        if (lastMoveIndex != movesIndex) {
+                            nodeChildren[nodeChildrenArrayIndex++] = lastMoveIndex;
+                        }
+                        undoAllMovesToPreviousPosition(getPathToTheRoot(i), generatedData);
+                    } else {
+                        nodeChildren[nodeChildrenArrayIndex++] = -1;
+                    }
 //                }
-//            }
-//            poczatek = koniec;
-//            koniec = nodeChildren[nodeChildrenArrayIndex - 1];
-//            transpositionMaxIndex = 0;
-//            if(poczatek >= koniec) {
-//                noSpecialMoves = true;
+            }
+            poczatek = koniec;
+            int j = 1;
+            while (nodeChildren[nodeChildrenArrayIndex - j] == -1) {
+                j++;
+            }
+            koniec = nodeChildren[nodeChildrenArrayIndex - j];
+            if(poczatek >= koniec) {
+                noSpecialMoves = true;
+            }
+        }
+//
+//        for(int i = pom; i < nodeChildrenArrayIndex - 1; i++){
+//            if(nodeChildren[i] == -1) {
+//                nodeChildren[i] = movesIndex;
+//                break;
 //            }
 //        }
+        for(int i = koniec; i < movesIndex; i++){
+            nodeChildren[nodeChildrenArrayIndex++] = -1;
+        }
+        int xx = 9;
+        xx += 7;
     }
 
     private void generateGameTreeLevel(Data generatedData, int father) {
@@ -436,21 +453,43 @@ public class GameTree {
         }
     }
     private boolean isTransposition(Data data) {
-        long []position = new long[2];
+        int []position = new int[3];
         data.convertPositionToNumber(position, data);
-        for(int i = 0; i < transpositionMaxIndex; i++) {
-            if(position[0] == transpositons[i][0] && position[1] == transpositons[i][1])
-            {
+        int index = hash(position);
+        int offset = 0;
+        while(true) {
+            if(transpositons[index][0] == position[0] && transpositons[index][1] == position[1] && transpositons[index][2] == position[2]) {
                 return true;
+            } else if(transpositons[index][0] == 0 && transpositons[index][1] == 0 && transpositons[index][2] == 0) {
+                break;
+            }
+            offset++;
+            index = hash(position) + 7 * offset * offset + 7 * offset;
+            if(offset > 1000) {
+                return false;
             }
         }
-        transpositons[transpositionMaxIndex++] = position;
+        transpositons[index] = position;
         return false;
     }
 
-    public int hash(long position[]) {
-        int value = (int) ((position[0] + position[1]) % 47);
-        return value;
+    public int hash(int position[]) {
+        int result = ((position[2] % HASH_NUMBER) + (position[1] % HASH_NUMBER) + (position[0] % HASH_NUMBER) );
+        if(result < 0) {
+            result = (-1) * result;
+        }
+        return result;
+    }
+
+    public void resetGameTreeFields(){
+        for(int i = 0; i < MAX_TRANSPOSITIONS; i++) {
+            transpositons[i][0] = 0;
+            transpositons[i][1] = 0;
+            transpositons[i][2] = 0;
+        }
+        movesIndex = 0;
+        nodeChildrenArrayIndex = 0;
+        checkTransposition = false;
     }
 
     public byte[][] getMoves() {
@@ -495,6 +534,17 @@ public class GameTree {
 
     public int getNodeChildrenAt(int i) {return nodeChildren[i];}
 
+    public int getNodeFatherAt(int i) {return nodeFather[i];}
+
     public byte[] getMovesAt(int i) {return moves[i];}
+
+    public int findFirstNodeWithChildrens(int node) {
+        for(int i = node; i < movesIndex; i++) {
+            if(nodeChildren[i] != -1 && nodeChildren[i] != movesIndex){
+                return nodeChildren[i];
+            }
+        }
+        return movesIndex;
+    }
 
 }

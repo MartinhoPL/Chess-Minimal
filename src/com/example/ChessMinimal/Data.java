@@ -99,31 +99,7 @@ public class Data {
     }
 
     public void undoMove(byte[] move, Data data) {
-        if (move[2] == 0) {
-            if (move[0] != move[1]) {
-                data.piece[move[0]] = data.piece[move[1]];//wykonanie ruchu
-                data.color[move[0]] = data.color[move[1]];
-                data.color[move[1]] = 0;
-                data.piece[move[1]] = 0;
-                data.changeSite();
-            }
-        } else if (move[2] == 4){
-            if (move[0] != move[1]) {
-                data.piece[move[0]] = 1;//wykonanie ruchu
-                data.color[move[0]] = data.color[move[1]];
-                data.piece[move[1]] = capture;
-                if(capture == 0) {
-                    data.color[move[1]] = 0;
-                }else {
-                    if (data.color[move[0]] == 1) {
-                        data.color[move[1]] = 2;
-                    } else {
-                        data.color[move[1]] = 1;
-                    }
-                }
-                data.changeSite();
-            }
-        }else {
+        if(move[2] == 8){
             if (move[0] != move[1]) {
                 data.piece[move[0]] = data.piece[move[1]];
                 data.color[move[0]] = data.color[move[1]];
@@ -134,6 +110,30 @@ public class Data {
                 else{
                     data.color[move[1]] = 1;
                 }
+                data.changeSite();
+            }
+        } else if (move[2] == 4) {
+            if (move[0] != move[1]) {
+                data.piece[move[0]] = 1;//wykonanie ruchu
+                data.color[move[0]] = data.color[move[1]];
+                data.piece[move[1]] = capture;
+                if (capture == 0) {
+                    data.color[move[1]] = 0;
+                } else {
+                    if (data.color[move[0]] == 1) {
+                        data.color[move[1]] = 2;
+                    } else {
+                        data.color[move[1]] = 1;
+                    }
+                }
+                data.changeSite();
+            }
+        } else {
+            if (move[0] != move[1]) {
+                data.piece[move[0]] = data.piece[move[1]];//wykonanie ruchu
+                data.color[move[0]] = data.color[move[1]];
+                data.color[move[1]] = 0;
+                data.piece[move[1]] = 0;
                 data.changeSite();
             }
         }
@@ -168,11 +168,11 @@ public class Data {
     //na podstawie planszy z data wypelnia tablice posiotionNumber (dwuelementowa) przyklad tworzenia liczby:
     //dla data.color=0 positionNumber[0] *= 16 i nastepny przebieg petli
     //dla pozostalych positionNumber[0] = 16 * positionNumber[0] + (data.color[i] - 1] * 6 + data.piece[i]
-    public void convertPositionToNumber(long positionNumber[], Data data){
+    public void convertPositionToNumber(int positionNumber[], Data data){
         positionNumber[0] = 0;
         positionNumber[1] = 0;
         long simplePosition = 0;
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < 8; i++) {
             positionNumber[0] *= 16;
             if(data.color[i] != 0) {
                 simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
@@ -181,7 +181,7 @@ public class Data {
             }
             positionNumber[0] += simplePosition;
         }
-        for (int i = 16; i < 25; i++) {
+        for (int i = 8; i < 14; i++) {
             positionNumber[1] *= 16;
             if(data.color[i] != 0) {
                 simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
@@ -190,44 +190,68 @@ public class Data {
             }
             positionNumber[1] += simplePosition;
         }
+        for (int i = 14; i < 20; i++) {
+            positionNumber[2] *= 16;
+            if(data.color[i] != 0) {
+                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            }else {
+                simplePosition = 0;
+            }
+            positionNumber[2] += simplePosition;
+        }
     }
 
     //odwraca dzialanie powyzszej funkcji za pomoca tablicy positionNumber wypelnia plansze w data
-    public void convertNumberToPosition(long positionNumber[], Data data) {
-        long simplePosition = 0;
-        for (int i = 24; i > 15; i++) {
+    public void convertNumberToPosition(int positionNumber[], Data data) {
+        int simplePosition = 0;
+        for (int i = 19; i > 13; i--) {
             simplePosition = positionNumber[1] % 16;
             if(simplePosition < 7){
-                data.piece[i] = ((int) simplePosition);
+                data.piece[i] = (simplePosition);
                 if(simplePosition == 0){
                     data.color[i] = 0;
                 }else {
                     data.color[i] = 1;
                 }
             }else {
-                data.piece[i] = ((int) simplePosition - 6);
+                data.piece[i] = (simplePosition - 6);
+                data.color[i] = 2;
+            }
+            positionNumber[2] /= 16;
+        }
+        for (int i = 13; i > 7; i--) {
+            simplePosition = positionNumber[0] % 16;
+            if(simplePosition < 7){
+                data.piece[i] = (simplePosition);
+                if(simplePosition == 0){
+                    data.color[i] = 0;
+                }else {
+                    data.color[i] = 1;
+                }
+            }else {
+                data.piece[i] = (simplePosition - 6);
                 data.color[i] = 2;
             }
             positionNumber[1] /= 16;
         }
-        for (int i = 15; i > -1; i++) {
+        for (int i = 7; i > -1; i--) {
             simplePosition = positionNumber[0] % 16;
             if(simplePosition < 7){
-                data.piece[i] = ((int) simplePosition);
+                data.piece[i] = (simplePosition);
                 if(simplePosition == 0){
                     data.color[i] = 0;
                 }else {
                     data.color[i] = 1;
                 }
             }else {
-                data.piece[i] = ((int) simplePosition - 6);
+                data.piece[i] = (simplePosition - 6);
                 data.color[i] = 2;
             }
             positionNumber[0] /= 16;
         }
     }
     public static int calculateArrayIndexForCoords(int x, int y){
-        return (y * 5) + x;
+        return (y * Fixed.XWIDTH) + x;
     }
 
     public void setCapture(int x, int y){

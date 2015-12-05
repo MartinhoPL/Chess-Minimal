@@ -156,9 +156,11 @@ public class MyActivity extends Activity {
         onStartButtonClick(view);
     }
 
-    public void superClick(View view) {
-        GameTree gameTree = new GameTree(data);
-        gameTree.generateGameTree(3);
-    }
+//    public void superClick(View view) {
+////        GameTree gameTree = new GameTree(data);
+////        gameTree.generateGameTree(3);
+//        AlfaBeta alfaBeta = new AlfaBeta(data);
+//        alfaBeta.getBestMove();
+//    }
 }
 

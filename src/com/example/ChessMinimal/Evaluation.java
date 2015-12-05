@@ -79,15 +79,15 @@ public class Evaluation { // klasa odpowiedzialna za ocene ustawienia figur itp.
             }
         }
         int result;
-        if(side == 1) {
+        if(sideToPlay == 1) {
             result = evalStat[0] - evalStat[1];
         }else {
             result = evalStat[1] - evalStat[0];
         }
-        if(sideToPlay != side);
-        {
-            result = -result;
-        }
+//        if(sideToPlay != side);
+//        {
+//            result = -result;
+//        }
         return result;
     }
 }

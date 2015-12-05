@@ -1604,6 +1604,7 @@ public final class ChessMechanic {
         } else {
             if (data.getIsCheck()) {
                 if (mate) {
+                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.CHECKMATE;
                 } else {
                     data.setCapture(x2, y2);
@@ -1611,6 +1612,7 @@ public final class ChessMechanic {
                 }
             } else {
                 if (mate) {
+                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.STALEMATE;
                 } else {
                     data.setCapture(x2, y2);
