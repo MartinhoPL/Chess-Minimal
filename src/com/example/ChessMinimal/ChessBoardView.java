@@ -22,7 +22,7 @@ public class ChessBoardView {
     public ImageButton[][]imageButtons;
     public AlfaBeta alfaBeta;
     private TableLayout tableLayout;
-    private Data data;
+    public Data data;
     private Context context;
     private int startX;
     private int startY;
@@ -137,35 +137,7 @@ public class ChessBoardView {
                             }
                         }
                     } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
-                        switch (ChessMechanic.isMoveCorrect(startX, startY, x, y, data)){
-                            case FAIL:
-                                movePiece(startX, startY, startX, startY);
-                                break;
-                            case GOOD:
-                                movePiece(startX, startY, x, y);
-                                break;
-                            case PROMOTION:
-                                movePiece(startX, startY, x, y);
-                                makePromotion(x, y);
-                                break;
-                            case CHECKMATE:
-                                movePiece(startX, startY, x, y);
-                                if (whiteNext) {
-                                    endGame(1);
-                                }
-                                else
-                                {
-                                    endGame(-1);
-                                }
-                                break;
-                            case STALEMATE:
-                                movePiece(startX, startY, x, y);
-                                endGame(0);
-                                break;
-                            case CHECK:
-                                movePiece(startX, startY, x, y);
-                                break;
-                        }
+                        validateMove(x, y);
 //                    dragView.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception ex) {
@@ -183,6 +155,40 @@ public class ChessBoardView {
         imageButtons[x][y] = imageButton;
         tableRows[y].addView(imageButtons[x][y]);
 
+    }
+
+    private void validateMove(int x, int y) {
+        switch (ChessMechanic.isMoveCorrect(startX, startY, x, y, data)){
+            case FAIL:
+                movePiece(startX, startY, startX, startY);
+                break;
+            case GOOD:
+                movePiece(startX, startY, x, y);
+                makeComputerMove();
+                break;
+            case PROMOTION:
+                movePiece(startX, startY, x, y);
+                makePromotion(x, y);
+                break;
+            case CHECKMATE:
+                movePiece(startX, startY, x, y);
+                if (whiteNext) {
+                    endGame(1);
+                }
+                else
+                {
+                    endGame(-1);
+                }
+                break;
+            case STALEMATE:
+                movePiece(startX, startY, x, y);
+                endGame(0);
+                break;
+            case CHECK:
+                movePiece(startX, startY, x, y);
+                makeComputerMove();
+                break;
+        }
     }
 
     public void endGame(final int result) { //-1 - wygrały białe, 0 - remis, 1 - wygrały czarne
@@ -210,6 +216,18 @@ public class ChessBoardView {
     }
 
     private void makePromotion(final int x, final int y) {
+        if (!whiteNext && Settings.Mode == 2)
+        {
+            imageButtons[x][y].setImageResource(R.drawable.whitequeen);
+            imageButtons[x][y].setTag(R.drawable.whitequeen);
+            CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 5, data));
+        }
+        if (whiteNext && Settings.Mode == 1)
+        {
+            imageButtons[x][y].setImageResource(R.drawable.blackqueen);
+            imageButtons[x][y].setTag(R.drawable.blackqueen);
+            CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 5, data));
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
         final String[] items = {context.getString(R.string.Queen), context.getString(R.string.Bishop), context.getString(R.string.Pawn), context.getString(R.string.Rook)};
         final int[] imageResource = new int[1];
@@ -268,7 +286,7 @@ public class ChessBoardView {
     private void CheckSituationAfterPromotion(MoveCorrectEnum promotion) {
         switch (promotion){
             case GOOD:
-
+                makeComputerMove();
                 break;
             case CHECKMATE:
                 if (whiteNext) {
@@ -283,6 +301,7 @@ public class ChessBoardView {
                 endGame(0);
                 break;
             case CHECK:
+                makeComputerMove();
                 break;
         }
     }
@@ -371,25 +390,35 @@ public class ChessBoardView {
                 whiteNext = !whiteNext;
                 changeTextViewForNextTurn();
                 ((MyActivity)context).gameState = GameStateEnum.STARTED;
-                if (Settings.Mode == 1)
-                {
-                    if (!whiteNext)
-                    {
-                        byte[] bestMove = alfaBeta.getBestMove();
-                        imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
-                        movePiece(bestMove[0]%Fixed.XWIDTH, bestMove[0]/Fixed.XWIDTH, bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
-                    }
-                }
-                if (Settings.Mode == 2)
-                {
-                    if (whiteNext)
-                    {
-                        byte[] bestMove = alfaBeta.getBestMove();
-                        imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
-                        movePiece(bestMove[0]%Fixed.XWIDTH, bestMove[0]/Fixed.XWIDTH, bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
-                    }
-                }
+                makeComputerMove();
             }
+    }
+
+    private void makeComputerMove() {
+        if (Settings.Mode == 1)
+        {
+            if (!whiteNext)
+            {
+                alfaBeta = new AlfaBeta(data);
+                byte[] bestMove = alfaBeta.getBestMove();
+                imageResourceDrag = (Integer) imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+                startX = bestMove[0]%Fixed.XWIDTH;
+                startY = bestMove[0]/Fixed.XWIDTH;
+                validateMove(bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
+            }
+        }
+        if (Settings.Mode == 2)
+        {
+            if (whiteNext)
+            {
+                alfaBeta = new AlfaBeta(data);
+                byte[] bestMove = alfaBeta.getBestMove();
+                imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+                startX = bestMove[0]%Fixed.XWIDTH;
+                startY = bestMove[0]/Fixed.XWIDTH;
+                validateMove(bestMove[1] % Fixed.XWIDTH, bestMove[1] / Fixed.XWIDTH);
+            }
+        }
     }
 
     public TableRow[] getTableRows() {

@@ -42,6 +42,7 @@ public class MyActivity extends Activity {
         chessBoardView.createBoard();
         if (Settings.Mode == 2)
         {
+            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
             byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
