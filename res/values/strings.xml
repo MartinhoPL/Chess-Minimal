@@ -20,10 +20,14 @@
     <string name="WhiteSuggestDraw">Białe proponują remis. Zgadzasz się?</string>
     <string name="BlackSuggestDraw">Czaene proponują remis. Zgadzasz się?</string>
     <string-array name="gameModeSpinnerItems">
+        <item>Humans</item>
         <item>Human White</item>
+        <item>Human Black</item>
     </string-array>
 
     <string-array name="timeSpinnerItems">
-        <item>5 min</item>
+        <item>10 min</item>
+        <item>20 min</item>
+        <item>30 min</item>
     </string-array>
 </resources>

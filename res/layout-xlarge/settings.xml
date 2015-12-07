@@ -100,7 +100,7 @@
             <EditText
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/editText" android:layout_column="2" android:text="8" android:textSize="50dp"
+                    android:id="@+id/editText" android:layout_column="2" android:textSize="50dp"
                     android:background="@android:color/background_light"
                     android:textColor="@android:color/background_dark" android:layout_span="80"/>
         </TableRow>

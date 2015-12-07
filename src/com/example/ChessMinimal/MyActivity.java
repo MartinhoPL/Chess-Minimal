@@ -5,10 +5,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TableLayout;
-import android.widget.TextView;
+import android.widget.*;
 
 import java.io.IOException;
+
+import static com.example.ChessMinimal.Settings.TreeDepth;
 
 public class MyActivity extends Activity {
     public GameStateEnum gameState;
@@ -50,7 +51,23 @@ public class MyActivity extends Activity {
     }
 
     public void onSettingsButtonClick(View view) {
+        int s = Settings.Mode;
         setContentView(R.layout.settings);
+
+        ((Spinner)findViewById(R.id.spinner2)).setSelection(Settings.Mode);
+        switch (Settings.Time) {
+            case 10:
+                ((Spinner) findViewById(R.id.spinner)).setSelection(0);
+                break;
+            case 20:
+                ((Spinner) findViewById(R.id.spinner)).setSelection(1);
+                break;
+            case 30:
+                ((Spinner) findViewById(R.id.spinner)).setSelection(2);
+                break;
+        }
+        ((CheckBox)findViewById(R.id.checkBox)).setChecked(Settings.ShowEvaluation);
+        ((EditText)findViewById(R.id.editText)).setText(Settings.TreeDepth);
     }
 
     public void onGiveUpButtonClick(View view) {
@@ -152,8 +169,27 @@ public class MyActivity extends Activity {
     }
 
     public void onAcceptClick(View view) {
+        Settings.Mode = ((Spinner)findViewById(R.id.spinner2)).getSelectedItemPosition();
+        switch (((Spinner) findViewById(R.id.spinner)).getSelectedItemPosition()) {
+            case 0:
+                Settings.Time = 10;
+                break;
+            case 1:
+                Settings.Time = 20;
+                break;
+            case 2:
+                Settings.Time = 30;
+                break;
+        }
+        Settings.ShowEvaluation = ((CheckBox)findViewById(R.id.checkBox)).isChecked();
+        TreeDepth = ((EditText)findViewById(R.id.editText)).getText().toString();
+
         setContentView(R.layout.main);
         onStartButtonClick(view);
+    }
+
+    public void undoMove(View view) {
+        chessBoardView.undoMove();
     }
 }
 

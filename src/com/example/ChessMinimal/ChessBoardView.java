@@ -386,4 +386,10 @@ public class ChessBoardView {
     public void setImageButtons(ImageButton[][] imageButtons) {
         this.imageButtons = imageButtons;
     }
+
+    public void undoMove() {
+        Move move = null;
+        // todo Patryk tu wywołujemy Twoją funkcję, musi mi zwracać Move, żebym wiedział skąd dokąd ruszyć
+        movePiece(move.getX1(), move.getY1(), move.getX2(), move.getY2());
+    }
 }
