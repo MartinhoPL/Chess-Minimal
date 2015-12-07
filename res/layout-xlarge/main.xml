@@ -140,5 +140,11 @@
                 android:id="@+id/imageButton2" android:minHeight="50dp" android:minWidth="50dp"
                 android:background="@android:color/background_dark" />
     </LinearLayout>
+    <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="New Button"
+            android:id="@+id/button" android:layout_weight="0.10" android:onClick="superClick"/>
 
 </LinearLayout>

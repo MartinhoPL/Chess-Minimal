@@ -160,7 +160,7 @@ public class MyActivity extends Activity {
 
     public void generateTree(View view) {
         GameTree gameTree = new GameTree(data);
-        gameTree.generateGameTree(6);
+        gameTree.generateGameTree(3);
         try {
             TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildren(), "C:/Users/Mikolaj/Desktop/file.txt");
         } catch (IOException e) {
@@ -191,5 +191,12 @@ public class MyActivity extends Activity {
     public void undoMove(View view) {
         chessBoardView.undoMove();
     }
+
+//    public void superClick(View view) {
+////        GameTree gameTree = new GameTree(data);
+////        gameTree.generateGameTree(3);
+//        AlfaBeta alfaBeta = new AlfaBeta(data);
+//        alfaBeta.getBestMove();
+//    }
 }
 
