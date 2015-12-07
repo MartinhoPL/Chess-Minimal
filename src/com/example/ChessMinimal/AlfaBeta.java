@@ -23,7 +23,7 @@ public class AlfaBeta {
         byte []move;
         int eval = alfaBetaAlgorithm(0, -99999999, 99999999, true, 0);
         move = gameTree.getMovesAt(bestMove);
-        return move;
+        return move.clone();
     }
 
     public  void convertMovesFromPrincipalVariationToBytes(){

@@ -32,20 +32,14 @@ public class MyActivity extends Activity {
     }
 
     public void onStartButtonClick(View view) {
- gameState = GameStateEnum.STARTED;
-
+       // gameState = GameStateEnum.STARTED;
+        gameState = GameStateEnum.BLOCKED;
         data=new Data();
         setContentView(R.layout.main);
         TableLayout chessBoardLayout = (TableLayout)findViewById(R.id.chessBoardLayout);
         TextView textView = (TextView) findViewById(R.id.textView);
         chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
         chessBoardView.createBoard();
-        if (Settings.Mode == 2)
-        {
-            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
-            chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
-            chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
-        }
     }
 
     public void onPauseButtonClick(View view) {
@@ -194,15 +188,17 @@ public class MyActivity extends Activity {
         onStartButtonClick(view);
     }
 
+<<<<<<< HEAD
     public void undoMove(View view) {
         chessBoardView.undoMove();
     }
-
+=======
 //    public void superClick(View view) {
 ////        GameTree gameTree = new GameTree(data);
 ////        gameTree.generateGameTree(3);
 //        AlfaBeta alfaBeta = new AlfaBeta(data);
 //        alfaBeta.getBestMove();
 //    }
+>>>>>>> 662718832ea60a8a2fe96d1b648aac644c6205fb
 }
 

@@ -13,22 +13,26 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+import java.util.Set;
+
 public class ChessBoardView {
 
     private final CharSequence whitesMoveString;
     private TableRow[]tableRows;
-    private ImageButton[][]imageButtons;
+    public ImageButton[][]imageButtons;
+    public AlfaBeta alfaBeta;
     private TableLayout tableLayout;
     private Data data;
     private Context context;
     private int startX;
     private int startY;
-    private int imageResourceDrag;
+    public int imageResourceDrag;
     private TextView textView;
     public boolean whiteNext = true;
     private boolean lock = false;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
+    alfaBeta = new AlfaBeta(data);
         this.textView = textView;
         this.whitesMoveString = textView.getText();
         tableRows = new TableRow[Fixed.YHEIGHT];
@@ -367,6 +371,24 @@ public class ChessBoardView {
                 whiteNext = !whiteNext;
                 changeTextViewForNextTurn();
                 ((MyActivity)context).gameState = GameStateEnum.STARTED;
+                if (Settings.Mode == 1)
+                {
+                    if (!whiteNext)
+                    {
+                        byte[] bestMove = alfaBeta.getBestMove();
+                        imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+                        movePiece(bestMove[0]%Fixed.XWIDTH, bestMove[0]/Fixed.XWIDTH, bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
+                    }
+                }
+                if (Settings.Mode == 2)
+                {
+                    if (whiteNext)
+                    {
+                        byte[] bestMove = alfaBeta.getBestMove();
+                        imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+                        movePiece(bestMove[0]%Fixed.XWIDTH, bestMove[0]/Fixed.XWIDTH, bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
+                    }
+                }
             }
     }
 
