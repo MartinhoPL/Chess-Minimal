@@ -209,6 +209,7 @@ public final class ChessMechanic {
         } else if (moveColor != 0) {
             return kingAttackPiece(x1, y1, x2, y2, data);
         }
+        int king = data.setZero(x1,y1);
         for (int j = 0; j < 5; j++) {
             for (int i = 0; i < 5; i++) {
                 if (data.getColor(i, j) != myColor) {
@@ -217,30 +218,35 @@ public final class ChessMechanic {
                         switch (piece) { //sprawdzanie czy cokolwiek moze sie poruszuc na pole króla (nowe)
                             case 1: {//pion (tylko do przodu o jedno pole)
                                 if (pawnCanAttack(i, j, x2, y2, data)) {
+                                    data.resetZero(x1,y1,king);
                                     return false;
                                 }
                                 break;
                             }
                             case 2: {//kon  ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
                                 if (knigthMoveIsCorrect(i, j, x2, y2, data)) {
+                                    data.resetZero(x1,y1,king);
                                     return false;
                                 }
                                 break;
                             }
                             case 3: {//goniec
                                 if (bishopMoveIsCorrect(i, j, x2, y2, data)) {
+                                    data.resetZero(x1,y1,king);
                                     return false;
                                 }
                                 break;
                             }
                             case 4: {//wieza
                                 if (rookMoveIsCorrect(i, j, x2, y2, data)) {
+                                    data.resetZero(x1,y1,king);
                                     return false;
                                 }
                                 break;
                             }
                             case 5: {//hetman
                                 if (queenMoveIsCorrect(i, j, x2, y2, data)) {
+                                    data.resetZero(x1,y1,king);
                                     return false;
                                 }
                                 break;
@@ -248,6 +254,7 @@ public final class ChessMechanic {
                             case 6: {//krol sprawdzamy czy nie podjeżdżamy pod króla przeciwnika(ruch hipotetyczny)
                                 if (i - x2 < 2 && i - x2 > -2) {
                                     if (j - y2 < 2 && j - y2 > -2) {
+                                        data.resetZero(x1,y1,king);
                                         return false;
                                     }
                                 }
@@ -258,6 +265,7 @@ public final class ChessMechanic {
                 }
             }
         }
+        data.resetZero(x1,y1,king);
         return true;
     }
 
@@ -318,8 +326,8 @@ public final class ChessMechanic {
 
     public static MoveCorrectEnum promotion(int x, int y, int piece, Data data) {
         data.promotion(x, y, piece);
-        data.setIsCheck(isCheckAfterMove(true, data));
-        if (data.getIsCheck()) {
+        boolean isCheck = isCheckAfterMove(true, data);
+        if (isCheck) {
             if (isCheckmate(data)) {
                 return MoveCorrectEnum.CHECKMATE;
             } else {
@@ -1438,8 +1446,9 @@ public final class ChessMechanic {
                         continue;
                     } else {
                         if (kingY + j < Fixed.YHEIGHT && kingY + j > -1) { // tak jak dla x
-                            if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j, data))
+                            if (kingMoveIsCorrect(kingX, kingY, kingX + i, kingY + j, data)) {
                                 return false; //bo krol ma mozliwosc ruchu na nieatakowane pole
+                            }
                         }
                     }
                 }
@@ -1461,8 +1470,9 @@ public final class ChessMechanic {
             }
         }
         if (attackerCanKilled(attackerX, attackerY, data)) {
-            return false;
+            return false; //mozna ubic atakujacego
         }
+        //czy mozna zablokowac linie ataku
         switch (attacker) {
             case 1:
             case 2:
@@ -1490,28 +1500,32 @@ public final class ChessMechanic {
         return true;
     }
 
-    public static MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2, Data data) { // kompletne (docelowo) sprawdzenie poprawności ruchu
-        if (x1 == x2 && y1 == y2)
+    // kompletne (docelowo) sprawdzenie poprawności ruchu
+    public static MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2, Data data) {
+        if (x1 == x2 && y1 == y2) { //poczatek == koniec
             return MoveCorrectEnum.FAIL;
-        if (data.getColor(x2, y2) == data.getSide())
+        }
+        if (data.getColor(x2, y2) == data.getSide()) { //proba ruchu na pole zajete przez nasza bierke
             return MoveCorrectEnum.FAIL;
-        if(!isInsideBoard(x2, y2, data)) {
+        }
+        if(!isInsideBoard(x2, y2, data)) { //ruch poza plansze
             return  MoveCorrectEnum.FAIL;
         }
         int piece1 = data.getPiece(x1, y1);
-        if (data.getColor(x1, y1) != data.getSide()) //czy wybrana bierka jest przeciwnika lub puste pole
+        if (data.getColor(x1, y1) != data.getSide()) { //czy wybrana bierka jest przeciwnika lub puste pole
             return MoveCorrectEnum.FAIL;
-        switch (piece1) { //sprawdzanie poprawnosci ruchu dla kazdej bierki
+        }
+        switch (piece1) { //sprawdzanie poprawnosci ruchu dla kazdego typu bierki
             case 0: {//puste (brak bierki na polu)
                 return MoveCorrectEnum.FAIL;
             }
-            case 1: {//pion (tylko do przodu o jedno pole)
+            case 1: {//pion
                 if (!pawnMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
                 break;
             }
-            case 2: {//kon ruch typu 2 na 1 (dwa w pionie 1 w poziomie lub dwa w poziomie 1 w pionie)
+            case 2: {//kon
                 if (!knigthMoveIsCorrect(x1, y1, x2, y2, data)) {
                     return MoveCorrectEnum.FAIL;
                 }
@@ -1542,84 +1556,40 @@ public final class ChessMechanic {
                 break;
             }
         }
-        if (data.getIsCheck()) {//w przypadku szacha
-            data.makeMove(x1, y1, x2, y2);
-            if (isCheckAfterMove(false, data)) {//sprawdzenie czy nadal król szachowany false bo makeMove zmienia stronę na ruchu
-                data.undoMove();
-                return MoveCorrectEnum.FAIL;// i zrócenie niepoprawności ruchu
-            } else {
-                data.setIsCheck(isCheckAfterMove(true, data));
-                boolean mate = false;
-                boolean promotion = isPromotionAfterMove(data);
-                if (!promotion) {
-                    if (data.getIsCheck()) {
-                        mate = isCheckmate(data);
-                    } else {
-                        mate = isStalemate(data);
-                    }
-                }
-                data.undoMove();
-                if (promotion) {
-                    data.setCapture(x2, y2);
-                    return MoveCorrectEnum.PROMOTION;
-                } else {
-                    if (data.getIsCheck()) {
-                        if (mate) {
-                            return MoveCorrectEnum.CHECKMATE;
-                        } else {
-                            data.setCapture(x2, y2);
-                            return MoveCorrectEnum.CHECK;
-                        }
-                    } else {
-                        if (mate) {
-                            return MoveCorrectEnum.STALEMATE;
-                        } else {
-                            data.setCapture(x2, y2);
-                            return MoveCorrectEnum.GOOD;
-                        }
-                    }
-                }
-            }
-        }
-        //todo spytać o zachowywanie sekwencji ruchów
-        data.makeMove(x1, y1, x2, y2);//wykonanie ruchu
-        if (isCheckAfterMove(false, data)) {
-            data.undoMove();
+        data.makeMove(x1, y1, x2, y2);//proba wykonania ruchu
+        if (isCheckAfterMove(false, data)) { //czy po ruchu jest szachowany nasz krol
+            data.undoMove(); //cofnij probe
             return MoveCorrectEnum.FAIL;
         }
-        data.setIsCheck(isCheckAfterMove(true, data));//sprawdzanie czy po ruchu jest szach i zmiana wartosci pola w data.
+        //ruch poprawny sprawdzenie sytuacji na planszy
+        boolean isCheck = isCheckAfterMove(true, data);//sprawdzanie czy po ruchu jest szach
         boolean mate = false;
-        boolean promotion = isPromotionAfterMove(data);
-        if (!promotion) {
-            if (data.getIsCheck()) {
-                mate = isCheckmate(data);
+        boolean promotion = isPromotionAfterMove(data); //sprawdzenie czy możliwosc promocji
+        if (!promotion) { //brak promocji
+            if (isCheck) { //sprawdz czy szach
+                mate = isCheckmate(data); //czy szach-mat
             } else {
-                mate = isStalemate(data);
+                mate = isStalemate(data); //czy pat
             }
         }
         data.undoMove();// cofnięcie ruchu
-        if (promotion) {
-            data.setCapture(x2, y2);
+        data.setCapture(x2,y2);
+        if (promotion) { //jesli promocja
             return MoveCorrectEnum.PROMOTION;
         } else {
-            if (data.getIsCheck()) {
-                if (mate) {
-                    data.setCapture(x2, y2);
+            if (isCheck) {//czy szach
+                if (mate) {//czy mat (checkMATE lub staleMATE)
                     return MoveCorrectEnum.CHECKMATE;
                 } else {
-                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.CHECK;
                 }
             } else {
-                if (mate) {
-                    data.setCapture(x2, y2);
+                if (mate) {//czy mat (checkMATE lub staleMATE)
                     return MoveCorrectEnum.STALEMATE;
                 } else {
-                    data.setCapture(x2, y2);
                     return MoveCorrectEnum.GOOD;
                 }
             }
         }
-
     }
 }

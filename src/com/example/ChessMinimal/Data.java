@@ -1,7 +1,7 @@
 package com.example.ChessMinimal;
 
 
-public class Data {
+public class Data implements Cloneable{
     //mozna polaczyc color i piece np. biale parzyste czarne nieparyste 0 puste
     public int[] color; //1-bialy; 2-czarny; 0-pusty
     public int[] piece; //0-pusty; 1-pion; 2-kon; 3-goniec; 4-wieza; 5-hetman/krolowa; 6-krol
@@ -10,24 +10,33 @@ public class Data {
     private int xside;  //strona niewykonujaca ruchu
     //private int castle;    // jak wyglada roszada?
     //czy jest podwojny ruch piona na planszy 5x5?
-    private int fifty; // liczba ruchow (polruchow?) od bicia lub ruchu pionem ==50->remis
     //ograniczenia w szukaniu ruchow;
     private int max_time;
     private int max_depth;
-    private boolean isCheck;
     //czas rozpoczecia szukania i maksymalny czas zaakonczenia
     private int start_time;
     private int stop_time;
-    private Move lastMove;private int capture;
+    private byte[] lastMove = {-1,0,0,0};
+    private int capture;
 
     Data() {
-        isCheck = false;
         side = 1;
         xside = 2;
-        fifty = 0;
         piece = Fixed.INIT_PIECE.clone();
         color = Fixed.INIT_COLOR.clone();
-        lastMove = new Move(-1, -1, -1, -1, -1, -1);
+    }
+
+    public Data clone() {
+        Data temp = null;
+        try {
+            temp = (Data) super.clone();
+        }catch (Exception e){
+        }
+        if(temp != null) {
+            temp.piece = this.piece.clone();
+            temp.color = this.color.clone();
+        }
+        return temp;
     }
 
     public int getPiece(int x, int y) {
@@ -52,10 +61,6 @@ public class Data {
         return -1;
     }
 
-    public boolean getIsCheck() {
-        return this.isCheck;
-    }
-
     public int setZero(int x, int y) {
         int piece = this.getPiece(x, y) + this.getColor(x, y) * 10;
         this.color[x + y * Fixed.XWIDTH] = 0;
@@ -68,80 +73,71 @@ public class Data {
         this.piece[x + y * Fixed.XWIDTH] = piece % 10;
     }
 
-    public void setIsCheck(boolean isCheck) {
-        this.isCheck = isCheck;
-    }
-
     public void changeSite() {
         int a = this.xside;
         this.xside = this.side;
         this.side = a;
     }
 
-    public void makeMove(byte[] move, Data data) {
+    public void makeMove(byte[] move) {
         if (move[2] != 4) {
             if (move[0] != move[1]) {
-                data.piece[move[1]] = data.piece[move[0]];//wykonanie ruchu
-                data.color[move[1]] = data.color[move[0]];
-                data.color[move[0]] = 0;
-                data.piece[move[0]] = 0;
-                data.changeSite();
+                this.piece[move[1]] = this.piece[move[0]];//wykonanie ruchu
+                this.color[move[1]] = this.color[move[0]];
+                this.color[move[0]] = 0;
+                this.piece[move[0]] = 0;
+                this.changeSite();
             }
         } else {
             if (move[0] != move[1]) {
-                data.piece[move[1]] = move[3];//wykonanie ruchu
-                data.color[move[1]] = data.color[move[0]];
-                data.color[move[0]] = 0;
-                data.piece[move[0]] = 0;
-                data.changeSite();
+                this.piece[move[1]] = 5;//wykonanie ruchu
+                this.color[move[1]] = this.color[move[0]];
+                this.color[move[0]] = 0;
+                this.piece[move[0]] = 0;
+                this.changeSite();
             }
         }
     }
 
-    public void undoMove(byte[] move, Data data) {
-        if(move[2] == 8){
+    public void undoMove(byte[] move) {
+        if(move[2] != 4){
             if (move[0] != move[1]) {
-                data.piece[move[0]] = data.piece[move[1]];
-                data.color[move[0]] = data.color[move[1]];
-                data.piece[move[1]] = move[3];
-                if(data.color[move[0]] == 1) {
-                    data.color[move[1]] = 2;
+                this.piece[move[0]] = this.piece[move[1]];
+                this.color[move[0]] = this.color[move[1]];
+                this.piece[move[1]] = move[3];
+                if(this.color[move[0]] == 1) {
+                    this.color[move[1]] = 2;
                 }
                 else{
-                    data.color[move[1]] = 1;
+                    this.color[move[1]] = 1;
                 }
-                data.changeSite();
-            }
-        } else if (move[2] == 4) {
-            if (move[0] != move[1]) {
-                data.piece[move[0]] = 1;//wykonanie ruchu
-                data.color[move[0]] = data.color[move[1]];
-                data.piece[move[1]] = capture;
-                if (capture == 0) {
-                    data.color[move[1]] = 0;
-                } else {
-                    if (data.color[move[0]] == 1) {
-                        data.color[move[1]] = 2;
-                    } else {
-                        data.color[move[1]] = 1;
-                    }
-                }
-                data.changeSite();
+                this.changeSite();
             }
         } else {
             if (move[0] != move[1]) {
-                data.piece[move[0]] = data.piece[move[1]];//wykonanie ruchu
-                data.color[move[0]] = data.color[move[1]];
-                data.color[move[1]] = 0;
-                data.piece[move[1]] = 0;
-                data.changeSite();
+                this.piece[move[0]] = 1;//wykonanie ruchu
+                this.color[move[0]] = this.color[move[1]];
+                this.piece[move[1]] = move[3];
+                if (move[3] == 0) {
+                    this.color[move[1]] = 0;
+                } else {
+                    if (this.color[move[0]] == 1) {
+                        this.color[move[1]] = 2;
+                    } else {
+                        this.color[move[1]] = 1;
+                    }
+                }
+                this.changeSite();
             }
         }
     }
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (x1 != x2 || y1 != y2) {
-            lastMove.setAll(x1, y1, x2, y2, this.piece[x2 + y2 * Fixed.XWIDTH], this.color[x2 + y2 * Fixed.XWIDTH]);
+            lastMove[0] = (byte)(x1 + y1 * Fixed.XWIDTH);
+            lastMove[1] = (byte)(x2 + y2 * Fixed.XWIDTH);
+            lastMove[2] = 0;
+            lastMove[3] = (byte)this.piece[x2 + y2 * Fixed.XWIDTH];
             this.piece[x2 + y2 * Fixed.XWIDTH] = this.piece[x1 + y1 * Fixed.XWIDTH];//wykonanie ruchu
             this.color[x2 + y2 * Fixed.XWIDTH] = this.color[x1 + y1 * Fixed.XWIDTH];
             this.color[x1 + y1 * Fixed.XWIDTH] = 0;
@@ -151,13 +147,19 @@ public class Data {
     }
 
     public void undoMove() {
-        if (lastMove.getX1() != -1) {
-            this.color[lastMove.getX1() + lastMove.getY1() * Fixed.XWIDTH] = this.color[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH];
-            this.piece[lastMove.getX1() + lastMove.getY1() * Fixed.XWIDTH] = this.piece[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH];
-            this.piece[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH] = lastMove.getBeatenPiece();
-            this.color[lastMove.getX2() + lastMove.getY2() * Fixed.XWIDTH] = lastMove.getBeatenColor();
+        if (lastMove[0] != -1) {
+            this.color[lastMove[0]] = this.color[lastMove[1]];
+            this.piece[lastMove[0]] = this.piece[lastMove[1]];
+            this.piece[lastMove[1]] = lastMove[3];
+            if (lastMove[3] == 0) {
+                this.color[lastMove[1]] = 0;
+            } else if (this.color[lastMove[0]] == 1) {
+                this.color[lastMove[1]] = 2;
+            } else {
+                this.color[lastMove[1]] = 1;
+            }
             changeSite();
-            lastMove.setX1(-1);
+            lastMove[0] = -1;
         }
     }
 
@@ -168,14 +170,14 @@ public class Data {
     //na podstawie planszy z data wypelnia tablice posiotionNumber (dwuelementowa) przyklad tworzenia liczby:
     //dla data.color=0 positionNumber[0] *= 16 i nastepny przebieg petli
     //dla pozostalych positionNumber[0] = 16 * positionNumber[0] + (data.color[i] - 1] * 6 + data.piece[i]
-    public void convertPositionToNumber(int positionNumber[], Data data){
+    public void convertPositionToNumber(int positionNumber[]){
         positionNumber[0] = 0;
         positionNumber[1] = 0;
         long simplePosition = 0;
         for (int i = 0; i < 8; i++) {
             positionNumber[0] *= 16;
-            if(data.color[i] != 0) {
-                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            if(this.color[i] != 0) {
+                simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
             }else {
                 simplePosition = 0;
             }
@@ -183,8 +185,8 @@ public class Data {
         }
         for (int i = 8; i < 14; i++) {
             positionNumber[1] *= 16;
-            if(data.color[i] != 0) {
-                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            if(this.color[i] != 0) {
+                simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
             }else {
                 simplePosition = 0;
             }
@@ -192,8 +194,8 @@ public class Data {
         }
         for (int i = 14; i < 20; i++) {
             positionNumber[2] *= 16;
-            if(data.color[i] != 0) {
-                simplePosition = data.piece[i] + (data.color[i] - 1) * 6;
+            if(this.color[i] != 0) {
+                simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
             }else {
                 simplePosition = 0;
             }
@@ -201,55 +203,6 @@ public class Data {
         }
     }
 
-    //odwraca dzialanie powyzszej funkcji za pomoca tablicy positionNumber wypelnia plansze w data
-    public void convertNumberToPosition(int positionNumber[], Data data) {
-        int simplePosition = 0;
-        for (int i = 19; i > 13; i--) {
-            simplePosition = positionNumber[1] % 16;
-            if(simplePosition < 7){
-                data.piece[i] = (simplePosition);
-                if(simplePosition == 0){
-                    data.color[i] = 0;
-                }else {
-                    data.color[i] = 1;
-                }
-            }else {
-                data.piece[i] = (simplePosition - 6);
-                data.color[i] = 2;
-            }
-            positionNumber[2] /= 16;
-        }
-        for (int i = 13; i > 7; i--) {
-            simplePosition = positionNumber[0] % 16;
-            if(simplePosition < 7){
-                data.piece[i] = (simplePosition);
-                if(simplePosition == 0){
-                    data.color[i] = 0;
-                }else {
-                    data.color[i] = 1;
-                }
-            }else {
-                data.piece[i] = (simplePosition - 6);
-                data.color[i] = 2;
-            }
-            positionNumber[1] /= 16;
-        }
-        for (int i = 7; i > -1; i--) {
-            simplePosition = positionNumber[0] % 16;
-            if(simplePosition < 7){
-                data.piece[i] = (simplePosition);
-                if(simplePosition == 0){
-                    data.color[i] = 0;
-                }else {
-                    data.color[i] = 1;
-                }
-            }else {
-                data.piece[i] = (simplePosition - 6);
-                data.color[i] = 2;
-            }
-            positionNumber[0] /= 16;
-        }
-    }
     public static int calculateArrayIndexForCoords(int x, int y){
         return (y * Fixed.XWIDTH) + x;
     }
@@ -262,24 +215,12 @@ public class Data {
         return this.capture;
     }
 
-    public Move getLastMove() {
-        return lastMove;
-    }
-
-    public void setLastMove(Move lastMove) {
-        this.lastMove = lastMove;
-    }
-
     public int getMax_depth() {
         return max_depth;
     }
 
     public void setMax_depth(int max_depth) {
         this.max_depth = max_depth;
-    }
-
-    public boolean isCheck() {
-        return isCheck;
     }
 
     public int getStart_time() {
@@ -302,32 +243,8 @@ public class Data {
         return color;
     }
 
-    public void setColor(int[] color) {
-        this.color = color;
-    }
-
     public int[] getPiece() {
         return piece;
-    }
-
-    public void setPiece(int[] piece) {
-        this.piece = piece;
-    }
-
-    public void setSide(int side) {
-        this.side = side;
-    }
-
-    public void setXside(int xside) {
-        this.xside = xside;
-    }
-
-    public int getFifty() {
-        return fifty;
-    }
-
-    public void setFifty(int fifty) {
-        this.fifty = fifty;
     }
 
     public int getMax_time() {

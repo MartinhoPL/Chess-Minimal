@@ -27,7 +27,7 @@ public class GameTree {
         nodeChildren = new int[MAX_MOVES];
         transpositons = new int[MAX_TRANSPOSITIONS][3];
         nodeFather = new int[MAX_MOVES];
-        this.data = data;
+        this.data = data.clone();
         nodeChildrenArrayIndex = 0;
         movesIndex = 0;
     }
@@ -408,13 +408,13 @@ public class GameTree {
             nodeFather[movesIndex] = father;
         }
         if (checkTransposition) {
-            generatedData.makeMove(move, generatedData);
+            generatedData.makeMove(move);
             if(isTransposition(generatedData)) {
-                generatedData.undoMove(move, generatedData);
+                generatedData.undoMove(move);
                 return null;
             }
             else {
-                generatedData.undoMove(move, generatedData);
+                generatedData.undoMove(move);
             }
         }
         return move;
@@ -439,7 +439,7 @@ public class GameTree {
     public void makeAllMovesToNextPosition(int[] moveSequence, Data data) {
         for (int i = moveSequence.length - 1; i >= 0; i--) {
             if(moveSequence[i] != 0) {
-                data.makeMove(moves[moveSequence[i]], data);
+                data.makeMove(moves[moveSequence[i]]);
             }
         }
     }
@@ -449,12 +449,13 @@ public class GameTree {
             if(moveSequence[i] == 0){
                 break;
             }
-            data.undoMove(moves[moveSequence[i]], data);
+            data.undoMove(moves[moveSequence[i]]);
         }
     }
+
     private boolean isTransposition(Data data) {
         int []position = new int[3];
-        data.convertPositionToNumber(position, data);
+        data.convertPositionToNumber(position);
         int index = hash(position);
         int offset = 0;
         while(true) {

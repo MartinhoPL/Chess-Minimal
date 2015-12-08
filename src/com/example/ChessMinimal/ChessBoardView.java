@@ -32,7 +32,7 @@ public class ChessBoardView {
     private boolean lock = false;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
-    alfaBeta = new AlfaBeta(data);
+    //alfaBeta = new AlfaBeta(data);
         this.textView = textView;
         this.whitesMoveString = textView.getText();
         tableRows = new TableRow[Fixed.YHEIGHT];
