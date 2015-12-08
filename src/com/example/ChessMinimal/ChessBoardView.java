@@ -21,13 +21,13 @@ public class ChessBoardView {
     private TableRow[]tableRows;
     public ImageButton[][]imageButtons;
     public AlfaBeta alfaBeta;
-    private TableLayout tableLayout;
+    public TableLayout tableLayout;
     public Data data;
     private Context context;
     private int startX;
     private int startY;
     public int imageResourceDrag;
-    private TextView textView;
+    public TextView textView;
     public boolean whiteNext = true;
     private boolean lock = false;
 
@@ -57,6 +57,28 @@ public class ChessBoardView {
                     color = Color.GRAY;
                 }
                 imageResource = getimageResourceForCell(j, i);
+                createColumn(color, imageResource, j, i);
+            }
+            tableLayout.addView(tableRows[i]);
+        }
+
+    }
+
+    public void restoreBoard(){
+        int color;
+        int imageResource;
+        for(int i = 0; i < Fixed.YHEIGHT; i++)
+        {
+            createRow(i);
+            for(int j = 0; j < Fixed.XWIDTH; j++)
+            {
+                if((j + i*Fixed.YHEIGHT) % 2 == 0){
+                    color = Color.WHITE;
+                }
+                else {
+                    color = Color.GRAY;
+                }
+                imageResource = (Integer) imageButtons[j][i].getTag();
                 createColumn(color, imageResource, j, i);
             }
             tableLayout.addView(tableRows[i]);
@@ -306,7 +328,7 @@ public class ChessBoardView {
         }
     }
 
-    private void changeTextViewForNextTurn() {
+    public void changeTextViewForNextTurn() {
         if (!whiteNext) {
             textView.setText(context.getString(R.string.BlacksMove));
         }
@@ -407,7 +429,7 @@ public class ChessBoardView {
                 validateMove(bestMove[1]%Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
             }
         }
-        if (Settings.Mode == 2)
+        else if (Settings.Mode == 2)
         {
             if (whiteNext)
             {

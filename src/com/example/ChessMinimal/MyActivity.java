@@ -32,7 +32,7 @@ public class MyActivity extends Activity {
     }
 
     public void onStartButtonClick(View view) {
- gameState = GameStateEnum.STARTED;
+        gameState = GameStateEnum.STARTED;
 
         data=new Data();
         setContentView(R.layout.main);
@@ -192,7 +192,33 @@ public class MyActivity extends Activity {
         TreeDepth = ((EditText)findViewById(R.id.editText)).getText().toString();
 
         setContentView(R.layout.main);
-        onStartButtonClick(view);
+        RestoreBoard();
+        applyChangesInGameMode();
+    }
+
+    private void applyChangesInGameMode() {
+        if (Settings.Mode == 1 && !chessBoardView.whiteNext)
+        {
+            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
+            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
+            chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+            chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
+        }
+        else if (Settings.Mode == 2 && chessBoardView.whiteNext)
+        {
+            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
+            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
+            chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
+            chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
+        }
+    }
+
+    private void RestoreBoard() {
+        TableLayout chessBoardLayout = (TableLayout)findViewById(R.id.chessBoardLayout);
+        chessBoardView.tableLayout = chessBoardLayout;
+        chessBoardView.textView = (TextView) findViewById(R.id.textView);
+        chessBoardView.changeTextViewForNextTurn();
+        chessBoardView.restoreBoard();
     }
 
     public void undoMove(View view) {
