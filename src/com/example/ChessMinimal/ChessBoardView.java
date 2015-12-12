@@ -30,9 +30,10 @@ public class ChessBoardView {
     public TextView textView;
     public boolean whiteNext = true;
     private boolean lock = false;
+    public byte[] move = {-1,-1,-1,-1};
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
-    //alfaBeta = new AlfaBeta(data);
+        alfaBeta = new AlfaBeta(data);
         this.textView = textView;
         this.whitesMoveString = textView.getText();
         tableRows = new TableRow[Fixed.YHEIGHT];
@@ -416,13 +417,13 @@ public class ChessBoardView {
             }
     }
 
-    private void makeComputerMove() {
+    public void makeComputerMove() {
         if (Settings.Mode == 1)
         {
             if (!whiteNext)
             {
-                alfaBeta = new AlfaBeta(data);
-                byte[] bestMove = alfaBeta.getBestMove();
+                //alfaBeta = new AlfaBeta(data);
+                byte[] bestMove = alfaBeta.getBestMove(this.data);
                 imageResourceDrag = (Integer) imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
                 startX = bestMove[0]%Fixed.XWIDTH;
                 startY = bestMove[0]/Fixed.XWIDTH;
@@ -434,7 +435,7 @@ public class ChessBoardView {
             if (whiteNext)
             {
                 alfaBeta = new AlfaBeta(data);
-                byte[] bestMove = alfaBeta.getBestMove();
+                byte[] bestMove = alfaBeta.getBestMove(this.data);
                 imageResourceDrag = (Integer) imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
                 startX = bestMove[0]%Fixed.XWIDTH;
                 startY = bestMove[0]/Fixed.XWIDTH;

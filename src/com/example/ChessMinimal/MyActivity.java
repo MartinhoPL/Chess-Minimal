@@ -42,8 +42,8 @@ public class MyActivity extends Activity {
         chessBoardView.createBoard();
         if (Settings.Mode == 2)
         {
-            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
-            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
+            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
+            byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
         }
@@ -160,20 +160,20 @@ public class MyActivity extends Activity {
         alert.show();
     }
 
-    public void alfaBeta(){
-
-
-    }
-
-    public void generateTree(View view) {
-        GameTree gameTree = new GameTree(data);
-        gameTree.generateGameTree(3);
-        try {
-            TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildren(), "C:/Users/Mikolaj/Desktop/file.txt");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+//    public void alfaBeta(){
+//
+//
+//    }
+//
+//    public void generateTree(View view) {
+//        GameTree gameTree = new GameTree(data);
+//        gameTree.generateGameTree(3,data);
+//        try {
+//            TestUtils.saveMovesToFile(gameTree.getMoves(), gameTree.getNodeChildren(), "C:/Users/Mikolaj/Desktop/file.txt");
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public void onAcceptClick(View view) {
         Settings.Mode = ((Spinner)findViewById(R.id.spinner2)).getSelectedItemPosition();
@@ -193,21 +193,21 @@ public class MyActivity extends Activity {
 
         setContentView(R.layout.main);
         RestoreBoard();
-        applyChangesInGameMode();
+        chessBoardView.makeComputerMove();
     }
 
     private void applyChangesInGameMode() {
         if (Settings.Mode == 1 && !chessBoardView.whiteNext)
         {
-            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
-            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
+            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
+            byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
         }
         else if (Settings.Mode == 2 && chessBoardView.whiteNext)
         {
-            chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
-            byte[] bestMove = chessBoardView.alfaBeta.getBestMove();
+            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
+            byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
         }

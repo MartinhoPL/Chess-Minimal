@@ -26,6 +26,7 @@ public class Data implements Cloneable{
         color = Fixed.INIT_COLOR.clone();
     }
 
+    @Override
     public Data clone() {
         Data temp = null;
         try {
@@ -35,6 +36,7 @@ public class Data implements Cloneable{
         if(temp != null) {
             temp.piece = this.piece.clone();
             temp.color = this.color.clone();
+            temp.lastMove = this.lastMove.clone();
         }
         return temp;
     }
@@ -105,7 +107,9 @@ public class Data implements Cloneable{
                 this.piece[move[0]] = this.piece[move[1]];
                 this.color[move[0]] = this.color[move[1]];
                 this.piece[move[1]] = move[3];
-                if(this.color[move[0]] == 1) {
+                if(move[3] == 0){
+                    this.color[move[1]] = 0;
+                }else if(this.color[move[0]] == 1) {
                     this.color[move[1]] = 2;
                 }
                 else{
@@ -137,7 +141,7 @@ public class Data implements Cloneable{
             lastMove[0] = (byte)(x1 + y1 * Fixed.XWIDTH);
             lastMove[1] = (byte)(x2 + y2 * Fixed.XWIDTH);
             lastMove[2] = 0;
-            lastMove[3] = (byte)this.piece[x2 + y2 * Fixed.XWIDTH];
+            lastMove[3] = (byte)this.piece[lastMove[1]];
             this.piece[x2 + y2 * Fixed.XWIDTH] = this.piece[x1 + y1 * Fixed.XWIDTH];//wykonanie ruchu
             this.color[x2 + y2 * Fixed.XWIDTH] = this.color[x1 + y1 * Fixed.XWIDTH];
             this.color[x1 + y1 * Fixed.XWIDTH] = 0;
@@ -167,23 +171,23 @@ public class Data implements Cloneable{
         this.piece[Fixed.XWIDTH * y + x] = piece;
     }
 
-    //na podstawie planszy z data wypelnia tablice posiotionNumber (dwuelementowa) przyklad tworzenia liczby:
-    //dla data.color=0 positionNumber[0] *= 16 i nastepny przebieg petli
-    //dla pozostalych positionNumber[0] = 16 * positionNumber[0] + (data.color[i] - 1] * 6 + data.piece[i]
-    public void convertPositionToNumber(int positionNumber[]){
-        positionNumber[0] = 0;
-        positionNumber[1] = 0;
-        long simplePosition = 0;
-        for (int i = 0; i < 8; i++) {
+    public int[] convertPositionToNumber(){
+        int positionNumber[] = {0,0,0}; //stworzenie tablicy na wynik
+        int simplePosition = 0; //nota pojedynczej pozycji
+        for (int i = 0; i < 8; i++) { //stworzenie 1. czesci
+            //mno¿nik 16 bo 2 kolory * 6 figur + pole puste = 13 mozliwosci
+            //a najblizsza (wieksza) potega 2 to 16
             positionNumber[0] *= 16;
-            if(this.color[i] != 0) {
+            if(this.color[i] != 0) { //jezeli pole nie puste
+                //numer figury +6 dla czarnych lub +0 dla bialych
                 simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
             }else {
                 simplePosition = 0;
             }
+            //zwieksz kontener o wyliczona wartosc
             positionNumber[0] += simplePosition;
         }
-        for (int i = 8; i < 14; i++) {
+        for (int i = 8; i < 14; i++) { //2. czesc analogicznie jak wyzej
             positionNumber[1] *= 16;
             if(this.color[i] != 0) {
                 simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
@@ -192,7 +196,7 @@ public class Data implements Cloneable{
             }
             positionNumber[1] += simplePosition;
         }
-        for (int i = 14; i < 20; i++) {
+        for (int i = 14; i < 20; i++) { //3. czesc analogcznie jak wyzej
             positionNumber[2] *= 16;
             if(this.color[i] != 0) {
                 simplePosition = this.piece[i] + (this.color[i] - 1) * 6;
@@ -201,6 +205,7 @@ public class Data implements Cloneable{
             }
             positionNumber[2] += simplePosition;
         }
+        return positionNumber.clone();
     }
 
     public static int calculateArrayIndexForCoords(int x, int y){

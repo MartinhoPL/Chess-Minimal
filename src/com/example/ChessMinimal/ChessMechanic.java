@@ -1502,19 +1502,23 @@ public final class ChessMechanic {
 
     // kompletne (docelowo) sprawdzenie poprawności ruchu
     public static MoveCorrectEnum isMoveCorrect(int x1, int y1, int x2, int y2, Data data) {
-        if (x1 == x2 && y1 == y2) { //poczatek == koniec
+        //poczatek == koniec
+        if (x1 == x2 && y1 == y2) {
             return MoveCorrectEnum.FAIL;
         }
-        if (data.getColor(x2, y2) == data.getSide()) { //proba ruchu na pole zajete przez nasza bierke
+        //proba ruchu na pole zajete przez nasza bierke
+        if (data.getColor(x2, y2) == data.getSide()) {
             return MoveCorrectEnum.FAIL;
         }
-        if(!isInsideBoard(x2, y2, data)) { //ruch poza plansze
+        //ruch poza plansze
+        if(!isInsideBoard(x2, y2, data)) {
             return  MoveCorrectEnum.FAIL;
         }
-        int piece1 = data.getPiece(x1, y1);
-        if (data.getColor(x1, y1) != data.getSide()) { //czy wybrana bierka jest przeciwnika lub puste pole
+        //wybrana bierka jest przeciwnika lub puste pole
+        if (data.getColor(x1, y1) != data.getSide()) {
             return MoveCorrectEnum.FAIL;
         }
+        int piece1 = data.getPiece(x1, y1);
         switch (piece1) { //sprawdzanie poprawnosci ruchu dla kazdego typu bierki
             case 0: {//puste (brak bierki na polu)
                 return MoveCorrectEnum.FAIL;
@@ -1557,11 +1561,13 @@ public final class ChessMechanic {
             }
         }
         data.makeMove(x1, y1, x2, y2);//proba wykonania ruchu
-        if (isCheckAfterMove(false, data)) { //czy po ruchu jest szachowany nasz krol
+        //czy po ruchu jest szachowany nasz krol
+        if (isCheckAfterMove(false, data)) {
             data.undoMove(); //cofnij probe
             return MoveCorrectEnum.FAIL;
         }
         //ruch poprawny sprawdzenie sytuacji na planszy
+
         boolean isCheck = isCheckAfterMove(true, data);//sprawdzanie czy po ruchu jest szach
         boolean mate = false;
         boolean promotion = isPromotionAfterMove(data); //sprawdzenie czy możliwosc promocji
@@ -1573,7 +1579,7 @@ public final class ChessMechanic {
             }
         }
         data.undoMove();// cofnięcie ruchu
-        data.setCapture(x2,y2);
+        data.setCapture(x2, y2);
         if (promotion) { //jesli promocja
             return MoveCorrectEnum.PROMOTION;
         } else {

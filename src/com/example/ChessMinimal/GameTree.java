@@ -32,8 +32,8 @@ public class GameTree {
         movesIndex = 0;
     }
 
-    public void generateGameTree(int depth) {
-        resetGameTreeFields();
+    public void generateGameTree(int depth, Data data) {
+        resetGameTreeFields(data);
         int maxDepth = depth;
         Data generatedData = data;
         if(movesIndex == 0) {
@@ -454,8 +454,7 @@ public class GameTree {
     }
 
     private boolean isTransposition(Data data) {
-        int []position = new int[3];
-        data.convertPositionToNumber(position);
+        int []position = data.convertPositionToNumber();
         int index = hash(position);
         int offset = 0;
         while(true) {
@@ -482,7 +481,8 @@ public class GameTree {
         return result;
     }
 
-    public void resetGameTreeFields(){
+    public void resetGameTreeFields(Data data){
+        this.data = data.clone();
         for(int i = 0; i < MAX_TRANSPOSITIONS; i++) {
             transpositons[i][0] = 0;
             transpositons[i][1] = 0;
