@@ -374,7 +374,7 @@ public class GameTree {
             }
             case PROMOTION:{
                 move[2] = 4;
-                move[3] = 5;
+//                move[3] = (byte)data.getPiece(destX,destY);
                 break;
             }
             case STALEMATE:{
@@ -393,7 +393,7 @@ public class GameTree {
             if(move[2] != 4 && move[2] != 16 && move[2] != 2) {
                 move[2] = 8;
             }
-            move[3] = (byte)data.getCapture();
+            move[3] = (byte)data.getPiece(destX,destY);
         }
         if (moveCorrect) {
             move[0] = (byte)data.calculateArrayIndexForCoords(x, y);

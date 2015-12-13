@@ -242,12 +242,14 @@ public class ChessBoardView {
             imageButtons[x][y].setImageResource(R.drawable.whitequeen);
             imageButtons[x][y].setTag(R.drawable.whitequeen);
             CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 5, data));
+            return;
         }
         if (whiteNext && Settings.Mode == 1)
         {
             imageButtons[x][y].setImageResource(R.drawable.blackqueen);
             imageButtons[x][y].setTag(R.drawable.blackqueen);
             CheckSituationAfterPromotion(ChessMechanic.promotion(x, y, 5, data));
+            return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this.context);
         final String[] items = {context.getString(R.string.Queen), context.getString(R.string.Bishop), context.getString(R.string.Pawn), context.getString(R.string.Rook)};
