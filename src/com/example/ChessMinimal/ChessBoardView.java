@@ -13,8 +13,6 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.Set;
-
 public class ChessBoardView {
 
     private final CharSequence whitesMoveString;
@@ -31,6 +29,7 @@ public class ChessBoardView {
     public boolean whiteNext = true;
     private boolean lock = false;
     public byte[] move = {-1,-1,-1,-1};
+    boolean firstMove = true;
 
     public ChessBoardView(TableLayout tableLayout, Data data, Context context, TextView textView){
         alfaBeta = new AlfaBeta(data);
@@ -164,7 +163,6 @@ public class ChessBoardView {
 //                    dragView.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception ex) {
-                    for (;;);
                 } finally {
                     return true;
                 }
@@ -413,7 +411,10 @@ public class ChessBoardView {
                 whiteNext = !whiteNext;
                 changeTextViewForNextTurn();
                 ((MyActivity)context).gameState = GameStateEnum.STARTED;
-                makeComputerMove();
+                if(firstMove) {
+                    firstMove = !firstMove;
+                    makeComputerMove();
+                }
             }
     }
 

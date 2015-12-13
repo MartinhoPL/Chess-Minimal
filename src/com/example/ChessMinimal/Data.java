@@ -111,8 +111,7 @@ public class Data implements Cloneable{
                     this.color[move[1]] = 0;
                 }else if(this.color[move[0]] == 1) {
                     this.color[move[1]] = 2;
-                }
-                else{
+                } else{
                     this.color[move[1]] = 1;
                 }
                 this.changeSite();
@@ -175,7 +174,7 @@ public class Data implements Cloneable{
         int positionNumber[] = {0,0,0}; //stworzenie tablicy na wynik
         int simplePosition = 0; //nota pojedynczej pozycji
         for (int i = 0; i < 8; i++) { //stworzenie 1. czesci
-            //mno¿nik 16 bo 2 kolory * 6 figur + pole puste = 13 mozliwosci
+            //mnoï¿½nik 16 bo 2 kolory * 6 figur + pole puste = 13 mozliwosci
             //a najblizsza (wieksza) potega 2 to 16
             positionNumber[0] *= 16;
             if(this.color[i] != 0) { //jezeli pole nie puste

@@ -21,7 +21,7 @@ public class AlfaBeta {
     public byte[] getBestMove(Data data) {
         gameTree.generateGameTree(2, data);
         byte []move;
-        int eval = alfaBetaAlgorithm(0, -99999999, 99999999, true, 0);
+        int eval = alfaBetaAlgorithm(0, -1000000, 1000000, true, data.getSide(), -1000001);
         move = gameTree.getMovesAt(bestMove);
         return move.clone();
     }
@@ -30,26 +30,35 @@ public class AlfaBeta {
         ;
     }
 
-    public int alfaBetaAlgorithm(int node, int alfa, int beta, boolean player, int depth) {
+    public int alfaBetaAlgorithm(int node, int alfa, int beta, boolean player, int sideToPlay, int previousAlfa) {
         if (gameTree.getNodeChildrenAt(node) == -1 || gameTree.getNodeChildrenAt(node) == gameTree.getMovesIndex()) {
             int pathToTheRoot[] = gameTree.getPathToTheRoot(node);
             gameTree.makeAllMovesToNextPosition(pathToTheRoot, data);
-            int result = evaluation.eval(data, sideToPlay);
+            int result;
+            if(gameTree.getMovesAt(node)[2] == 2) {
+                if (sideToPlay == data.getSide()) {
+                    return 999999;
+                } else {
+                    return -999999;
+                }
+            } else if(gameTree.getMovesAt(node)[2] == 2) {
+                return 0;
+            }
+            result = evaluation.eval(data, sideToPlay);
             gameTree.undoAllMovesToPreviousPosition(pathToTheRoot, data);
             return result;
         }
         if(player) {
             for(int i = gameTree.findFirstNodeWithChildrens(node); i < gameTree.findFirstNodeWithChildrens(node + 1); i++) {
-//                int previousAlfa = alfa;
-//                int xxxx = alfaBetaAlgorithm(i, alfa, beta, !player, depth + 1);
-                int tmp = alfaBetaAlgorithm(i, alfa, beta, !player, depth + 1);
+                alfa = Math.max(alfaBetaAlgorithm(i, alfa, beta, !player, sideToPlay, previousAlfa), alfa);
 //                alfa =
-                if(tmp > alfa) {
-                    alfa = tmp;
-                    if(gameTree.getNodeFatherAt(i) == 0) {
-                        bestMove = i;
-                    }
+//                if(alfa < tmp) {
+//                    alfa = tmp;
+                if(gameTree.getNodeFatherAt(i) == 0 && previousAlfa < alfa) {
+                    previousAlfa = alfa;
+                    bestMove = i;
                 }
+//                }
                 if(beta <= alfa){
                     break;
                 }
@@ -58,7 +67,7 @@ public class AlfaBeta {
         }
         else {
             for(int i = gameTree.findFirstNodeWithChildrens(node); i < gameTree.findFirstNodeWithChildrens(node + 1); i++) {
-                beta = Math.min(beta, alfaBetaAlgorithm(i, alfa, beta, !player, depth + 1));
+                beta = Math.min(beta, alfaBetaAlgorithm(i, alfa, beta, !player, sideToPlay, previousAlfa));
                 if(beta <= alfa){
                     break;
                 }
