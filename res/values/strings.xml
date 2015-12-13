@@ -19,6 +19,7 @@
     <string name="Yes">Tak</string>
     <string name="WhiteSuggestDraw">Białe proponują remis. Zgadzasz się?</string>
     <string name="BlackSuggestDraw">Czaene proponują remis. Zgadzasz się?</string>
+    <string name="Human">Człowiek</string>
     <string-array name="gameModeSpinnerItems">
         <item>Humans</item>
         <item>Human White</item>
