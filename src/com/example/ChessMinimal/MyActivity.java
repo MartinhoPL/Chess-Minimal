@@ -29,6 +29,10 @@ public class MyActivity extends Activity {
         TextView textView = (TextView) findViewById(R.id.textView);
         chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
         chessBoardView.createBoard();
+        if (Settings.Mode == 2)
+        {
+            chessBoardView.lock = true;
+        }
     }
 
     public void onStartButtonClick(View view) {
@@ -42,6 +46,7 @@ public class MyActivity extends Activity {
         chessBoardView.createBoard();
         if (Settings.Mode == 2)
         {
+            chessBoardView.lock = false;
             //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
             byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();

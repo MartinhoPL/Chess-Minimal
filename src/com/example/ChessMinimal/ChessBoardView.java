@@ -27,7 +27,7 @@ public class ChessBoardView {
     public int imageResourceDrag;
     public TextView textView;
     public boolean whiteNext = true;
-    private boolean lock = false;
+    public boolean lock = false;
     public byte[] move = {-1,-1,-1,-1};
     boolean firstMove = true;
 
