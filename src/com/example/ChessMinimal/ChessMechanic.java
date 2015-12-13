@@ -765,7 +765,7 @@ public final class ChessMechanic {
                     }
                 }
                 if (y - 1 > -1) {
-                    if (data.getColor(x - 2, y + 1) != data.getSide()) {
+                    if (data.getColor(x - 2, y - 1) != data.getSide()) {
                         tab[x - 2][y - 1] = -1;
                     }
                 }

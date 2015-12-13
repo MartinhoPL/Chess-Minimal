@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent" android:background="#ff4b4a4a">
+              android:layout_height="match_parent" android:background="#ff4b4a4a" android:weightSum="1">
 
     <LinearLayout
             android:orientation="vertical"
@@ -17,7 +17,7 @@
     </LinearLayout>
     <TableLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content" android:layout_weight="0.32">
         <TableRow
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
@@ -43,67 +43,7 @@
                     android:id="@+id/spinner2" android:layout_column="1" android:spinnerMode="dropdown"
                     android:entries="@array/gameModeSpinnerItems"/>
         </TableRow>
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Czas na gre"
-                    android:id="@+id/hhh" android:layout_column="0" android:singleLine="false"
-                    android:textSize="40dp" android:layout_margin="20dp"
-                    android:textColor="@android:color/background_dark"/>
-            <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/spinner" android:layout_column="1" android:entries="@array/timeSpinnerItems"/>
-        </TableRow>
 
-    </TableLayout>
-    <TableLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" android:layout_gravity="center_horizontal" android:layout_weight="1">
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ustawienia silnika"
-                    android:id="@+id/textView12" android:layout_column="0"
-                    android:textColor="#ff200d0a" android:textSize="50dp"
-                    android:layout_margin="30dp"/>
-        </TableRow>
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_margin="20dp">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Pokazuj obliczenia silnika:"
-                    android:id="@+id/textView13" android:layout_column="0" android:textSize="40dp"
-                    android:textColor="@android:color/background_dark"/>
-            <CheckBox
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/checkBox" android:layout_column="2" android:checked="true"/>
-        </TableRow>
-        <TableRow
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent" android:layout_margin="20dp" android:id="@+id/gcj">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Głębokość drzewa gry:"
-                    android:id="@+id/textView14" android:layout_column="0" android:textSize="40dp"
-                    android:textColor="@android:color/background_dark"/>
-            <EditText
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/editText" android:layout_column="2" android:textSize="50dp"
-                    android:background="@android:color/background_light"
-                    android:textColor="@android:color/background_dark" android:layout_span="80"/>
-        </TableRow>
     </TableLayout>
     <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content" >
         <Button android:onClick="onAcceptClick" android:layout_width="wrap_content" android:width="250dp" android:layout_marginLeft="290dp" android:layout_marginRight="200dp" android:text="Akceptuj" android:textSize="40dp" android:layout_marginBottom="100dp" android:layout_height="wrap_content"/>
