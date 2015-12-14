@@ -481,7 +481,7 @@ public final class ChessMechanic {
                         }
                         case 2: {
                             if (knigthMoveIsCorrect(j, i, x, y, data) && !pieceBlocked(j, i, x, y, data))
-                                return false;
+                                return true;
                             break;
                         }
                         case 3: {
@@ -640,20 +640,20 @@ public final class ChessMechanic {
                 break;
             if (y != kingY) { // !czy atak w pionie?
                 for (int k = 0; k < Fixed.YHEIGHT; k++) { //pion
-                    if (k == y)
+                    if (k == x)
                         continue;
-                    if (data.getColor(x, k) == myColor) {
-                        if (pieceCanMove(x, k, x, y, data))
+                    if (data.getColor(k, x) == myColor) {
+                        if (pieceCanMove(k, y, x, y, data))
                             return true;
                     }
                 }
             }
             if (x != kingX) {// !czy atak w poziomie?
                 for (int k = 0; k < Fixed.XWIDTH; k++) { //poziom
-                    if (k == x)
+                    if (k == y)
                         continue;
-                    if (data.getColor(k, y) == myColor) {
-                        if (pieceCanMove(k, y, x, y, data))
+                    if (data.getColor(x, k) == myColor) {
+                        if (pieceCanMove(x, k, x, y, data))
                             return true;
                     }
                 }
