@@ -35,7 +35,6 @@ public class GameTree {
     public void generateGameTree(int depth, Data data) {
         resetGameTreeFields(data);
         int maxDepth = depth;
-//        Data data = data;
         if(movesIndex == 0) {
             byte []move = new byte[4];
             nodeFather[movesIndex] = -1;
@@ -52,7 +51,6 @@ public class GameTree {
         int koniec = nodeChildren[nodeChildrenArrayIndex - 1];
         while (depth > 0) {
             if(maxDepth - depth >= 2) {
-//                clearTranspositons();
                 checkTransposition = true;
             } else {
                 checkTransposition = false;
@@ -68,7 +66,6 @@ public class GameTree {
                         nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
                     }
                     undoAllMovesToPreviousPosition(getPathToTheRoot(i), data);
-//                    data = data;
                 } else {
                     nodeChildren[nodeChildrenArrayIndex - 1] = -1;
                     nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
@@ -80,17 +77,11 @@ public class GameTree {
 
         }
 
-//        while(nodeChildrenArrayIndex < movesIndex){
-//            nodeChildren[nodeChildrenArrayIndex++] = -1;
-//        }
         int pom = nodeChildrenArrayIndex - 1;
-//        nodeChildren[pom] = -1;
         nodeChildrenArrayIndex--;
         boolean noSpecialMoves = false;
-//        checkTransposition = false;
         while(!noSpecialMoves) {// poglebienie drzewa gry
             for(int i = poczatek; i < koniec; i++) {
-//                if(moves[i][2] != 2 && moves[i][2] != 16) {
                     if (moves[i][2] == 4 || moves[i][2] == 8) {
                         makeAllMovesToNextPosition(getPathToTheRoot(i), data);
 
@@ -103,7 +94,6 @@ public class GameTree {
                     } else {
                         nodeChildren[nodeChildrenArrayIndex++] = -1;
                     }
-//                }
             }
             poczatek = koniec;
             int j = 1;
@@ -377,7 +367,6 @@ public class GameTree {
             }
             case PROMOTION:{
                 move[2] = 4;
-//                move[3] = (byte)data.getPiece(destX,destY);
                 break;
             }
             case STALEMATE:{

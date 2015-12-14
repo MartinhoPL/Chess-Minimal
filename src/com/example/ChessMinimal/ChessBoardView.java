@@ -117,8 +117,6 @@ public class ChessBoardView {
                             ClipData clipData = ClipData.newPlainText("", "");
                             View.DragShadowBuilder dsb = new View.DragShadowBuilder(view);
                             view.startDrag(clipData, dsb, view, 0);
-                           // imageButton.setImageResource(android.R.color.transparent);
-                            //view.setVisibility(View.INVISIBLE);
                         }
                     } catch (Exception exception) {
 
@@ -160,7 +158,6 @@ public class ChessBoardView {
                         }
                     } else if (dragAction == DragEvent.ACTION_DROP && containsDragable) {
                         validateMove(x, y);
-//                    dragView.setVisibility(View.VISIBLE);
                     }
                 } catch (Exception ex) {
                 } finally {
@@ -403,7 +400,6 @@ public class ChessBoardView {
 
     public void movePiece(int x1, int y1, int x2, int y2) {
             data.makeMove(x1, y1, x2, y2);
-            //imageResources = getimageResourceForCell(x1, y1);
             imageButtons[x1][y1].setImageResource(android.R.color.transparent);
             imageButtons[x1][y1].setTag(-0);
             imageButtons[x2][y2].setImageResource(imageResourceDrag);
@@ -425,7 +421,6 @@ public class ChessBoardView {
         {
             if (!whiteNext)
             {
-                //alfaBeta = new AlfaBeta(data);
                 byte[] bestMove = alfaBeta.getBestMove(this.data);
                 imageResourceDrag = (Integer) imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
                 startX = bestMove[0]%Fixed.XWIDTH;
@@ -464,9 +459,4 @@ public class ChessBoardView {
         this.imageButtons = imageButtons;
     }
 
-    public void undoMove() {
-        Move move = null;
-        // todo Patryk tu wywołujemy Twoją funkcję, musi mi zwracać Move, żebym wiedział skąd dokąd ruszyć
-        movePiece(move.getX1(), move.getY1(), move.getX2(), move.getY2());
-    }
 }
