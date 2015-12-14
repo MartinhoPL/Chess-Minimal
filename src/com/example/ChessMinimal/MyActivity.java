@@ -63,7 +63,6 @@ public class MyActivity extends Activity {
         if (Settings.Mode == 2)
         {
             chessBoardView.lock = false;
-            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
             byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
@@ -184,14 +183,12 @@ public class MyActivity extends Activity {
     private void applyChangesInGameMode() {
         if (Settings.Mode == 1 && !chessBoardView.whiteNext)
         {
-            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
             byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]% Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
         }
         else if (Settings.Mode == 2 && chessBoardView.whiteNext)
         {
-            //chessBoardView.alfaBeta = new AlfaBeta(chessBoardView.data);
             byte[] bestMove = chessBoardView.alfaBeta.getBestMove(chessBoardView.data);
             chessBoardView.imageResourceDrag = (Integer) chessBoardView.imageButtons[bestMove[0]%Fixed.XWIDTH][bestMove[0]/Fixed.XWIDTH].getTag();
             chessBoardView.movePiece(bestMove[0] % Fixed.XWIDTH, bestMove[0] / Fixed.XWIDTH, bestMove[1] % Fixed.XWIDTH, bestMove[1]/Fixed.XWIDTH);
@@ -205,16 +202,5 @@ public class MyActivity extends Activity {
         chessBoardView.changeTextViewForNextTurn();
         chessBoardView.restoreBoard();
     }
-
-    public void undoMove(View view) {
-        chessBoardView.undoMove();
-    }
-
-//    public void superClick(View view) {
-////        GameTree gameTree = new GameTree(data);
-////        gameTree.generateGameTree(3);
-//        AlfaBeta alfaBeta = new AlfaBeta(data);
-//        alfaBeta.getBestMove();
-//    }
 }
 
