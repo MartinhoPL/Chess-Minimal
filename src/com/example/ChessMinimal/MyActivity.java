@@ -25,9 +25,28 @@ public class MyActivity extends Activity {
         TextView textView = (TextView) findViewById(R.id.textView);
         chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
         chessBoardView.createBoard();
+        setTextViews();
         if (Settings.Mode == 2)
         {
             chessBoardView.lock = true;
+        }
+    }
+
+    private void setTextViews() {
+        switch (Settings.Mode)
+        {
+            case 0:
+                ((TextView) findViewById(R.id.textView2)).setText(getString(R.string.Human));
+                ((TextView) findViewById(R.id.textView3)).setText(getString(R.string.Human));
+                break;
+            case 1:
+                ((TextView) findViewById(R.id.textView2)).setText(getString(R.string.Human));
+                ((TextView) findViewById(R.id.textView3)).setText("Komputer");
+                break;
+            case 2:
+                ((TextView) findViewById(R.id.textView3)).setText(getString(R.string.Human));
+                ((TextView) findViewById(R.id.textView2)).setText("Komputer");
+                break;
         }
     }
 
@@ -40,6 +59,7 @@ public class MyActivity extends Activity {
         TextView textView = (TextView) findViewById(R.id.textView);
         chessBoardView = new ChessBoardView(chessBoardLayout, data, this, textView);
         chessBoardView.createBoard();
+        setTextViews();
         if (Settings.Mode == 2)
         {
             chessBoardView.lock = false;
@@ -117,6 +137,9 @@ public class MyActivity extends Activity {
     }
 
     private void askForDraw() {
+        if (Settings.Mode != 0) {
+            return;
+        }
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         String message;
         if (chessBoardView.whiteNext)
@@ -153,6 +176,8 @@ public class MyActivity extends Activity {
         Settings.Mode = ((Spinner)findViewById(R.id.spinner2)).getSelectedItemPosition();
         setContentView(R.layout.main);
         RestoreBoard();
+        chessBoardView.lock = false;
+        setTextViews();
         chessBoardView.makeComputerMove();
     }
 
