@@ -69,6 +69,9 @@ public class GameTree {
                     }
                     undoAllMovesToPreviousPosition(getPathToTheRoot(i), data);
 //                    data = data;
+                } else {
+                    nodeChildren[nodeChildrenArrayIndex - 1] = -1;
+                    nodeChildren[nodeChildrenArrayIndex++] = movesIndex;
                 }
             }
             poczatek = koniec;

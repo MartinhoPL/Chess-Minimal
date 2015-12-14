@@ -19,7 +19,8 @@ public class AlfaBeta {
     }
 
     public byte[] getBestMove(Data data) {
-        gameTree.generateGameTree(2, data);
+        this.data = data.clone();
+        gameTree.generateGameTree(2, this.data);
         byte []move;
         int eval = alfaBetaAlgorithm(0, -1000000, 1000000, true, data.getSide(), -1000001);
         move = gameTree.getMovesAt(bestMove);
@@ -32,16 +33,23 @@ public class AlfaBeta {
 
     public int alfaBetaAlgorithm(int node, int alfa, int beta, boolean player, int sideToPlay, int previousAlfa) {
         if (gameTree.getNodeChildrenAt(node) == -1 || gameTree.getNodeChildrenAt(node) == gameTree.getMovesIndex()) {
+            if(node == 3) {
+                int xx = 7;
+                xx += 14;
+        }
             int pathToTheRoot[] = gameTree.getPathToTheRoot(node);
             gameTree.makeAllMovesToNextPosition(pathToTheRoot, data);
             int result;
             if(gameTree.getMovesAt(node)[2] == 2) {
-                if (sideToPlay == data.getSide()) {
+                if (sideToPlay == data.getXside()) {
+                    gameTree.undoAllMovesToPreviousPosition(pathToTheRoot, data);
                     return 999999;
                 } else {
+                    gameTree.undoAllMovesToPreviousPosition(pathToTheRoot, data);
                     return -999999;
                 }
             } else if(gameTree.getMovesAt(node)[2] == 2) {
+                gameTree.undoAllMovesToPreviousPosition(pathToTheRoot, data);
                 return 0;
             }
             result = evaluation.eval(data, sideToPlay);
